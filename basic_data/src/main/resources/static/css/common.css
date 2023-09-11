@@ -1,0 +1,108 @@
+.search-pane{
+    border: 1px solid #d2d6de;
+    border-radius: 2px;
+    padding: 30px 0 30px 20px;
+    box-shadow: 1px 2px 5px #d2d6de;
+    margin: 40px 30px;
+    min-height: 174px;
+}
+
+.table-pane{
+    margin: 50px 0 0 30px;
+}
+.box-body{
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    padding: 10px;
+}
+
+.flex-panel-list {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.flex-panel-list li {
+    flex: 1;
+    padding: 10px 20px;
+    margin-right: 15px;
+    background: #f1f1f1;
+    border-radius: 10px;
+    min-height:100px;
+}
+
+.body-container{
+    width: 90%;
+    margin-left: 5%;
+    margin-top: 2%;
+}
+.box-shadow{
+    border: 1px solid #d2d6de;
+    box-shadow: 1px 2px 5px #d2d6de;
+    padding: 10px;
+}
+
+.card-header-word{
+    font-size: 20px;
+    font-weight: bold;
+    color:#333333;
+    padding: 0 10px;
+}
+
+.agg-listbox {
+    flex-wrap: wrap;
+    padding-top: 15px;
+}
+#aggsTeamSales{
+    color: #fff;
+}
+#aggsTeamSales li:nth-child(1) {
+    background-color: #70c0b3;
+}
+#aggsTeamSales li:nth-child(2) {
+    background-color: #FFB800;
+}
+#aggsTeamSales li:nth-child(3) {
+    background-color: #00B83F;
+}
+#aggsTeamSales li:nth-child(4) {
+    background-color: #01AAED;
+}
+#aggsTeamSales li:nth-child(5) {
+    background-color: #583C87;
+}
+#aggsTeamSales li:nth-child(6) {
+    background-color: #be1aaf;
+}
+.loading{
+    display : inline-block;
+    height:40px;
+    width:40px;
+    background:url(/images/loading_red.gif) no-repeat left top;
+    text-align: center;
+    line-height: 50px;
+}
+
+.download-icon{
+    font-size:25px;
+    margin-left:5px;
+    color:#fff;
+}
+
+.min-download-icon{
+    font-size:14px;
+    margin-left:5px;
+}
+.agg-listbox .words a{
+    color:#fff;
+    font-size:14px;
+    padding-top:5px;
+}
+
+.agg-listbox a{
+    color:#fff;
+    font-size:20px;
+    padding-top:5px;
+}

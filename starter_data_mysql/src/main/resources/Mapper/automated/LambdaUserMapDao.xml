@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.LambdaUserMapDao">
+
+    <resultMap id="lambdaUserMapMap" type="com.sailvan.dispatchcenter.common.domain.LambdaUserMap">
+        <id property="id" column="id" />
+        <result property="taskId" column="task_id"/>
+        <result property="lambdaAccountId" column="lambda_account_id"/>
+        <result property="accountName" column="account_name"/>
+        <result property="regionId" column="region_id"/>
+        <result property="functionId" column="function_id"/>
+        <result property="region" column="region"/>
+        <result property="functionName" column="function_name"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+
+
+    <insert id="insertLambdaUserMap" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.sailvan.dispatchcenter.common.domain.LambdaUserMap">
+        insert into atc_aws_lambda_user_map(lambda_account_id,account_name,region_id,function_id,region,function_name, created_at,updated_at)
+        values (#{lambdaAccountId,jdbcType=INTEGER},#{accountName,jdbcType=VARCHAR}, #{regionId,jdbcType=INTEGER}, #{functionId,jdbcType=INTEGER},
+               #{region,jdbcType=VARCHAR},#{functionName,jdbcType=VARCHAR},#{createdAt,jdbcType=VARCHAR},#{updatedAt,jdbcType=VARCHAR})
+    </insert>
+
+
+    <select id="getAllLambdaUserMap" resultMap="lambdaUserMapMap" resultType="java.util.List">
+        select * from atc_aws_lambda_user_map
+    </select>
+
+
+
+    <update id="updateLambdaUserMap">
+    update atc_aws_lambda_user_map
+    <set>
+        <if test="lambdaAccountId != 0 and lambdaAccountId != null ">
+            lambda_account_id = #{lambdaAccountId},
+        </if>
+        <if test="accountName != '' and accountName != null ">
+            account_name = #{accountName},
+        </if>
+        <if test="regionId != 0 and regionId != null ">
+            region_id = #{regionId},
+        </if>
+        <if test="region != null and region != '' ">
+            region = #{region},
+        </if>
+        <if test="functionId != 0 and functionId != null ">
+            function_id = #{functionId},
+        </if>
+
+        <if test="functionName != '' and functionName != null ">
+            function_name = #{functionName},
+        </if>
+        <if test="updatedAt != null and updatedAt != '' ">
+            updated_at = #{updatedAt},
+        </if>
+    </set>
+    WHERE id = #{id}
+    </update>
+
+
+    <select id="getMapByLambdaUserMap" resultMap="lambdaUserMapMap">
+        select * from atc_aws_lambda_user_map
+        <where>
+            <if test="lambdaAccountId != 0 and lambdaAccountId != null ">
+                and lambda_account_id = #{lambdaAccountId}
+            </if>
+            <if test="regionId != 0 and regionId != null ">
+                and region_id = #{regionId}
+            </if>
+            <if test="accountName != null and accountName != '' ">
+                and account_name = #{accountName}
+            </if>
+            <if test="functionId != 0 and functionId != null ">
+                and function_id = #{functionId}
+            </if>
+            <if test="region != null and region != '' ">
+                and region = #{region}
+            </if>
+            <if test="functionName != null and functionName != '' ">
+                and function_name = #{functionName}
+            </if>
+        </where>
+    </select>
+
+    <select id="getMapListByAccountName" resultMap="lambdaUserMapMap" resultType="java.util.List">
+        select * from atc_aws_lambda_user_map where account_name = #{accountName}
+    </select>
+    <select id="getMapById" resultMap="lambdaUserMapMap">
+         select * from atc_aws_lambda_user_map where id = #{mapId}
+    </select>
+
+</mapper>

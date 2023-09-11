@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.CaptchaCodeApiKeyDao">
+
+    <!--    前面java字段 后面mysql-->
+    <resultMap id="captchaCodeApiKeyMap" type="com.sailvan.dispatchcenter.common.domain.CaptchaCodeApiKey">
+        <id property="id" column="id" />
+        <result property="apiKey" column="api_key"/>
+    </resultMap>
+    <select id="getCaptchaCodeApiKey" resultMap="captchaCodeApiKeyMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.BusinessSystem">
+        select *  from atc_captcha_code_api_key
+    </select>
+
+    <update id="updateCaptchaCodeApiKey">
+        UPDATE atc_captcha_code_api_key set api_key = #{apiKey}  WHERE id = #{id}
+    </update>
+
+</mapper>

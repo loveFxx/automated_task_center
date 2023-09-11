@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.MachineDao">
+
+    <!--    前面java字段 后面mysql-->
+    <resultMap id="machineMap" type="com.sailvan.dispatchcenter.common.domain.Machine">
+        <id property="id" column="id"/>
+        <result property="ip" column="ip"/>
+        <result property="mac" column="mac"/>
+        <!--        <result property="account" column="account"/>-->
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="machineType" column="machine_type"/>
+        <result property="dialUsername" column="dial_username"/>
+        <result property="dialPassword" column="dial_password"/>
+        <result property="status" column="status"/>
+        <result property="machineStatus" column="machine_status"/>
+        <result property="cpu" column="cpu"/>
+        <result property="memory" column="memory"/>
+        <result property="diskSpace" column="disk_space"/>
+        <result property="netWork" column="net_work"/>
+        <result property="dueTime" column="due_time"/>
+        <result property="serviceProvider" column="service_provider"/>
+        <result property="lastHeartbeat" column="last_heartbeat"/>
+        <result property="lastExecuteTask" column="last_execute_task"/>
+        <result property="lastExecuteWorkType" column="last_execute_work_type"/>
+        <result property="lastExecuteTime" column="last_execute_time"/>
+        <result property="token" column="token"/>
+        <result property="operatingSystem" column="operating_system"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="machineLocalTime" column="machine_local_time"/>
+        <result property="userNames" column="user_names"/>
+        <result property="userNum" column="user_num"/>
+        <result property="clientVersion" column="client_version"/>
+        <result property="clientFileVersion" column="client_file_version"/>
+        <result property="maxIO" column="max_io"/>
+    </resultMap>
+    <select id="getMachineAll" resultMap="machineMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.Machine">
+        select *
+        from atc_machine
+    </select>
+
+    <select id="getMachineByMachine" resultMap="machineMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.Machine">
+        select * from atc_machine
+        <where>
+            <if test="ip != null and ip != '' ">
+                and ip = #{ip}
+            </if>
+            <if test=" machineType != -1 ">
+                and machine_type = #{machineType}
+            </if>
+            <if test="status != -1 ">
+                and status = #{status}
+            </if>
+            <if test="machineStatus != -1 ">
+                and machine_status = #{machineStatus}
+            </if>
+
+            <if test="expiring!=-1">
+                and due_time <![CDATA[>=]]> #{startTime} and due_time <![CDATA[<]]> #{endTime}
+            </if>
+            <if test="ids != null and ids != '' ">
+                and id in ${ids}
+            </if>
+        </where>
+    </select>
+
+    <select id="getMachineById" resultMap="machineMap" resultType="com.sailvan.dispatchcenter.common.domain.Machine">
+        select *
+        from atc_machine
+        where id = #{id}
+    </select>
+
+    <select id="select" resultMap="machineMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.Machine">
+        select *
+        from atc_machine
+        where ip = #{ip}
+    </select>
+
+    <select id="getMachineByIP" resultMap="machineMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.Machine">
+        select *
+        from atc_machine
+        where ip = #{ip}
+    </select>
+
+
+    <!--    前mysql字段后java-->
+    <update id="updateMachine">
+        UPDATE atc_machine
+        <set>
+            <if test="ip != null and ip != '' ">
+                ip = #{ip},
+            </if>
+            <if test="mac != null and mac != '' ">
+                mac = #{mac},
+            </if>
+            <if test="username != null and username != '' ">
+                username = #{username},
+            </if>
+            <if test="password != null and password != '' ">
+                password = #{password},
+            </if>
+            <if test="machineStatus != -1">
+                machine_status = #{machineStatus},
+            </if>
+            <!--    后面的要不要加or？-->
+            <if test="cpu != null and cpu != '' ">
+                cpu = #{cpu},
+            </if>
+            <if test="memory != null and memory != '' ">
+                memory = #{memory},
+            </if>
+            <if test="diskSpace != null and diskSpace != '' ">
+                disk_space = #{diskSpace},
+            </if>
+            <if test="token != null and token != '' ">
+                token = #{token},
+            </if>
+            <if test="dueTime != null and dueTime != ''">
+                due_time = #{dueTime},
+            </if>
+            <if test="dueTime == null or dueTime == ''">
+                due_time = null,
+            </if>
+            service_provider = #{serviceProvider},
+            operating_system = #{operatingSystem},
+            dial_username = #{dialUsername},
+            dial_password = #{dialPassword},
+            mac = #{mac},
+            max_io = #{maxIO}
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateByHeatBeat">
+        UPDATE atc_machine
+        set machine_status      = #{machineStatus},
+            cpu                 = #{cpu},
+            memory              = #{memory},
+            disk_space          = #{diskSpace},
+            last_heartbeat      = #{lastHeartbeat},
+            machine_local_time  = #{machineLocalTime},
+            net_work            = #{netWork},
+            user_names          = #{userNames},
+            user_num            = #{userNum},
+            client_version      = #{clientVersion},
+            client_file_version = #{clientFileVersion}
+        WHERE id = #{id}
+    </update>
+
+
+    <update id="updateMachineUserPwd">
+        UPDATE atc_machine
+        set username = #{username},
+            password = #{password}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateMachineStatus">
+        UPDATE atc_machine
+        set machine_status = #{machineStatus}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateLastWorkTaskByIp">
+        UPDATE atc_machine
+        set last_execute_task      = #{lastExecuteTask},
+            last_execute_work_type = #{lastExecuteWorkType},
+            last_execute_time      = #{lastExecuteTime}
+        WHERE ip = #{ip}
+    </update>
+
+    <update id="updateStatus">
+        UPDATE atc_machine
+        set status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <insert id="insertMachine" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.sailvan.dispatchcenter.common.domain.Machine">
+        insert into atc_machine( ip, mac, username, password, machine_type, dial_username, dial_password, status, cpu
+                               , memory, disk_space, due_time, service_provider
+                               , last_heartbeat, last_execute_task, created_time,last_execute_work_type, token,max_io)
+        values ( #{ip,jdbcType=VARCHAR}, #{mac,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}
+               , #{password,jdbcType=VARCHAR}
+               , #{machineType,jdbcType=INTEGER}, #{dialUsername,jdbcType=VARCHAR}, #{dialPassword,jdbcType=VARCHAR}
+               , #{status,jdbcType=INTEGER}
+               , #{cpu,jdbcType=VARCHAR}, #{memory,jdbcType=VARCHAR}, #{diskSpace,jdbcType=VARCHAR}
+               , #{dueTime,jdbcType=TIMESTAMP}
+               , #{serviceProvider,jdbcType=VARCHAR}, #{lastHeartbeat,jdbcType=TIMESTAMP}
+               , #{lastExecuteTask,jdbcType=VARCHAR},#{createdTime,jdbcType=VARCHAR}
+               , #{lastExecuteWorkType,jdbcType=VARCHAR}, #{token,jdbcType=VARCHAR},#{maxIO,jdbcType=INTEGER})
+    </insert>
+
+    <delete id="deleteMachineById">
+        delete
+        from atc_machine
+        where id = #{id}
+    </delete>
+
+
+    <select id="getMachineByStandard" resultMap="machineMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.Machine">
+        SELECT distinct atc_machine.*
+        FROM atc_account_sites
+                 LEFT JOIN atc_machine_work_type ON atc_machine_work_type.account = atc_account_sites.account
+                 LEFT JOIN atc_machine ON atc_machine.id = atc_machine_work_type.machine_id
+        WHERE atc_account_sites.`status` = 1
+          AND atc_machine_work_type.`status` = 1
+          AND atc_machine.`status` = 1
+
+          AND (
+                atc_machine.last_heartbeat IS NULL
+                OR  NOW() > DATE_ADD(atc_machine.last_heartbeat, INTERVAL #{interval} MINUTE)
+            )
+    </select>
+
+    <select id="getAccountSiteWithHeartbeatTimeOut" resultType="java.util.LinkedHashMap">
+        SELECT atc_account_sites.account,
+               atc_account_sites.site,
+               atc_machine.ip,
+               IFNULL(atc_machine.last_heartbeat,'null') as last_heartbeat
+        FROM atc_account_sites
+                 LEFT JOIN atc_machine_work_type ON atc_machine_work_type.account = atc_account_sites.account
+                 LEFT JOIN atc_machine ON atc_machine.id = atc_machine_work_type.machine_id
+        WHERE atc_account_sites.`status` = 1
+          AND atc_machine_work_type.`status` = 1
+          AND atc_machine.`status` = 1
+
+          AND (
+                atc_machine.last_heartbeat IS NULL
+                OR  NOW() > DATE_ADD(atc_machine.last_heartbeat, INTERVAL #{interval} MINUTE)
+            )
+    </select>
+
+
+    <select id="getMachineWithBigTimeDiff" resultMap="machineMap">
+        select *
+        from atc_machine
+        where abs(timestampdiff(minute,last_heartbeat, machine_local_time)) >= ${timeDiff}
+          and status = 1
+    </select>
+
+
+    <select id="getMachineStatusOn" resultMap="machineMap">
+        select *
+        from atc_machine
+        where status = 1 and last_heartbeat IS NOT NULL
+    </select>
+
+
+    <select id="getMachineLackingMemory" resultMap="machineMap">
+        select *
+        from atc_machine
+        where memory > ${memory}
+          and status = 1
+    </select>
+
+
+    <select id="countMachineWithoutNetWork" resultMap="machineMap">
+        select *
+        from atc_machine
+        where net_work = 0
+          and status = 1 and last_heartbeat IS NOT NULL
+    </select>
+
+    <select id="getMachineTotalCountGroupByType"
+            resultType="com.sailvan.dispatchcenter.common.domain.MachineTypeCountDTO">
+        select machine_type machineType, count(*) totalCount
+        from atc_machine
+        group by machine_type
+    </select>
+
+
+    <select id="getMachineWithLivingHeartbeatCountGroupByType" resultType="java.util.Map">
+        select machine_type, count(*)
+        from atc_machine
+        where DATE_ADD(last_heartbeat, INTERVAL ${interval} MINUTE) > NOW()
+        group by machine_type
+    </select>
+
+
+    <select id="getMachineStatusOnCountGroupByType"
+            resultType="com.sailvan.dispatchcenter.common.domain.MachineTypeCountDTO">
+        select machine_type, count(*)
+        from atc_machine
+        where status = 1
+        group by machine_type
+    </select>
+
+    <select id="getMachineTypeCount" resultType="com.sailvan.dispatchcenter.common.domain.MachineTypeCountDTO">
+        select a.machineType, a.totalCount, b.machineWithLivingHeartbeatCount, c.machineStatusOnCount
+        from (select machine_type machineType, count(*) totalCount from atc_machine group by machine_type) a
+                 left join
+             (select machine_type, count(*) machineWithLivingHeartbeatCount
+              from atc_machine
+              where DATE_ADD(last_heartbeat, INTERVAL ${interval} MINUTE) > NOW()
+              group by machine_type) b
+             on a.machineType = b.machine_type
+                 left join
+             (select machine_type, count(*) machineStatusOnCount
+              from atc_machine
+              where status = 1
+              group by machine_type) c
+             on a.machineType = c.machine_type;
+    </select>
+
+    <select id="getMachineFatherVersionStat"
+            resultType="com.sailvan.dispatchcenter.common.domain.MachineVersionStatDTO">
+        SELECT version,
+               MAX(CASE type WHEN '0' THEN score ELSE 0 END) accountMachineCount,
+               MAX(CASE type WHEN '1' THEN score ELSE 0 END) innerVPSCount,
+               MAX(CASE type WHEN '2' THEN score ELSE 0 END) overseaVPSCount,
+               MAX(CASE type WHEN '3' THEN score ELSE 0 END) ChongqingVpsCount,
+               MAX(CASE type WHEN '4' THEN score ELSE 0 END) ChongqingAccountMachineCount
+        FROM (select client_version version, machine_type type, count(*) score
+              from atc_machine
+              group by client_version, machine_type) table_a
+        GROUP BY version;
+    </select>
+
+
+    <select id="getMachineSonVersionStat"
+            resultType="com.sailvan.dispatchcenter.common.domain.MachineVersionStatDTO">
+        SELECT version,
+               MAX(CASE type WHEN '0' THEN score ELSE 0 END) accountMachineCount,
+               MAX(CASE type WHEN '1' THEN score ELSE 0 END) innerVPSCount,
+               MAX(CASE type WHEN '2' THEN score ELSE 0 END) overseaVPSCount,
+               MAX(CASE type WHEN '3' THEN score ELSE 0 END) ChongqingVpsCount,
+               MAX(CASE type WHEN '4' THEN score ELSE 0 END) ChongqingAccountMachineCount
+        FROM (select client_file_version version, machine_type type, count(*) score
+              from atc_machine
+              group by client_file_version, machine_type) table_a
+        GROUP BY version;
+    </select>
+
+
+    <select id="getMachineByType" resultMap="machineMap">
+        select *
+        from atc_machine
+        where machine_type = #{machineType}
+    </select>
+
+    <select id="getMachineByFatherVersion" resultMap="machineMap">
+        select *
+        from atc_machine
+        where client_version = #{version}
+    </select>
+
+
+    <select id="getMachineBySonVersion" resultMap="machineMap">
+        select *
+        from atc_machine
+        where client_file_version = #{version}
+    </select>
+
+
+</mapper>

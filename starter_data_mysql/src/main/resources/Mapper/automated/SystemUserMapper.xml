@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.system.UserDao">
+  <resultMap id="BaseResultMap" type="com.sailvan.dispatchcenter.common.domain.system.UserDomain">
+
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="sys_user_name" jdbcType="VARCHAR" property="sysUserName" />
+    <result column="sys_user_pwd" jdbcType="VARCHAR" property="sysUserPwd" />
+    <result column="user_phone" jdbcType="VARCHAR" property="userPhone" />
+    <result column="user_status" jdbcType="INTEGER" property="userStatus" />
+    <result column="reg_time" jdbcType="VARCHAR" property="regTime" />
+    <result column="permissions" jdbcType="VARCHAR" property="permissions" />
+  </resultMap>
+
+  <sql id="baseColumn">
+    id,sys_user_name,sys_user_pwd,user_status,reg_time,user_phone,permissions
+  </sql>
+
+
+  <update id="updateUser">
+    UPDATE atc_system_user
+    <set>
+       permissions = #{permissions},
+      <if test="sysUserName != null and sysUserName !=''" >
+        sys_user_name = #{sysUserName},
+      </if>
+      <if test="sysUserPwd != null and sysUserPwd !=''">
+        sys_user_pwd = #{sysUserPwd},
+      </if>
+      <if test="userPhone != null">
+        user_phone = #{userPhone}
+      </if>
+    </set>
+    WHERE id = #{id}
+  </update>
+
+
+  <update id="updatePwd">
+    UPDATE atc_system_user
+    set sys_user_pwd = #{password}
+    where sys_user_name = #{userName}
+  </update>
+
+  <update id="updateUserStatus">
+    UPDATE atc_system_user
+    SET user_status = #{status}
+    WHERE id = #{id}
+  </update>
+
+
+  <select id="getUserByUserName" resultMap="BaseResultMap">
+    SELECT <include refid="baseColumn"/>
+    FROM atc_system_user
+    WHERE sys_user_name = #{sysUserName}
+    and user_status = 1
+    <if test="id != null">
+      and id != #{id}
+    </if>
+  </select>
+
+  <select id="findByUserName" resultMap="BaseResultMap">
+    SELECT <include refid="baseColumn"/>
+    FROM atc_system_user
+    WHERE sys_user_name = #{userName}
+    and user_status = 1
+  </select>
+
+  <select id="getUserList" resultType="com.sailvan.dispatchcenter.common.domain.system.UserDomain">
+    SELECT id, sys_user_name AS sysUserName ,
+    (SELECT role_name FROM atc_system_role as r WHERE r.id = u.role_id) as roleName,
+    user_phone AS userPhone,reg_time AS regTime,user_status AS userStatus,permissions as permissionIds
+    FROM atc_system_user as u
+    <where>
+      <if test="sysUserName != null and sysUserName != '' ">
+        and sys_user_name LIKE '%' #{sysUserName} '%'
+      </if>
+      <if test="userPhone != null and userPhone != '' ">
+        and user_phone  LIKE '%' #{userPhone} '%'
+      </if>
+      <if test="startTime != null and startTime != '' ">
+        and reg_time &gt;  #{startTime}
+      </if>
+      <if test="endTime != null and endTime != '' ">
+        and reg_time &lt;  #{endTime}
+      </if>
+    </where>
+  </select>
+
+  <insert id="insert">
+        insert into atc_system_user(sys_user_name,user_phone,sys_user_pwd,reg_time,permissions)
+        values(#{sysUserName,jdbcType=VARCHAR},
+         #{userPhone,jdbcType=VARCHAR},#{sysUserPwd,jdbcType=VARCHAR},#{regTime,jdbcType=VARCHAR},#{permissions,jdbcType=VARCHAR})
+    </insert>
+
+  <delete id="deleteByPrimaryKey">
+        delete from atc_system_user where id = #{id}
+    </delete>
+
+</mapper>

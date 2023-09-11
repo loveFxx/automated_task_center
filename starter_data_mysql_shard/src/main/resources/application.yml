@@ -1,0 +1,25 @@
+#spring:
+#  shardingsphere:
+#    props:
+#      sql:
+#        show: true
+#    datasource:
+#  #    names: automated
+#      automated:
+#        type: com.alibaba.druid.pool.DruidDataSource
+#        driverClassName: com.mysql.cj.jdbc.Driver
+#        url: jdbc:mysql://192.168.200.9:3306/automated_task_center_local?characterEncoding=utf-8&characterSetResults=utf-8&useSSL=false&serverTimezone=GMT%2B8&autoReconnect=true
+#        username: root
+#        password: 123123
+
+#    sharding:
+#      default-data-source-name: automated
+#      default-database-strategy.standard.sharding-column: id
+#      default-database-strategy.standard.precise-algorithm-class-name: com.core.config.DatabasePreciseShardingAlgorithm
+#      binding-tables: atc_machine_heartbeat_logs
+#      tables:
+#        atc_machine_heartbeat_logs:
+#          actual-data-nodes: automated.atc_machine_heartbeat_logs->{10..12}
+#          table-strategy.standard.sharding-column: id
+#          table-strategy.standard.precise-algorithm-class-name: com.core.config.OrderTablePreciseShardingAlgorithm
+

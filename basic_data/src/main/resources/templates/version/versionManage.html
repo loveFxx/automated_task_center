@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head th:include="layout :: htmlhead (pageTitle='客户端版本管理')" >
+    <link rel="stylesheet" href="/layui/css/layui.css"  media="all">
+</head>
+<link rel="stylesheet" type="text/css" href="/css/formSelects-v4.css"/>
+<!--<script type="text/javascript" src="/js/select/formSelects-v4.js"></script>-->
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!--头-->
+    <div th:replace="fragments/head :: header"></div>
+    <div class="layui-body" style="margin: 1%">
+        <form id="userSearch" class="layui-form layui-form-pane" method="post" action="" style="margin-top: 20px;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">版本</label>
+                <div class="layui-input-inline">
+                    <input id="clientVersionSearch" name="clientVersion" autocomplete="off" class="layui-input" type="text"/>
+                </div>
+                <button class="layui-btn" type="submit"  lay-submit="" lay-filter="searchSubmit">提交</button>
+            </div>
+        </form>
+
+        <button class="layui-btn layui-btn-normal"  onclick="addVersion()">增加新版本</button>
+        <table id="versionList" lay-filter="versionListTable"></table>
+
+
+
+
+        <table   class="layui-table layui-form"  style="overflow-y: scroll;" id="tree-table" ></table>
+
+
+
+
+        <!--分页组件-->
+        <div id="pageDemo"></div>
+
+
+
+
+
+
+        <!--父子共用删除文件-->
+        <script type="text/html" id="optBarUpdateFileMap">
+            <a class="layui-btn layui-btn-xs" lay-event="deleteFile" shiro:hasPermission="version:update">删除</a>
+        </script>
+    </div>
+
+
+    <!--添加父级-->
+    <div id="addVersion" class="layer_self_wrap" style="width:auto; margin-left:3%;display:none;">
+
+
+
+
+                <div class="layui-tab-content">
+
+                    <div class="">
+                        <form id="userFormAdd2" class="layui-form layui-form-pane" method="post" action="" style="width:auto;margin-top: 20px;margin-bottom: 20px;margin-left: 20px" th:scrolling="yes">
+                            <div class="layui-form-item" >
+                                <label class="layui-form-label required" style="width:150px;border-style:none">父版本</label>
+                                <div class="layui-input-inline">
+                                    <input id="clientVersionAdd" name="clientVersion"  class="layui-input" type="text" />
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item" >
+                                <label class="layui-form-label required" style="width:150px;border-style:none">父更新限制</label>
+                                <div class="layui-input-inline">
+                                    <input id="updateLimitAdd" name="updateLimit"  class="layui-input" type="text" />
+                                </div>
+                            </div>
+
+
+                            <div class="layui-form-item" >
+                                <label class="layui-form-label required" style="width:150px;border-style:none">子版本</label>
+                                <div class="layui-input-inline">
+                                    <input id="clientVersionAdd_2" name="clientVersion_2"  class="layui-input" type="text" />
+                                </div>
+                            </div>
+
+                            <div class="layui-form-item" >
+                                <label class="layui-form-label required" style="width:150px;border-style:none">子更新限制</label>
+                                <div class="layui-input-inline">
+                                    <input id="updateLimitAdd_2" name="updateLimit_2"  class="layui-input" type="text" />
+                                </div>
+                            </div>
+
+
+                            <div class="layui-form-item">
+                                <div class="layui-input-block" style="margin-left: 20%;">
+                                    <button class="layui-btn"  lay-submit="" lay-filter="versionAddSubmit">提交</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+
+
+    </div>
+
+
+
+    <!--添加子级-->
+    <div id="addFileVersion" class="layer_self_wrap" style="width:auto; margin-left:3%;display:none;">
+        <div class="layui-tab-content">
+            <div class="">
+                <form id="userFormAdd3" class="layui-form layui-form-pane" method="post" action="" style="width:auto;margin-top: 20px;margin-bottom: 20px;margin-left: 20px" th:scrolling="yes">
+
+
+                    <input  id="pid" type="hidden" name="pid"/>
+
+
+
+                    <div class="layui-form-item" >
+                        <label class="layui-form-label" style="width:150px;border-style:none">客户端版本(二级里)</label>
+                        <div class="layui-input-inline" style="border-style:none">
+                            <input id="clientVersionUpdate2" name="clientVersion"  class="layui-input layui-disabled" type="text"   readonly="readonly"/>
+                        </div>
+                    </div>
+
+
+                    <div class="layui-form-item" >
+                        <label class="layui-form-label required" style="width:150px;border-style:none">二级版本</label>
+                        <div class="layui-input-inline">
+                            <input id="clientVersionAdd2" name="clientFileVersion"  class="layui-input" type="text" />
+                        </div>
+                    </div>
+                    <div class="layui-form-item" >
+                        <label class="layui-form-label required" style="width:150px;border-style:none">最大更新限制</label>
+                        <div class="layui-input-inline">
+                            <input id="updateLimitAdd2" name="updateLimit"  class="layui-input" type="text" />
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-input-block" style="margin-left: 20%;">
+                            <button class="layui-btn"  lay-submit="" lay-filter="fileVersionAddSubmit">提交</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+
+    </div>
+
+
+
+
+
+
+
+    <!--父版本上传文件-->
+    <div id="fatherVersionLayer" class="layer_self_wrap" style="width:auto; margin-left:3%;display:none;">
+        <form  class="layui-form layui-form-pane" method="post" action="" style="width:auto;margin-top: 20px;margin-bottom: 20px;margin-left: 20px" th:scrolling="yes">
+            <input id="fatherVersionId" type="hidden" name="fatherVersionId"/>
+            <div class="layui-form-item" >
+                <label class="layui-form-label required" style="width:150px;border-style:none">客户端版本</label>
+                <div class="layui-input-inline" style="border-style:none">
+                    <input id="clientVersion" name="clientVersion"  class="layui-input layui-disabled" type="text"  readonly="readonly"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item" >
+                <label class="layui-form-label required" style="width:150px;border-style:none">fatherUpdateLimit</label>
+                <div class="layui-input-inline" style="border-style:none">
+                    <input id="fatherUpdateLimit" name="fatherUpdateLimit"  class="layui-input" type="text" />
+                </div>
+
+                <div class="layui-input-inline" style="border-style:none">
+                    <button class="layui-btn"  lay-submit="" lay-filter="fatherUpdateLimitSubmit">确认更新fatherUpdateLimit</button>
+                </div>
+            </div>
+
+            <table  id="fatherFileMapTable"   lay-filter="fatherFileMapTable" ></table>
+            <div class="layui-upload layui-upload-father">
+                <button type="button" class="layui-btn layui-btn-normal" id="fatherChooseButton">选择父亲文件</button>
+                <div class="layui-upload-list" style="max-width: 1000px;">
+                    <table class="layui-table">
+                        <colgroup>
+                            <col>
+                            <col width="150">
+                            <col width="260">
+                            <col width="150">
+                        </colgroup>
+                        <thead>
+                        <tr><th>文件名</th>
+                            <th>大小</th>
+                            <th>上传进度</th>
+                            <th>操作</th>
+                        </tr></thead>
+                        <tbody id="uploadFatherList"></tbody>
+                    </table>
+                </div>
+                <button type="button" class="layui-btn" id="fatherListAction">开始上传父亲</button>
+            </div>
+        </form>
+
+
+    </div>
+
+
+
+    <!--子版本上传文件-->
+    <div id="sonVersionLayer" class="layer_self_wrap" style="width:auto; margin-left:3%;display:none;">
+        <form  class="layui-form layui-form-pane" method="post" action="" style="width:auto;margin-top: 20px;margin-bottom: 20px;margin-left: 20px" th:scrolling="yes">
+
+
+
+            <input id="sonVersionId" type="hidden" name="sonVersionId"/>
+
+            <div class="layui-form-item" >
+                <label class="layui-form-label required" style="width:150px;border-style:none">客户端版本</label>
+                <div class="layui-input-inline" style="border-style:none">
+                    <input id="sonClientVersion" name="sonClientVersion"  class="layui-input layui-disabled" type="text"  readonly="readonly"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item" >
+                <label class="layui-form-label required" style="width:150px;border-style:none">客户端文件版本</label>
+                <div class="layui-input-inline" style="border-style:none">
+                    <input id="sonClientFileVersion" name="sonClientFileVersion"  class="layui-input" type="text"  />
+                </div>
+                <div class="layui-input-inline" style="border-style:none">
+                    <button class="layui-btn"  lay-submit="" lay-filter="sonVersionSubmit">确认更新son版本号</button>
+
+                </div>
+            </div>
+            <div class="layui-form-item" >
+                <label class="layui-form-label" style="border-style:none">是否全量</label>
+                <div  class="layui-input-inline" style="width:auto">
+                    否<input  type="radio" name="resetAll"  value="0" checked/>
+                    是<input  type="radio" name="resetAll"  value="1"/>
+                </div>
+                <div class="layui-input-inline"  id="fileLoading" style=" display:none; height:30px;background:url('http://build.gzwhir.com/Whir_WEB/jsdemo/loading_1/images/loading_red.gif') no-repeat 10px top;width:60px;    "></div>
+                <div class="layui-input-inline"  id="upadteSuccess" style=" display:none ">扫描成功</div>
+            </div>
+
+
+
+
+            <div class="layui-form-item" >
+                <label class="layui-form-label required" style="width:150px;border-style:none">sonUpdateLimit</label>
+                <div class="layui-input-inline" style="border-style:none">
+                    <input id="sonUpdateLimit" name="sonUpdateLimit"  class="layui-input" type="text" />
+                </div>
+
+                <div class="layui-input-inline" style="border-style:none">
+                    <button class="layui-btn"  lay-submit="" lay-filter="sonUpdateLimitSubmit">确认更新sonUpdateLimit</button>
+<!--                    <button class="layui-btn layui-btn-normal"  onclick="cloneLayer()">克隆一下上传进度</button>-->
+
+                </div>
+            </div>
+
+
+
+            <table  id="sonFileMapTable"   lay-filter="sonFileMapTable" ></table>
+
+        <!--    <div class="layui-upload layui-upload-son">
+                <button type="button" class="layui-btn layui-btn-normal" id="sonChooseButton">选择儿子文件</button>
+                <div class="layui-upload-list" style="max-width: 1000px;">
+                    <table class="layui-table">
+                        <colgroup>
+                            <col>
+                            <col width="150">
+                            <col width="260">
+                            <col width="150">
+                        </colgroup>
+                        <thead>
+                        <tr><th>文件名</th>
+                            <th>大小</th>
+                            <th>上传进度</th>
+                            <th>操作</th>
+                        </tr></thead>
+                        <tbody id="uploadSonList"></tbody>
+                    </table>
+                </div>
+                <button type="button" class="layui-btn" id="sonListAction">开始上传儿子</button>
+            </div>-->
+
+            <div class="layui-form-item" >
+                <label class="layui-form-label required" style="width:150px;border-style:none">fileName</label>
+                <div class="layui-input-inline" style="border-style:none">
+                    <input id="fileName" name="fileName"  class="layui-input " type="text" />
+                </div>
+
+                <label class="layui-form-label required" style="width:150px;border-style:none">clientFilePath</label>
+                <div class="layui-input-inline" style="border-style:none">
+                    <input id="xxx" name="clientFilePath"  class="layui-input " type="text" />
+                </div>
+
+                    <button class="layui-btn"  lay-submit="" lay-filter="sonFileMapSubmit">添加</button>
+
+            </div>
+
+
+
+            <div class="layui-form-item" >
+
+            </div>
+
+
+        </form>
+    </div>
+
+
+    <!--底部-->
+    <div th:replace="fragments/footer :: footer"></div>
+    <script src="/js/version/versionManage.js"></script>
+    <script src="/js/constant.js"></script>
+
+
+
+
+
+
+
+    <style type="text/css">
+        .layui-table-cell {
+            /*height: auto;*/
+            /*overflow: visible;*/
+            /*text-overflow: inherit;*/
+            /*white-space: normal;*/
+            /*word-break: break-all;*/
+        }
+
+        label.required:before {   /* 给红色的必填项打红色星号（文字后）如果打前面用before*/
+            content: ' *';
+            color: red;
+        }
+
+        .layui-disabled {       /* 只读内容颜色太浅了 改深一点*/
+            color: #999!important;
+
+        }
+
+        .layui-disabled:hover{
+            color: #999!important;
+        }
+    </style>
+
+<!--    <script type="text/html" id="introduceHtml">-->
+<!--        <div> {{d.client_file_path}}</div></div>-->
+<!--        <div>测试</div>-->
+<!--    </script>-->
+
+</div>
+</body>
+</html>
+
+

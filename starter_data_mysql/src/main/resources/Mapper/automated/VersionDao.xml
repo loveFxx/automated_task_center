@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.VersionDao">
+
+    <!--    前面java字段 后面mysql-->
+    <resultMap id="versionMap" type="com.sailvan.dispatchcenter.common.domain.Version">
+        <id property="id" column="id" />
+        <result property="clientVersion" column="client_version"/>
+        <result property="clientFileVersion" column="client_file_version"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="status" column="status"/>
+        <result property="updateLimit" column="update_limit"/>
+        <result property="resetAll" column="reset_all"/>
+    </resultMap>
+
+    <select id="getVersionAll" resultMap="versionMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.Version">
+        select *  from atc_version order by client_version desc
+    </select>
+
+    <select id="getValidVersion" resultMap="versionMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.Version">
+        select *  from atc_version where status=#{status} order by client_version desc limit 1
+    </select>
+
+    <select id="getValidChildVersion" resultMap="versionMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.Version">
+        select *  from atc_version where status=#{status} and pid=#{pid} order by client_version desc limit 1
+    </select>
+
+    <select id="getVersionByVersion" resultMap="versionMap" resultType="com.sailvan.dispatchcenter.common.domain.Version">
+        select *  from atc_version
+        <where>
+            <if test="clientVersion != null and clientVersion != '' ">
+                and client_version = #{clientVersion}
+            </if>
+            and client_file_version is null
+        </where>
+    </select>
+
+
+    <select id="getSonsByFather" resultMap="versionMap" resultType="com.sailvan.dispatchcenter.common.domain.Version">
+        select *  from atc_version
+        <where>
+            pid = #{id}
+        </where>
+    </select>
+
+
+    <select id="getVersionByClientFileVersion" resultMap="versionMap" resultType="com.sailvan.dispatchcenter.common.domain.Version">
+        select *  from atc_version
+        <where>
+            <if test="clientVersion != null and clientVersion != '' ">
+                and client_version = #{clientVersion}
+            </if>
+            <if test="clientFileVersion != null and clientFileVersion != '' ">
+                and client_file_version = #{clientFileVersion}
+            </if>
+        </where>
+    </select>
+
+    <select id="getVersionById" resultMap="versionMap" resultType="com.sailvan.dispatchcenter.common.domain.Version">
+        select *  from atc_version where id = #{id}
+    </select>
+
+
+    <!--    前mysql字段后java-->
+    <update id="updateVersion">
+        UPDATE atc_version
+        <set>
+
+            <if test="status != -1 ">
+                status = #{status},
+            </if>
+            <if test="updateLimit != -1 ">
+                update_limit = #{updateLimit},
+            </if>
+
+            <if test="clientFileVersion != null and clientFileVersion != '' ">
+                client_file_version = #{clientFileVersion},
+            </if>
+            <if test="resetAll != null and resetAll != '' ">
+                reset_all = #{resetAll},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+
+
+    <insert id="insertVersion" useGeneratedKeys="true" keyProperty="id" parameterType="com.sailvan.dispatchcenter.common.domain.Version">
+        insert into atc_version(pid, client_version, client_file_version,update_time,update_limit)
+        values(#{pid,jdbcType=INTEGER},#{clientVersion,jdbcType=VARCHAR},#{clientFileVersion,jdbcType=VARCHAR},#{updateTime,jdbcType=VARCHAR},#{updateLimit,jdbcType=INTEGER})
+    </insert>
+
+    <delete id="deleteVersionById">
+        delete from atc_version where id = #{id}
+    </delete>
+
+    <select id="getBigVersion"  resultType="java.lang.String">
+        select client_version  from atc_version where client_file_version is  null or client_file_version=''
+    </select>
+
+
+    <select id="getVersionFileMap" resultType="map">
+        select * from atc_version_file_map where version_id=#{versionId}
+    </select>
+
+
+    <select id="getClientVersionCount"  resultType="java.lang.Integer">
+        select count(*)  from atc_version
+        <where>
+            <if test="clientVersion != null and clientVersion != '' ">
+                and client_version = #{clientVersion}
+            </if>
+            and client_file_version is null
+        </where>
+    </select>
+
+
+
+
+
+    <update id="updateVersionFileMap">
+        UPDATE atc_version_file_map
+        <set>
+            <if test="clientFilePath != null and clientFilePath != '' ">
+                client_file_path = #{clientFilePath},
+            </if>
+            <if test="fileName != null and fileName != '' ">
+                file_name = #{fileName},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+
+
+
+    <delete id="deleteFile">
+        delete from atc_version_file_map where id = #{id}
+    </delete>
+
+
+    <delete id="deleteFileByVersionId">
+        delete from atc_version_file_map where version_id = #{versionId}
+    </delete>
+
+    <insert id="insertVersionFile"  >
+        insert ignore into atc_version_file_map(version_id,file_name)
+        values(#{versionId,jdbcType=INTEGER},#{fileName,jdbcType=VARCHAR})
+    </insert>
+
+
+    <insert id="addVersionFileMap"  >
+        insert  into atc_version_file_map(version_id,file_name,client_file_path)
+        values(#{versionId,jdbcType=INTEGER},#{fileName,jdbcType=VARCHAR},#{clientFilePath,jdbcType=VARCHAR})
+    </insert>
+
+    <select id="getChildVersionByVersionId" resultMap="versionMap" resultType="com.sailvan.dispatchcenter.common.domain.Version">
+        select *  from atc_version where client_version = #{clientVersion} and pid != 0
+    </select>
+
+
+    <select id="getChildVersionByFileVersionId" resultMap="versionMap" resultType="com.sailvan.dispatchcenter.common.domain.Version">
+        select *  from atc_version where client_file_version = #{clientFileVersion} and pid != 0
+    </select>
+
+</mapper>

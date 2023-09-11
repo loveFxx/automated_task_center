@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.BusinessSystemDao">
+
+    <!--    前面java字段 后面mysql-->
+    <resultMap id="BusinessSystemMap" type="com.sailvan.dispatchcenter.common.domain.BusinessSystem">
+        <id property="id" column="id" />
+        <result property="systemName" column="system_name"/>
+        <result property="appKey" column="app_key"/>
+        <result property="appSecret" column="app_secret"/>
+        <result property="invokeTimesMonth" column="invoke_times_month"/>
+        <result property="invokeTimesMonthUsed" column="invoke_times_month_used"/>
+        <result property="invokeInterval" column="invoke_interval"/>
+        <result property="invokeTimes" column="invoke_times"/>
+<!--        <result property="taskTypeName" column="task_type_name"/>-->
+        <result property="callbackAddress" column="callback_address"/>
+        <result property="updateUser" column="update_user"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="status" column="status"/>
+        <result property="lastLogin" column="last_login"/>
+        <result property="networkType" column="network_type"/>
+        <result property="systemVersion" column="system_version"/>
+    </resultMap>
+    <select id="getBusinessSystemAll" resultMap="BusinessSystemMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.BusinessSystem">
+        select *  from atc_business_system
+    </select>
+
+    <select id="getBusinessSystemByBusinessSystem" resultMap="BusinessSystemMap" resultType="com.sailvan.dispatchcenter.common.domain.BusinessSystem">
+        select *  from atc_business_system
+        <where>
+            <if test="systemName != null and systemName != '' ">
+                and system_name = #{systemName}
+            </if>
+
+            <if test="status != -1 ">
+                and status = #{status}
+            </if>
+
+        </where>
+    </select>
+
+    <select id="checkBusiness" resultMap="BusinessSystemMap" resultType="com.sailvan.dispatchcenter.common.domain.BusinessSystem">
+        select *  from atc_business_system where system_name = #{systemName}
+    </select>
+
+    <select id="checkBusinessBySecret" resultMap="BusinessSystemMap" resultType="com.sailvan.dispatchcenter.common.domain.BusinessSystem">
+        select *  from atc_business_system where system_name = #{systemName} and app_key = #{appKey} and app_secret = #{appSecret}
+    </select>
+
+    <select id="getBusinessById" resultMap="BusinessSystemMap" resultType="com.sailvan.dispatchcenter.common.domain.BusinessSystem">
+        select *  from atc_business_system where id = #{id}
+    </select>
+
+
+    <!--    前mysql字段后java-->
+    <update id="updateBusinessSystem">
+        UPDATE atc_business_system
+        <set>
+            <if test="systemName != null and systemName != '' ">
+                system_name = #{systemName},
+            </if>
+            <if test="invokeTimesMonth != null and invokeTimesMonth != '' ">
+                invoke_times_month = #{invokeTimesMonth},
+            </if>
+            <if test="invokeInterval != null and invokeInterval != '' ">
+                invoke_interval = #{invokeInterval},
+            </if>
+            <if test="invokeTimes != null and invokeTimes != '' ">
+                invoke_times = #{invokeTimes},
+            </if>
+
+            <if test="callbackAddress != null and callbackAddress != '' ">
+                callback_address = #{callbackAddress},
+            </if>
+            <if test="updateUser != null and updateUser != '' ">
+                update_user = #{updateUser},
+            </if>
+            <if test="networkType != 0 and networkType != '' ">
+                network_type = #{networkType},
+            </if>
+            <if test="systemVersion != null and systemVersion != '' ">
+                system_version = #{systemVersion},
+            </if>
+            <if test="status != -1 ">
+                status = #{status}
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateBusinessSystemInvokeTimesMonthUsed">
+        UPDATE atc_business_system set invoke_times_month_used = #{invokeTimesMonthUsed}  WHERE id = #{id}
+    </update>
+
+
+    <update id="updateLastLogin">
+        UPDATE atc_business_system set last_login = #{lastLogin} WHERE id = #{id}
+    </update>
+
+    <insert id="insertBusinessSystem" useGeneratedKeys="true" keyProperty="id" parameterType="com.sailvan.dispatchcenter.common.domain.Machine">
+        insert into atc_business_system(system_name, invoke_times_month,invoke_interval,invoke_times,callback_address)
+        values(#{systemName,jdbcType=VARCHAR},#{invokeTimesMonth,jdbcType=INTEGER},#{invokeInterval,jdbcType=INTEGER}, #{invokeTimes,jdbcType=INTEGER}
+              ,#{callbackAddress,jdbcType=VARCHAR})
+    </insert>
+
+    <delete id="deleteBusinessSystemById">
+        delete from atc_business_system where id = #{id}
+    </delete>
+
+
+    <select id="findBySystemName" resultMap="BusinessSystemMap" resultType="com.sailvan.dispatchcenter.common.domain.BusinessSystem">
+        select *  from atc_business_system where system_name = #{systemName} limit 1;
+    </select>
+
+    <select id="findSystemById" resultMap="BusinessSystemMap" resultType="com.sailvan.dispatchcenter.common.domain.BusinessSystem">
+        select *  from atc_business_system where id = #{id}
+    </select>
+</mapper>

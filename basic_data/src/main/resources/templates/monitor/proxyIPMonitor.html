@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head th:include="layout :: htmlhead (pageTitle='客户端版本管理')">
+    <link rel="stylesheet" type="text/css" href="/css/formSelects-v4.css"/>
+</head>
+<script type="text/javascript" src="/echart/echarts.min.js"></script>
+<body>
+<div class="layui-layout layui-layout-admin">
+    <!--头-->
+    <div th:replace="fragments/head :: header"></div>
+
+    <div class="layui-body">
+        <div class="body-container">
+            <div class="layui-card box-shadow">
+                <div class="layui-card-header">
+                    <span class="card-header-word">代理IP监控</span>
+                    <span id="time"></span>
+                </div>
+                <div class="layui-card-body box-body">
+                    <ul class="flex-panel-list" id="aggsTeamSales">
+                        <li>
+                            <h3>代理IP总数</h3>
+                            <div class="agg-listbox">
+                                <span class="loading" style="font-size:25px" id="total"></span>
+                            </div>
+                        </li>
+                        <li>
+                            <h3>代理IP失效数</h3>
+                            <div class="agg-listbox">
+                                <span class="loading" style="font-size:25px" id="invalidNum"></span>
+                                <a href="javascript:void(0)" class="layui-icon layui-icon-download-circle download-icon invalidIpExcelClass"></a>
+                                <div class="words">
+                                    <a href="javascript:void(0)" onclick="invalidIpDetail()">失效IP详情</a>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <h3>Amazon代理IP总数</h3>
+                            <div class="agg-listbox">
+                                <span class="loading" style="font-size:25px" id="amazonTotal"></span>
+                            </div>
+                        </li>
+                        <li>
+                            <h3>Amazon代理IP失效数</h3>
+                            <div class="agg-listbox">
+                                <span class="loading" style="font-size:25px" id="amazonInvalidNum"></span>
+                                <a href="javascript:void(0)" class="layui-icon layui-icon-download-circle download-icon amazonInvalidIpExcelClass"></a>
+                                <div class="words">
+                                    <a href="javascript:void(0)" onclick="amazonInvalidIpDetail()">失效IP详情</a>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <h3>AmazonDaemon代理IP总数</h3>
+                            <div class="agg-listbox">
+                                <span class="loading" style="font-size:25px" id="amazonDaemonTotal"></span>
+                            </div>
+                        </li>
+                        <li>
+                            <h3>AmazonDaemon代理IP失效数</h3>
+                            <div class="agg-listbox">
+                                <span class="loading" style="font-size:25px" id="amazonDaemonInvalidNum"></span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="layui-card box-shadow">
+                <div class="layui-card-header">
+                    <span class="card-header-word">平台代理IP监控</span>
+                </div>
+                <div class="layui-card-body box-body table-overlay">
+                    <table id="platformProxyIpStatus"></table>
+                </div>
+            </div>
+
+            <div class="layui-card box-shadow">
+                <div class="layui-card-header">
+                    <span class="card-header-word">代理IP分布图</span>
+                </div>
+                <div class="layui-card-body box-body" >
+                    <div class="layui-card-body box-body">
+                        <div class="layui-form layui-form-item">
+                            <label class="layui-form-label">时间点</label>
+                            <div class="layui-input-inline" style="width: 150px;">
+                                <input id="timePoint" name="timePoint" autocomplete="off" class="layui-input"
+                                       type="text" onchange="getProxyScatter()"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="scatter" style="width: 1000px;height: 400px;"></div>
+                    <div id="proxyInterval" style="width: 1000px;height: 400px;"></div>
+                </div>
+            </div>
+
+            <div class="layui-card box-shadow">
+                <div class="layui-card-header">
+                    <span class="card-header-word">AmazonDaemon代理IP监控</span>
+                </div>
+
+                <div class="layui-card-body box-body">
+                    <div class="layui-form layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">时间范围</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="timeRange" class="layui-input" style="width:300px">
+                            </div>
+                        </div>
+
+                        <input name="beginTime" type="hidden" id="beginTime">
+                        <input name="endTime" type="hidden" id="endTime">
+
+                        <div class="layui-input-inline">
+                            <select name="barType" id="barType" lay-filter="barType">
+                                <option value="1">均匀采样</option>
+                                <option value="2">Top20</option>
+                            </select>
+                        </div>
+                        <input name="barType" type="hidden">
+
+                        <div class="layui-input-inline">
+                            <select name="monitorSearcher" id="monitorSearcher" lay-filter="monitorSearcher" lay-search=""></select>
+                        </div>
+                        <input name="proxyId" type="hidden">
+                    </div>
+
+                    <div id="rateBar" style="width: 1000px;height: 400px;"></div>
+
+                    <div id="timeBar" style="width: 1000px;height: 400px;"></div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <div id="invalidIp" class="layer_self_wrap" style="width:1000px;height: 450px; margin-left:3%;display:none; ">
+        <form id="userForm" class="layui-form layui-form-pane" method="post" action=""
+              style="width:auto;margin-top: 20px;margin-bottom: 20px;" th:scrolling="yes">
+            <div class="table-overlay">
+                <table id="showInvalidIp" lay-filter="showInvalidIp"></table>
+            </div>
+        </form>
+    </div>
+    <div id="amazonInvalidIp" class="layer_self_wrap" style="width:1000px;height: 450px; margin-left:3%;display:none; ">
+        <form id="userForm2" class="layui-form layui-form-pane" method="post" action="" style="width:auto;margin-top: 20px;margin-bottom: 20px;" th:scrolling="yes">
+            <div class="table-overlay">
+                <table id="showAmazonInvalidIp" lay-filter="showAmazonInvalidIp"></table>
+            </div>
+        </form>
+    </div>
+
+    <!--底部-->
+    <div th:replace="fragments/footer :: footer"></div>
+
+
+    <script type="text/javascript" src="/js/moment.min.js"></script>
+    <script type="text/javascript" src="/js/daterangepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/daterangepicker.css"/>
+
+    <script src="/js/monitor/proxyIPMonitor.js"></script>
+    <script src="/js/constant.js"></script>
+</div>
+</body>
+</html>

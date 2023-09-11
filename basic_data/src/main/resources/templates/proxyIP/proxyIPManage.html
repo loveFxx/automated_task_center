@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head th:include="layout :: htmlhead (pageTitle='代理IP管理')" ></head>
+<link rel="stylesheet" type="text/css" href="/css/formSelects-v4.css"/>
+<!--<script type="text/javascript" src="/js/select/formSelects-v4.js"></script>-->
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!--头-->
+    <div th:replace="fragments/head :: header"></div>
+
+    <div class="layui-body">
+        <div class="search-pane">
+            <form id="proxyIPSearch" class="layui-form layui-form-pane" method="post">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">代理IP</label>
+                        <div class="layui-input-inline">
+                            <input id="ipSearch" name="ip" autocomplete="off" class="layui-input" type="text"/>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">可爬取平台</label>
+                        <div class="layui-input-inline">
+                            <select name="crawlPlatform" id="crawlPlatformSearch" xm-select-height="36px"
+                                    xm-select="crawlPlatformSearch" xm-select-search="" xm-select-search-type="dl"
+                                    xm-select-radio>
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">账号平台</label>
+                        <div class="layui-input-inline">
+                            <select name="platformShop" id="platformSearch" xm-select-height="36px"
+                                    xm-select="platformSearch" xm-select-search="" xm-select-search-type="dl"
+                                    xm-select-radio>
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">店铺代号</label>
+                        <div class="layui-input-inline">
+                            <select name="account" id="accountSearch" xm-select-height="36px" xm-select="accountSearch"
+                                    xm-select-search="" xm-select-search-type="dl">
+                                <option value="">请选择, 可多选</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">平台状态</label>
+                        <div class="layui-input-inline">
+                            <select name="platform" id="platformPlatformSearch" xm-select-height="36px"
+                                    xm-select="platformPlatformSearch" xm-select-search="" xm-select-search-type="dl"
+                                    xm-select-radio>
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <div class="layui-input-inline">
+                            <select name="status" id="statusPlatformSearch">
+                                <option value="0">请选择</option>
+                                <option value="1">正常</option>
+                                <option value="-1">封禁</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="layui-btn" lay-submit="" lay-filter="searchSubmit">提交</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="table-pane">
+            <div class="layui-btn-container">
+                <!--        <button class="layui-btn layui-btn-normal" shiro:hasPermission="proxyIP:add" onclick="addProxyIP()">添加代理IP</button>-->
+                <!--        <button type="button" class="layui-btn" shiro:hasPermission="proxyIP:delete" id="batchDeleteProxyIP">删除</button>-->
+
+                <button type="button" class="layui-btn" id="upload" style="width: 152px;"><i
+                        class="layui-icon layui-icon-upload layui-font-12"></i>上传文件
+                </button>
+                <button type="button" class="layui-btn" id="refreshProxyIPPlatform" style="width: 152px;"><i
+                        class="layui-icon layui-icon-upload layui-font-12"></i>刷新平台
+                </button>
+                <button type="button" class="layui-btn" id="initProxyPool" style="width: 152px;"><i
+                        class="layui-icon layui-icon-upload layui-font-12"></i>初始化代理池
+                </button>
+
+                <button type="button" class="layui-btn" id="setRate" style="width: 152px;"><i
+                        class="layui-icon layui-icon-upload layui-font-12"></i>设置限制频率
+                </button>
+<!--                <button type="button" class="layui-btn" id="uploadPort" style="width: 152px;"><i-->
+<!--                        class="layui-icon layui-icon-upload layui-font-12"></i>刷新代理IP端口-->
+<!--                </button>-->
+<!--                <button type="button" class="layui-btn" shiro:hasPermission="proxyIP:add" id="refreshCrawlPlatform">-->
+<!--                    刷新可爬取平台-->
+<!--                </button>-->
+<!--                <button type="button" class="layui-btn" shiro:hasPermission="proxyIP:add" id="refreshProxyIPPlatform">-->
+<!--                    刷新代理IP平台-->
+<!--                </button>-->
+            </div>
+            <table id="proxyIPList" lay-filter="proxyIPTable"></table>
+
+            <script type="text/html" id="optBar">
+                <a class="layui-btn layui-btn-xs" shiro:hasPermission="proxyIP:update" lay-event="edit">编辑</a>
+                <!--            <a class="layui-btn layui-btn-danger layui-btn-xs" shiro:hasPermission="proxyIP:delete" lay-event="del">删除</a>-->
+            </script>
+        </div>
+    </div>
+    <!--添加或编辑代理IP帐号-->
+    <div id="setProxyIP" class="layer_self_wrap" style="width:auto; margin-left:3%;display:none;">
+        <form id="proxyIPForm" class="layui-form layui-form-pane" method="post" action="" style="width:auto;margin-top: 20px;margin-bottom: 20px;" th:scrolling="yes">
+            <input id="pageNum" type="hidden" name="pageNum"/>
+            <input id="id" type="hidden" name="id"/>
+            <input id="port" type="hidden" name="port"/>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">代理IP</label>
+                <div class="layui-input-inline">
+                    <input id="ip" name="ip" readonly="readonly" style="border-style:none" class="layui-input" type="text"/>
+                </div>
+            </div>
+            <div class="layui-form-item" >
+                <label class="layui-form-label" style="border-style:none">可爬取平台</label>
+                <div class="layui-input-inline" >
+                    <select name="crawlPlatform" id="crawlPlatform" xm-select="crawlPlatform" style="border-style:none">
+                        <option value="" >请选择, 可多选</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block" style="margin-left: 10px;">
+                    <button class="layui-btn"  lay-submit="" lay-filter="proxyIPSubmit">提交</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+
+    <div id="setRateLayer" class="layer_self_wrap" style="width:auto; margin-left:3%;display:none;">
+        <form class="layui-form" action="">
+            <input name="proxyIds" type="hidden" id="proxyIds">
+            <div class="layui-form-item">
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">单位时限制次数</label>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="limit_hour" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid">小时</div>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="limit_hour_times"  autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid">次</div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">单位天限制次数</label>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="limit_day" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid">天</div>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="limit_day_times"  autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid">次</div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">禁用频率限制</label>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="rate_hour" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid">小时超过</div>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="rate_hour_percent"  autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid">%   延长</div>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="rate_delay_hour" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-form-mid">小时</div>
+                </div>
+
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="setRate">提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!--底部-->
+    <div th:replace="fragments/footer :: footer"></div>
+    <!--    <script src="/js/dateUtils.js"></script>-->
+    <script src="/js/proxyIP/proxyIPList.js"></script>
+    <script src="/js/constant.js"></script>
+    <!--    <script src="/js/nav_href.js"></script>-->
+    <script>
+        layui.use('laydate', function(){
+            var laydate = layui.laydate;
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#banPeriod' //指定元素
+                ,type: 'datetime'
+
+            });
+        });
+    </script>
+
+    <script type="text/html" id="statusTemp">
+        {{#  if(d.validStatus==1){ }}
+        <input type="checkbox" name="validStatus" lay-skin="switch" checked   lay-text="开启|关闭"  value= "1"  lay-filter="validStatus" data-id={{d.id}}>
+        {{#  } else { }}
+        <input type="checkbox" name="validStatus" lay-skin="switch"  lay-text="开启|关闭"  value= "-1" lay-filter="validStatus" data-id={{d.id}}>
+        {{#  } }}
+    </script>
+    <style type="text/css">
+        .layui-table-cell {
+            height: auto;
+            overflow:visible;
+            text-overflow:inherit;
+            white-space:normal;
+            word-break: break-all;
+        }
+    </style>
+</div>
+</body>
+</html>

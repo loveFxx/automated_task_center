@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head th:include="layout :: htmlhead (pageTitle='机器管理')" >
+</head>
+<link rel="stylesheet" type="text/css" href="/css/formSelects-v4.css"/>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!--头-->
+    <div th:replace="fragments/head :: header"></div>
+    <div class="layui-body">
+
+        <div class="search-pane">
+            <form id="userSearch" class="layui-form layui-form-pane" method="post">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">远程连接IP</label>
+                        <div class="layui-input-inline">
+                            <input id="ipSearch" name="ip" autocomplete="off" class="layui-input" type="text"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">机器类型</label>
+                        <div class="layui-input-inline">
+                            <select name="machineType" id="machineTypeSearch" class="machineTypeClass">
+                                <option value="-1">请选择</option>
+                                <option value="0">账号机</option>
+                                <option value="1">内网VPS</option>
+                                <option value="2">外网VPS</option>
+                                <option value="3">重庆VPS</option>
+                                <option value="4">重庆账号机</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">爬取平台</label>
+                        <div class="layui-input-inline">
+                            <select name="crawlPlatform" id="crawlPlatformSearch" xm-select-height="36px"
+                                    xm-select="crawlPlatformSearch" xm-select-search="" xm-select-search-type="dl"
+                                    xm-select-radio>
+                                <option value="">请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">店铺代号</label>
+                        <div class="layui-input-inline">
+                            <select name="account" id="accountSearch" xm-select-height="36px" xm-select="accountSearch"
+                                    xm-select-search="" xm-select-search-type="dl">
+                                <option value="">请选择, 可多选</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">任务类型</label>
+                        <div class="layui-input-inline">
+                            <select name="taskType" id="taskTypeSearch" xm-select="taskTypeSearch" xm-select-search=""
+                                    xm-select-search-type="dl" xm-select-height="36px">
+                                <option value="">请选择, 可多选</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">启用状态</label>
+                        <div class="layui-input-inline">
+                            <select name="status" id="statusSearch" class="machineTypeClass">
+                                <option value="-1">请选择</option>
+                                <option value="1">开启</option>
+                                <option value="0">禁用</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">即将到期</label>
+                        <div class="layui-input-inline">
+                            <select name="expiring" id="expiringSearch" class="machineTypeClass">
+                                <option value="-1">请选择</option>
+                                <option value="0">当天到期</option>
+                                <option value="1">1天后到期</option>
+                                <option value="7">7天后到期</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">机器状态</label>
+                        <div class="layui-input-inline">
+                            <select name="machineStatus" id="machineStatus" class="machineTypeClass">
+                                <option value="-1">请选择</option>
+                                <option value="0">失效</option>
+                                <option value="1">有效</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="layui-btn" lay-submit="" lay-filter="searchSubmit">提交</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="table-pane">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal" shiro:hasPermission="machine:add" onclick="addMachine()">
+                    添加客户端服务器
+                </button>
+                <!--        <button type="button" class="layui-btn" shiro:hasPermission="crawler:delete" id="batchDeleteMachine">删除</button>-->
+                <button type="button" class="layui-btn" shiro:hasPermission="machine:add" id="refreshMiNiMachine">
+                    刷新mini账号机
+                </button>
+                <button type="button" class="layui-btn" id="uploadUserPwd"><i
+                        class="layui-icon layui-icon-upload layui-font-12"></i>更新机器密码
+                </button>
+                <button type="button" class="layui-btn" id="refreshValidMachine"><i
+                        class="layui-icon layui-icon-upload layui-font-12"></i>刷新有效机器
+                </button>
+                <button type="button" class="layui-btn" id="offInValidMachine"><i
+                        class="layui-icon layui-icon-upload layui-font-12"></i>关闭无效机器
+                </button>
+                <button type="button" class="layui-btn" id="clientCheckScreen"><i
+                        class="layui-icon layui-icon-upload layui-font-12"></i>checkScreen机器
+                </button>
+                <button type="button" class="layui-btn" shiro:hasPermission="machine:add" id="refreshMachineWorkTypeTask">
+                    刷新机器执行任务
+                </button>
+            </div>
+            <table id="machineList" lay-filter="machineTable"></table>
+            <script type="text/html" id="optBar">
+                <a class="layui-btn layui-btn-xs" lay-event="edit" shiro:hasPermission="machine:update">机器设置</a>
+                <a class="layui-btn layui-btn-xs" lay-event="heartBeatLog">心跳日志</a>
+                <a class="layui-btn layui-btn-xs" lay-event="exeStat" >exeStat</a>
+
+                <!--            <a class="layui-btn layui-btn-danger layui-btn-xs" shiro:hasPermission="crawler:delete" lay-event="del">删除</a>-->
+            </script>
+        </div>
+    </div>
+
+
+    <div id="addCrawlerServer" class="layer_self_wrap" style="width:auto; margin-left:3%;display:none;">
+        <form id="addUserForm" class="layui-form layui-form-pane" method="post" action="" style="width:auto;margin-top: 20px;margin-bottom: 20px;" th:scrolling="yes">
+            <input id="pageNumAdd" type="hidden" name="pageNum"/>
+            <input id="idAdd" type="hidden" name="id"/>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">远程连接IP</label>
+                <div class="layui-input-inline">
+                    <input id="ipAdd" name="ip" lay-verify="required" autocomplete="off" class="layui-input" type="text"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none" >机器类型</label>
+                <div class="layui-input-inline">
+                    <select name="machineType"  id="machineTypeAdd" class="machineTypeClass">
+                        <option value="-1">请选择</option>
+                        <option value="0">账号机</option>
+                        <option value="1">内网VPS</option>
+                        <option value="2">外网VPS</option>
+                        <option value="3">重庆VPS</option>
+                        <option value="4">重庆账号机</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block" style="margin-left: 10px;">
+                    <button class="layui-btn"  lay-submit="" lay-filter="userSubmit">提交</button>
+                </div>
+            </div>
+
+            <!--            <table id="crawlerServerPlatform" lay-filter="crawlerServerPlatform"></table>-->
+        </form>
+    </div>
+
+    <!--添加或编辑爬虫服务器-->
+    <div id="setCrawlerServer" class="layer_self_wrap" style="width:auto; margin-left:3%;display:none;">
+        <form id="userForm" class="layui-form layui-form-pane" method="post" action="" style="width:auto;margin-top: 20px;margin-bottom: 20px;" th:scrolling="yes">
+<!--            <input id="pageNum" type="hidden" name="pageNum"/>-->
+            <input id="id" type="hidden" name="id"/>
+            <input id="status" type="hidden" name="status"/>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">远程连接IP</label>
+                <div class="layui-input-inline">
+                    <input id="ip" name="ip"  style="border-style:none" class="layui-input" type="text"/>
+                </div>
+                <label class="layui-form-label" style="border-style:none">mac</label>
+                <div class="layui-input-inline">
+                    <input id="mac" name="mac" autocomplete="off" class="layui-input" type="text"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none" >机器类型</label>
+                <div class="layui-input-inline">
+                    <select name="machineType"  id="machineType" class="machineTypeClass">
+                        <option value="-1">请选择</option>
+                        <option value="0">账号机</option>
+                        <option value="1">内网VPS</option>
+                        <option value="2">外网VPS</option>
+                        <option value="3">重庆VPS</option>
+                        <option value="4">重庆账号机</option>
+                    </select>
+                </div>
+
+                <label class="layui-form-label" style="border-style:none" >搭载系统</label>
+                <div class="layui-input-inline">
+                    <select name="operatingSystem"  id="operatingSystem" class="machineTypeClass">
+                        <option value="">请选择</option>
+                        <option value="win7">win7</option>
+                        <option value="2008">2008</option>
+                        <option value="win10">win10</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required" style="border-style:none" >机器账号</label>
+                <div class="layui-input-inline">
+                    <input id="username" name="username" lay-verify="required" autocomplete="off" class="layui-input" type="text"/>
+                </div>
+                <label class="layui-form-label" style="border-style:none" required>拨号账号</label>
+                <div class="layui-input-inline">
+                    <input id="dialUsername" name="dialUsername"  class="layui-input" type="text"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required" style="border-style:none" >机器密码</label>
+                <div class="layui-input-inline">
+                    <input id="password" name="password" lay-verify="required" autocomplete="off" class="layui-input" type="text"/>
+                </div>
+                <label class="layui-form-label" style="border-style:none">拨号密码</label>
+                <div class="layui-input-inline">
+                    <input id="dialPassword" name="dialPassword"  class="layui-input" type="text"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">到期时间</label>
+                <div class="layui-input-inline">
+                    <input id="dueTime" name="dueTime"  class="layui-input" type="text"/>
+                </div>
+                <label class="layui-form-label" style="border-style:none">服务商</label>
+                <div class="layui-input-inline">
+                    <select name="serviceProvider"  id="serviceProvider" class="machineTypeClass">
+                        <option value="">请选择</option>
+                        <option value="福建省余初网络科技有限公司">福建省余初网络科技有限公司</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+<!--                <label class="layui-form-label" style="border-style:none">任务类型</label>-->
+<!--                <div class="layui-input-inline">-->
+<!--                    <input id="taskType" name="taskType" lay-verify="required|stringCheck" autocomplete="off" class="layui-input" type="text"/>-->
+<!--                </div>-->
+                <label class="layui-form-label" style="border-style:none">可爬取平台</label>
+                <div class="layui-input-inline">
+                    <select name="crawlPlatform" id="crawlPlatform" xm-select="crawlPlatform">
+                        <option value="">请选择, 可多选</option>
+                    </select>
+                </div>
+                <label class="layui-form-label required" style="border-style:none" >最大IO数</label>
+                <div class="layui-input-inline">
+                    <input id="maxIO" name="maxIO" lay-verify="required" autocomplete="off" class="layui-input" type="text"/>
+                </div>
+            </div>
+
+            <div class="table-overlay">
+                <table id="showMachineTaskType" lay-filter="showMachineTaskType"></table>
+           </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block" style="margin-left: 10px;">
+                    <button class="layui-btn"  lay-submit="" lay-filter="userSubmit">提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div id="exeStatWindow" class="layer_self_wrap" style="width:auto; margin-left:3%;display:none;">
+
+        <table id="machineExeTable" lay-filter="machineExeTable"></table>
+
+        <script type="text/html" id="machineExeToolbar">
+            <a class="layui-btn layui-btn-xs" lay-event="machineExeEvent" >查看24小时</a>
+            <!--            <a class="layui-btn layui-btn-danger layui-btn-xs" shiro:hasPermission="crawler:delete" lay-event="del">删除</a>-->
+        </script>
+
+    </div>
+
+    <div id="exeStatTableWindow" class="layer_self_wrap" style="width:auto; margin-left:3%;display:none;">
+
+        <table id="machineExeTable2" lay-filter="machineExeTable2"></table>
+
+
+    </div>
+
+
+    <div id="setMachineDetail" class="layer_self_wrap" style="width:auto; margin-left:3%;display:none;">
+        <form id="userFormDetail" class="layui-form layui-form-pane" method="post" action="" style="width:auto;margin-top: 20px;margin-bottom: 20px;" th:scrolling="yes">
+            <input id="pageNumDetail" type="hidden" name="pageNum"/>
+            <input id="idDetail" type="hidden" name="id"/>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width:auto;border-style:none">上次心跳时间</label>
+                <div class="layui-input-inline">
+                    <input id="lastHeartbeat" name="lastHeartbeat" readonly="readonly" style="border-style:none" class="layui-input" type="text"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width:auto;border-style:none" >网络是否可用</label>
+                <div class="layui-input-inline">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">CPU使用率</label>
+                <div class="layui-input-inline">
+                    <input id="cpu" name="cpu" readonly="readonly" style="border-style:none" class="layui-input" type="text"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">内存</label>
+                <div class="layui-input-inline">
+                    <input id="memory" name="memory" readonly="readonly" style="border-style:none" class="layui-input" type="text"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">磁盘空间</label>
+                <div class="layui-input-inline" style="width:auto; padding-top: 10px; font-family:Monospace">
+                    <div id="diskSpace" style="padding-left:10px" ></div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div id="heartBeatLog" class="layer_self_wrap" style="width:auto; margin-left:3%; margin-right:3%;display:none;">
+        <form class="layui-form " style=" margin:10px;" >
+            <div class="layui-collapse" >
+                <div class="layui-colla-item" style="display: none">
+                    <h2 class="layui-colla-title"></h2>
+                    <div class="layui-colla-content"  >
+                        <div style="text-align: center;">
+                            <div class="layui-inline">
+                                <table></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+
+    <!--底部-->
+    <div th:replace="fragments/footer :: footer"></div>
+    <script src="/js/crawlerServer/serverList.js"></script>
+    <script src="/js/constant.js"></script>
+
+    <script type="text/html" id="statusTemp">
+        {{#  if(d.status==STATUS_VALID){ }}
+        <input type="checkbox" name="status" lay-skin="switch" checked   lay-text="开启|关闭"  value= {{d.id}}  lay-filter="status" >
+        {{#  } else { }}
+        <input type="checkbox" name="status" lay-skin="switch"  lay-text="开启|关闭"  value= {{d.id}} lay-filter="status" >
+        {{#  } }}
+    </script>
+
+    <script type="text/html" id="taskTypeStatusTemp">
+        {{#  if(d.status==STATUS_VALID){ }}
+        <input type="checkbox" name="status" lay-skin="switch" checked   lay-text="开启|关闭"  value= {{d.id}}  lay-filter="taskTypeStatus" >
+        {{#  } else { }}
+        <input type="checkbox" name="status" lay-skin="switch"  lay-text="开启|关闭"  value= {{d.id}} lay-filter="taskTypeStatus" >
+        {{#  } }}
+    </script>
+
+    <script type="text/html" id="isBrowserTemp">
+        {{#  if(d.isBrowser==STATUS_VALID){ }}
+        <input type="checkbox" name="status" lay-skin="switch" checked   lay-text="开启|关闭"  value= {{d.id}}  lay-filter="isBrowserFilter" >
+        {{#  } else { }}
+        <input type="checkbox" name="status" lay-skin="switch"  lay-text="开启|关闭"  value= {{d.id}} lay-filter="isBrowserFilter" >
+        {{#  } }}
+    </script>
+
+    <script type="text/html" id="taskTypeTemp">
+        {{# <select name="taskType{{d.id}}" id="taskType{{d.id}}" xm-select="taskType{{d.id}}">}}
+            <option value="">请选择, 可多选</option>
+        </select>
+    </script>
+    <script>
+        layui.use('laydate', function(){
+            var laydate = layui.laydate;
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#dueTime' //指定元素
+                ,type: 'datetime'
+                ,trigger: 'click'//为了防止一个页面用两次laydate闪退
+
+            });
+            // laydate.render({
+            //     elem: '#lastHeartbeat' //指定元素
+            //     ,type: 'datetime'
+            //     ,trigger: 'click'//为了防止一个页面用两次laydate闪退
+            // });
+        });
+    </script>
+    <style type="text/css">
+        .layui-table-cell {
+            height: auto;
+            /*overflow: visible;*/
+        }
+        label.required:after {   /* 给红色的必填项打红色星号（文字后）如果打前面用before*/
+            content: ' *';
+            color: red;
+        }
+        .layui-table-view .layui-table-body{min-height: 300px;}
+        .table-overlay .layui-table-cell {
+            overflow: visible;
+        }
+    </style>
+
+</div>
+</body>
+</html>

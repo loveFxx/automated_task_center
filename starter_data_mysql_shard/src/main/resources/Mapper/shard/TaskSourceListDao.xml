@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.shard.dao.TaskSourceListShardDao">
+
+    <resultMap id="taskSourceListMap" type="com.sailvan.dispatchcenter.common.domain.TaskSourceList">
+        <id property="id" column="id" />
+        <result property="uniqueId" column="unique_id"/>
+        <result property="taskId" column="task_id"/>
+        <result property="type" column="type"/>
+        <result property="systemId" column="system_id"/>
+        <result property="priority" column="priority"/>
+        <result property="isEnforced" column="is_enforced"/>
+        <result property="isSingle" column="is_single"/>
+        <result property="workType" column="work_type"/>
+        <result property="params" column="params"/>
+        <result property="returnParams" column="return_params"/>
+        <result property="expectedTime" column="expected_time"/>
+        <result property="refreshTime" column="refresh_time"/>
+        <result property="lastCreateTime" column="last_create_time"/>
+        <result property="lastResultTime" column="last_result_time"/>
+        <result property="jobName" column="job_name"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="taskState" column="task_state"/>
+    </resultMap>
+
+    <resultMap id="listIdResult" type="java.lang.Integer" >
+        <result column="id" property="id"/>
+    </resultMap>
+
+    <select id="getTaskSrcByTaskSrc" resultMap="taskSourceListMap" resultType="com.sailvan.dispatchcenter.common.domain.TaskSourceList">
+        select *  from atc_task_source_list
+        <where>
+            <if test="expectedTime!= null and expectedTime != '' ">
+                expected_time like #{expectedTime}
+            </if>
+            <if test="taskIds!= null and taskIds != '' ">
+                and task_id in ${taskIds}
+            </if>
+            <if test="taskSourceList.systemId!= null and taskSourceList.systemId != '' ">
+                and   system_id in ${taskSourceList.systemId}
+            </if>
+            <if test="taskSourceList.type != null and taskSourceList.type != '' ">
+                and type = #{taskSourceList.type}
+            </if>
+            and is_single = #{isSingle}
+            <if test="taskSourceList.id == 0">
+                and <![CDATA[id >= #{startId}]]> and <![CDATA[id <= #{endId}]]>
+            </if>
+            <if test="taskSourceList.id != 0">
+                and id = #{taskSourceList.id}
+            </if>
+            <if test="taskSourceList.taskState!= null and taskSourceList.taskState != '' ">
+                and   task_state = #{taskSourceList.taskState}
+            </if>
+            <if test="params!= null and params != '' ">
+                and   params like ${params}
+            </if>
+            <if test="createdTime!= null and createdTime != '' ">
+                and   created_at like #{createdTime}
+            </if>
+            order by id desc
+
+
+
+        </where>
+    </select>
+
+    <select id="findTaskSourceById" resultMap="taskSourceListMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.TaskSourceList">
+        select *  from atc_task_source_list where id = #{id} and is_single=#{isSingle}
+    </select>
+
+    <update id="update">
+        UPDATE atc_task_source_list
+        <set>
+            <if test="uniqueId != null or uniqueId != '' ">
+                unique_id = #{uniqueId},
+            </if>
+            <if test="taskId != null or taskId != '' ">
+                task_id = #{taskId},
+            </if>
+            <if test="systemId != null or systemId != '' ">
+                system_id = #{systemId},
+            </if>
+            <if test="priority != null or priority != '' ">
+                priority = #{priority},
+            </if>
+            <if test="isEnforced != null or isEnforced != '' ">
+                is_enforced = #{isEnforced},
+            </if>
+            <if test="params != null or params != '' ">
+                params = #{params},
+            </if>
+            <if test="returnParams != null or returnParams != '' ">
+                return_params = #{returnParams},
+            </if>
+            <if test="expectedTime != null or expectedTime != '' ">
+                expected_time = #{expectedTime},
+            </if>
+            <if test="refreshTime != null or refreshTime != '' ">
+                refresh_time = #{refreshTime},
+            </if>
+            <if test="lastCreateTime != null or lastCreateTime != '' ">
+                last_create_time = #{lastCreateTime},
+            </if>
+            <if test="lastResultTime != null or lastResultTime != '' ">
+                last_result_time = #{lastResultTime},
+            </if>
+            <if test="jobName != null or jobName != '' ">
+                job_name = #{jobName},
+            </if>
+            <if test="taskState != null or taskState != '' ">
+                task_state = #{taskState},
+            </if>
+            updated_at=now()
+
+        </set>
+        WHERE id = #{id} and is_single = #{isSingle}
+    </update>
+
+    <insert id="insertTaskSourceList" useGeneratedKeys="true" keyProperty="id">
+        insert into atc_task_source_list(id,unique_id,task_id,type,system_id,priority,is_enforced
+                                        ,is_single,work_type,params,return_params,expected_time,refresh_time,last_create_time,last_result_time,created_at,updated_at,task_state)
+        values(#{id,jdbcType=INTEGER},#{uniqueId,jdbcType=INTEGER},#{taskId,jdbcType=INTEGER},#{type,jdbcType=INTEGER},#{systemId,jdbcType=VARCHAR}
+                  ,#{priority,jdbcType=INTEGER} ,#{isEnforced,jdbcType=INTEGER},#{isSingle,jdbcType=INTEGER},#{workType,jdbcType=VARCHAR},
+               #{params,jdbcType=VARCHAR},#{returnParams,jdbcType=VARCHAR},#{expectedTime,jdbcType=TIMESTAMP},#{refreshTime,jdbcType=TIMESTAMP},#{lastCreateTime,jdbcType=TIMESTAMP},#{lastResultTime,jdbcType=TIMESTAMP},now(),now(),#{taskState,jdbcType=VARCHAR})
+    </insert>
+
+
+    <delete id="delete">
+        delete from atc_task_source_list where id = #{id} and is_single=#{isSingle}
+    </delete>
+
+    <select id="getTaskSourceListByUniqueIdAndIsSingle" resultMap="taskSourceListMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.TaskSourceList">
+        select *  from atc_task_source_list where unique_id = #{uniqueId} and is_single = #{isSingle} and id <![CDATA[>=]]> #{id} limit 1;
+    </select>
+
+    <select id="getTaskSourceListByUniqueIdAndIsSingleAndRefreshTime" resultMap="taskSourceListMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.TaskSourceList">
+        select *  from atc_task_source_list where unique_id = #{uniqueId} and is_single=#{isSingle}
+                                              and refresh_time=#{refreshTime} and id <![CDATA[>=]]> #{id} limit 1;
+    </select>
+
+    <update id="updateLastResultTimeById">
+        UPDATE atc_task_source_list
+        <set>
+            <if test="lastResultTime != null or lastResultTime != '' ">
+            last_result_time = #{lastResultTime},
+            </if>
+            updated_at=now(),
+            task_state = #{taskState}
+        </set>
+        WHERE id = #{id} and is_single=#{isSingle}
+    </update>
+
+    <resultMap id="PartMap" type="java.util.HashMap">
+        <result column="system_id" property="systemId"/>
+    </resultMap>
+
+    <update id="updateJobNameById">
+        UPDATE atc_task_source_list
+        <set>
+            <if test="expectedTime != null and expectedTime != '' ">
+                expected_time = #{expectedTime},
+            </if>
+            <if test="jobName != null and jobName != '' ">
+                job_name = #{jobName},
+            </if>
+        </set>
+        WHERE id = #{id} and is_single=#{isSingle}
+    </update>
+
+    <select id="listTaskSourcesByJobName" resultMap="taskSourceListMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.TaskSourceList">
+        select *  from atc_task_source_list where job_name = #{jobName} and is_single=#{isSingle} and id <![CDATA[>=]]> #{id};
+    </select>
+
+    <update id="bulkUpdateTimeByIds">
+
+        UPDATE atc_task_source_list
+        <set>
+            <if test="expectedTime != null and expectedTime != '' ">
+                expected_time = #{expectedTime},
+            </if>
+            <if test="lastCreateTime != null and lastCreateTime != '' ">
+                last_create_time = #{lastCreateTime},
+            </if>
+            updated_at=now()
+        </set>
+        <where>
+            id IN
+            <foreach item="list" index="index" collection="lists"
+                     open="(" separator="," close=")"> #{list}</foreach>
+            and is_single = #{isSingle}
+        </where>
+    </update>
+
+    <update id="updateExpectedTimeByJobName">
+        UPDATE atc_task_source_list
+        <set>
+            <if test="expectedTime != null and expectedTime != '' ">
+                expected_time = #{expectedTime},
+            </if>
+            updated_at=now()
+        </set>
+        where job_name = #{jobName} and is_single = #{isSingle} and id >= #{id}
+    </update>
+
+    <select id="getDefaultTaskById" resultMap="taskSourceListMap" resultType="com.sailvan.dispatchcenter.common.domain.TaskSourceList">
+        select * from atc_task_source_list where type = 2 and is_single = #{isSingle} and <![CDATA[id >= #{id}]]>  and <![CDATA[id <= #{endId}]]> order by id desc
+    </select>
+
+
+    <select id="queryTaskSource" resultMap="taskSourceListMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.TaskSourceList">
+        select * from atc_task_source_list
+        <where>
+            is_single=#{isSingle} and id <![CDATA[>=]]> #{id}
+            <if test="workTypes != null">
+                and work_type IN
+                <foreach item="workType" index="index" collection="workTypes"
+                         open="(" separator="," close=")"> #{workType}</foreach>
+            </if>
+            <if test="taskIds != null">
+                and task_id IN
+                <foreach item="taskId" index="index" collection="taskIds"
+                         open="(" separator="," close=")"> #{taskId}</foreach>
+            </if>
+        </where>
+    </select>
+
+
+
+    <select id="getAccountSiteAll" resultType="java.lang.String">
+        SELECT params
+        FROM atc_task_source_list
+        where is_single=0
+        and id >0
+        GROUP BY params
+    </select>
+
+
+    <select id="getAccountAll" resultType="java.lang.String">
+        SELECT substr(params,13,7)
+        FROM atc_task_source_list
+        where is_single=0
+          and id >0
+        GROUP BY params
+    </select>
+
+    <select id="getAccountHavingNoMachineButTask" resultType="java.lang.String">
+        SELECT distinct work_type
+        FROM atc_task_source_list
+        where is_single=0
+          and id >0
+         and work_type in
+     (  select concat(account,'_',continents) from atc_account where have_machine!=1)
+    </select>
+
+    <select id="countAccountSite" resultType="java.lang.Integer">
+        select count(distinct params)
+        from atc_task_source_list
+        where is_single=0
+          and id >0
+    </select>
+
+    <insert id="batchInsertTaskSource">
+        insert into atc_task_source_list(id,unique_id,task_id,type,system_id,priority,is_enforced
+        ,is_single,work_type,params,return_params,expected_time,refresh_time,last_create_time,last_result_time,created_at,updated_at,task_state) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id,jdbcType=INTEGER},#{item.uniqueId,jdbcType=INTEGER},#{item.taskId,jdbcType=INTEGER},#{item.type,jdbcType=INTEGER},#{item.systemId,jdbcType=VARCHAR}
+            ,#{item.priority,jdbcType=INTEGER} ,#{item.isEnforced,jdbcType=INTEGER},#{item.isSingle,jdbcType=INTEGER},#{item.workType,jdbcType=VARCHAR},
+            #{item.params,jdbcType=VARCHAR},#{item.returnParams,jdbcType=VARCHAR},#{item.expectedTime,jdbcType=TIMESTAMP},#{item.refreshTime,jdbcType=TIMESTAMP},#{item.lastCreateTime,jdbcType=TIMESTAMP},#{item.lastResultTime,jdbcType=TIMESTAMP},now(),now(),#{item.taskState,jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+
+
+    <update id="batchUpdateJobNameById">
+        UPDATE atc_task_source_list
+        <set>
+            <if test="expectedTime != null and expectedTime != '' ">
+                expected_time = #{expectedTime},
+            </if>
+            <if test="jobName != null and jobName != '' ">
+                job_name = #{jobName},
+            </if>
+            updated_at=now()
+        </set>
+        <where>
+            is_single = #{isSingle} and
+            id IN
+            <foreach item="id" index="index" collection="ids"
+                     open="(" separator="," close=")"> #{id}</foreach>
+        </where>
+    </update>
+
+    <select id="listTaskSourceByTaskId" resultType="java.lang.Integer">
+        select id from atc_task_source_list where is_single = 0 and id> #{id} and task_id = #{taskId} limit #{limit};
+    </select>
+
+    <select id="countTaskSourceByTaskId" resultType="java.lang.Integer">
+        select count(*) as count from atc_task_source_list where is_single = 0 and id>0 and task_id = #{taskId};
+    </select>
+
+<!--    <select id="groupByTaskSources" resultMap="taskSourceListMap"-->
+<!--            resultType="com.sailvan.dispatchcenter.common.domain.TaskSourceList">-->
+<!--        select * from atc_task_source_list-->
+<!--        <where>-->
+<!--            is_single = 0 and-->
+<!--            id IN-->
+<!--            <foreach item="id" index="index" collection="ids"-->
+<!--                     open="(" separator="," close=")"> #{id}</foreach>-->
+<!--        </where>-->
+<!--    </select>-->
+
+    <select id="groupByTaskSources" resultMap="taskSourceListMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.TaskSourceList">
+        select * from atc_task_source_list
+        <where>
+            is_single=0 and id <![CDATA[>]]> 0
+            <if test="ids != null">
+                and id IN
+                <foreach item="id" index="index" collection="ids"
+                         open="(" separator="," close=")"> #{id}</foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="listIds" resultType="java.lang.Integer">
+        select max(id) as id from atc_task_source_list where task_id = #{taskId} and is_single=0 and id>0 group by params;
+    </select>
+
+    <select id="listTaskSourceByParams" resultMap="taskSourceListMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.TaskSourceList">
+        select * from atc_task_source_list where is_single=0 and id>0 and task_id=#{taskId} and params=#{params}
+    </select>
+
+    <delete id="batchDeleteById">
+        DELETE FROM atc_task_source_list
+        <where>
+            is_single = 0 and id <![CDATA[>]]> 0 and task_id=#{taskId} and
+            id NOT IN
+            <foreach item="id" index="index" collection="ids"
+                     open="(" separator="," close=")"> #{id}</foreach>
+        </where>
+    </delete>
+</mapper>

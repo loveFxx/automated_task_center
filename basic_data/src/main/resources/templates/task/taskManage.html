@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head th:include="layout :: htmlhead(pageTitle='任务类型管理')" ></head>
+<link rel="stylesheet" type="text/css" href="/css/formSelects-v4.css"/>
+<!--<script type="text/javascript" src="/js/select/formSelects-v4.js"></script>-->
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!--头-->
+    <div th:replace="fragments/head :: header"></div>
+    <div class="layui-body">
+        <div class="search-pane">
+            <form id="userSearch" class="layui-form layui-form-pane" method="post" action="">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">任务名称</label>
+                        <div class="layui-input-inline">
+                            <input id="taskNameSearch" name="taskName" autocomplete="off" class="layui-input"
+                                   type="text"/>
+                        </div>
+                    </div>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    <button class="layui-btn" lay-submit="" lay-filter="searchSubmit">提交</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="table-pane">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal" shiro:hasPermission="task:add" onclick="addTask()">添加任务类型
+                </button>
+                <button type="button" class="layui-btn" shiro:hasPermission="task:delete" id="batchDeleteTask">删除
+                </button>
+            </div>
+            <table id="taskList" lay-filter="taskTable"></table>
+            <script type="text/html" id="optBar">
+                <a class="layui-btn layui-btn-xs" shiro:hasPermission="task:update" lay-event="edit">编辑</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" shiro:hasPermission="task:delete"
+                   lay-event="del">删除</a>
+            </script>
+            <script type="text/html" id="optBar2">
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="optBar2RemoveColumn">删除</a>
+            </script>
+        </div>
+    </div>
+
+    <!--添加或编辑-->
+    <div id="setTask" class="layer_self_wrap" style=";margin-left:3%;display:none;">
+        <form class="layui-form "  style=" margin:10px;" >
+            <div style=" margin:10px; border: 1px solid #333333;">
+                <div  style="background:#f2f2f2;height: 35px;margin-bottom: 15px" >
+                    <div class="text " style=" position: relative;top: 50%;transform:translateY(-50%);margin-left: 4px;">
+                        <p><span>基本信息</span></p>
+                    </div>
+                </div>
+                <input id="pageNum" type="hidden" name="pageNum"/>
+                <input id="taskId" type="hidden" name="taskId"/>
+                <input id="hiddenStatus" type="hidden" name="hiddenStatus"/>
+                <div class="layui-form-item">
+                    <label class="layui-form-label " >任务类型名称</label>
+                    <div class="layui-input-inline">
+                        <input id="taskName" name="taskName" lay-verify="required|stringCheck"   autocomplete="off" class="layui-input " type="text"  />
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label " >任务类型简称</label>
+                    <div class="layui-input-inline">
+                        <input id="taskAbbreviation" name="taskAbbreviation"  autocomplete="off" class="layui-input " type="text"  />
+                    </div>
+                </div>
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">任务类型说明</label>
+                    <div class="layui-input-inline" style="width:400px">
+                        <textarea id="taskExplain" name="taskExplain" lay-verify="required|stringCheck" placeholder="请输入内容" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item" >
+                    <label class="layui-form-label" style="border-style:none">需求系统</label>
+                    <div class="layui-input-inline" style="width:400px">
+                        <select name="systems" id="systems" xm-select="systems">
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item" >
+                    <label class="layui-form-label" style="border-style:none">任务大类型</label>
+                    <div class="layui-input-inline" style="width:auto">
+                        <div class="layui-input-block" style="margin-left:0" >
+                            <input type="radio" name="largeTaskType"  lay-filter="largeTaskType1" value="1" title="按可爬取平台" />
+                        </div>
+                        <div class="layui-input-block" style="margin-left:0">
+                            <input type="radio" name="largeTaskType"  lay-filter="largeTaskType2" value="2" title="按账号站点" />
+                        </div>
+                    </div>
+                    <div class="layui-input-inline" style="width:400px">
+                        <select name="executePlatforms" id="executePlatforms" xm-select="executePlatforms" xm-select-radio>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label " >优先级</label>
+                    <div class="layui-input-inline"style="width:50px">
+                        <input id="priority" name="priority" lay-verify="required|numCheck"   autocomplete="off" class="layui-input " type="number"   />
+                    </div>
+                </div>
+                <div class="layui-form-item" >
+                    <label class="layui-form-label" style="border-style:none">任务执行周期</label>
+                    <div class="layui-input-inline" style="width:auto">
+                        <div class="layui-input-block" style="margin-left:0" >
+                            <input type="radio" name="type"  lay-filter="type1" value="1" title="周期" />
+                        </div>
+                        <div class="layui-input-block" style="margin-left:0">
+                            <input type="radio" name="type"  lay-filter="type2" value="2" title="单次" />
+                        </div>
+                    </div>
+                    <div class="layui-input-inline" style="width:400px">
+                        <input id="cronExpression"   name="cronExpression" lay-verify=""   autocomplete="off" class="layui-input " type="text"  />
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label " >任务执行重置间隔</label>
+                    <div class="layui-input-inline" style="width:50px">
+                        <input id="intervalTimes" name="intervalTimes" lay-verify="required"   autocomplete="off" class="layui-input" type="text"  />
+                    </div>
+                    <div class="layui-input-inline" style="width:auto">
+                        <div class="layui-form-mid" style="margin-right:0">个</div>
+                    </div>
+                    <div class="layui-input-inline">
+                        <div>
+                            <select name="intervalType" id="intervalType" >
+                                <option value="1">自然天</option>
+                                <option value="2">自然小时</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label " >接口调用频次限制</label>
+                    <div class="layui-input-inline" style="width:auto">
+                        <div class="layui-form-mid" style="margin-right:0">限制</div>
+                    </div>
+                    <div class="layui-input-inline" style="width:50px">
+                        <input id="apiTimeLimit" name="apiTimeLimit" lay-verify="required|stringCheck"   autocomplete="off" class="layui-input " type="text"  />
+                    </div>
+                    <div class="layui-input-inline" style="width:auto">
+                        <div class="layui-form-mid" style="margin-right:0">min内调用</div>
+                    </div>
+                    <div class="layui-input-inline" style="width:50px">
+                        <input id="apiMaxTimes" name="apiMaxTimes" lay-verify="required|stringCheck"   autocomplete="off" class="layui-input " type="text"  />
+                    </div>
+                    <div class="layui-input-inline" style="width:auto">
+                        <div class="layui-form-mid" style="margin-right:0">次</div>
+                    </div>
+                </div>
+                <div class="layui-form-item" >
+                    <label class="layui-form-label" style="border-style:none">运行模式</label>
+                    <div class="layui-input-inline" style="width:auto">
+                        <div>
+                            <select name="runMode" id="runMode" >
+                                <option value="0">机器</option>
+                                <option value="1">lambda</option>
+                                <option value="2">lambda和机器</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">任务生成速率</label>
+                    <div class="layui-input-inline" style="width:auto">
+                        <div class="layui-form-mid" style="margin-right:0">在</div>
+                    </div>
+                    <div class="layui-input-inline" style="width:50px">
+                        <input id="produceInterval" name="produceInterval" lay-verify="required|stringCheck"   autocomplete="off" class="layui-input " type="text"  />
+                    </div>
+                    <div class="layui-input-inline" style="width:auto">
+                        <div class="layui-form-mid" style="margin-right:0">秒内执行</div>
+                    </div>
+                    <div class="layui-input-inline" style="width:50px">
+                        <input id="produceConcurrency" name="produceConcurrency" lay-verify="required|stringCheck"   autocomplete="off" class="layui-input " type="text"  />
+                    </div>
+                    <div class="layui-input-inline" style="width:auto">
+                        <div class="layui-form-mid" style="margin-right:0">并发数X</div>
+                    </div>
+                    <div class="layui-input-inline" style="width:50px">
+                        <input id="produceCapacity" name="produceCapacity" lay-verify="required|stringCheck"   autocomplete="off" class="layui-input " type="text"  />
+                    </div>
+                    <div class="layui-input-inline" style="width:auto">
+                        <div class="layui-form-mid" style="margin-right:0">个</div>
+                    </div>
+                </div>
+                <div class="layui-form-item" >
+                    <label class="layui-form-label" style="border-style:none">是否为及时任务</label>
+                    <div class="layui-input-inline" style="width:auto">
+                            否<input type="radio" name="isTimely"  value="0" />
+                            是<input type="radio" name="isTimely"  value="1"/>
+                    </div>
+                </div>
+
+                <div class="layui-form-item" id="addSelect">
+                    <label class="layui-form-label" style="border-style:none">用户及区域函数配置</label>
+                    <div class="layui-input-inline" style="width: 60%">
+
+                            <select name="awsUserRegionFunctions" id="awsUserRegionFunctions"
+                                    xm-select="awsUserRegionFunctions" xm-select-radio>
+                                <option value="">请选择, 此处是联动单选</option>
+                            </select>
+
+                    </div>
+                </div>
+                <div class="layui-form-item" id="updateSelect">
+                    <label class="layui-form-label" style="border-style:none">用户及区域函数配置</label>
+                    <div class="layui-input-inline" style="width: 60%">
+
+                        <select name="awsUserRegionFunctionsUpdate" id="awsUserRegionFunctionsUpdate"
+                                xm-select="awsUserRegionFunctionsUpdate" xm-select-radio>
+                            <option value="">请选择, 此处是联动单选</option>
+                        </select>
+
+                    </div>
+                </div>
+                <div class="layui-form-item" >
+                    <label class="layui-form-label" style="border-style:none">是否为组合任务</label>
+                    <div class="layui-input-inline" style="width:auto">
+                        否<input type="radio" name="isCombo"  value="0" />
+                        是<input type="radio" name="isCombo"  value="1"/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label " >正常运行次数</label>
+                    <div class="layui-input-inline"style="width:50px">
+                        <input id="exMaxTimes" name="exMaxTimes" lay-verify="number"   autocomplete="off" class="layui-input " type="number"  value="0" />
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label " >异常运行次数</label>
+                    <div class="layui-input-inline"style="width:50px">
+                        <input id="errorMaxTimes" name="errorMaxTimes" lay-verify="number"   autocomplete="off" class="layui-input " type="number"  value="0" />
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label " >任务重试次数</label>
+                    <div class="layui-input-inline"style="width:50px">
+                        <input id="limitRetryTimes" name="limitRetryTimes" lay-verify="number"   autocomplete="off" class="layui-input " type="number"  value="2" />
+                    </div>
+                </div>
+            </div>
+
+            <div style=" margin:10px; border: 1px solid #333333;">
+                <div  style="background:#f2f2f2;height: 35px">
+                    <div class="text " style=" position: relative;top: 50%;transform:translateY(-50%);margin-left: 4px;">
+                        <p><span>任务参数</span></p>
+                    </div>
+                </div>
+                <button type="button" class="layui-btn layui-btn-sm" data-type="addRow" title="添加一行">
+                    <i class="layui-icon layui-icon-add-1"></i> 添加一行
+                </button>
+                <div style="margin-left:5%; margin-right:5%;" class="table-overlay">
+                    <table  id="columnTable"   lay-filter="columnTable" ></table>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label " >组合字段</label>
+                    <div id="column-box">
+                    </div>
+                    <a href="javascript:void(0);" style="color:blue;font-size:20px;line-height:38px;" onclick="addComboColumn()">+</a>
+                    <a href="javascript:void(0);" style="color:blue;font-size:20px;line-height:38px;" onclick="deleteComboColumn()">-</a>
+                </div>
+            </div>
+            <div class="layui-form-item"  id="taskSubmit">
+                <div class="layui-input-block" style="margin-left: 10px;">
+                    <button id="AddTaskSubmit" class="layui-btn"  lay-submit="" lay-filter="AddTaskSubmit">提交添加</button>
+                    <button id="updateTaskSubmit" class="layui-btn"  lay-submit="" lay-filter="updateTaskSubmit">提交修改</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+        <form id="taskForm" class="layui-form layui-form-pane" lay-filter="test2" method="post" action="" style="margin-top: 20px;">
+        </form>
+    </div>
+    <div id="detailLayer" style="display:none;"></div>
+
+    <!--底部-->
+    <div th:replace="fragments/footer :: footer"></div>
+    <script src="/js/task/task.js"></script>
+    <script src="/js/nav_href.js"></script>
+<!--    <script type="text/javascript" src="/js/select/formSelects-v4.js"></script>-->
+</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/html" id="isRequired">
+    <input type="checkbox" name="isRequired"  lay-skin="switch" lay-text="是|否"  {{d.isRequired > 0 ? ' checked' : ''}}>
+</script>
+
+<script type="text/html" id="isCombined">
+    <input type="checkbox" name="isCombined" lay-skin="switch" lay-text="是|否" {{d.isCombined > 0 ? ' checked' : ''}}>
+</script>
+
+<script type="text/html" id="isCombinedUnique">
+    <input type="checkbox" name="isCombinedUnique" lay-skin="switch" lay-text="是|否" {{d.isCombinedUnique > 0 ? ' checked' : ''}}>
+</script>
+
+<script type="text/html" id="isReturnFlag">
+    <input type="checkbox" name="isReturnFlag" lay-skin="switch" lay-text="是|否" {{d.isReturnFlag > 0 ? ' checked' : ''}}>
+</script>
+
+<script type="text/html" id="isIdFlag">
+    <input type="checkbox" name="isIdFlag" lay-skin="switch" lay-text="是|否" {{d.isIdFlag > 0 ? ' checked' : ''}}>
+</script>
+
+<script type="text/html" id="statusTemp">
+    {{#  if(d.status==1){ }}
+    <input type="checkbox" name="status" lay-skin="switch" checked   lay-text="开启|关闭"  value= {{d.id}}  lay-filter="status" >
+    {{#  } else { }}
+    <input type="checkbox" name="status" lay-skin="switch"  lay-text="开启|关闭"  value= {{d.id}} lay-filter="status" >
+    {{#  } }}
+</script>
+
+
+
+
+
+<style type="text/css">
+    .layui-form-label {
+        text-align:left;
+        width:15%;
+
+    }
+
+    .childBody{padding: 15px;}
+
+    /*layui 元素样式改写*/
+    .layui-btn-sm{line-height: normal; font-size: 12.5px;}
+    .layui-table-view .layui-table-body{min-height: 256px;}
+    .layui-table-cell .layui-input.layui-unselect{height: 30px; line-height: 30px;}
+
+    /*设置 layui 表格中单元格内容溢出可见样式*/
+
+    /*.table-overlay .layui-table-body{overflow: visible;}*/
+    .table-overlay .layui-table-cell {height: auto;}
+
+
+
+
+
+
+    /*columnTable  .layui-table-cell{*/
+    /*    height:22px;*/
+    /*    line-height: 22px;*/
+    /*}*/
+    /*.noSpace {*/
+    /*    font-size: 0;*/
+    /*}*/
+    /*.noSpace layui-form-label {*/
+    /*    font-size: 12px;*/
+    /*}*/
+
+    /*.layui-input{*/
+    /*    height:auto;*/
+    /*}*/
+</style>

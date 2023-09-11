@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.TaskInPoolMetricDao">
+
+    <resultMap id="taskInPoolMetricMap" type="com.sailvan.dispatchcenter.common.domain.TaskInPoolMetric">
+        <id property="id" column="id" />
+        <result property="taskType" column="task_type"/>
+        <result property="bufferNum" column="buffer_num"/>
+        <result property="oneHourNum" column="one_hour_num"/>
+        <result property="oneToThreeNum" column="one_to_three_num"/>
+        <result property="threeToFiveNum" column="three_to_five_num"/>
+        <result property="fiveToTenNum" column="five_to_ten_num"/>
+        <result property="tenToOneDayNum" column="ten_to_one_day_num"/>
+        <result property="overOneDayNum" column="over_one_day_num"/>
+        <result property="hour" column="hour"/>
+        <result property="date" column="date"/>
+    </resultMap>
+
+
+    <insert id="insertTaskInPoolMetric"  useGeneratedKeys="true" keyProperty="id" >
+        insert into atc_task_in_pool_metric(task_type,buffer_num,one_hour_num,one_to_three_num,three_to_five_num,five_to_ten_num,ten_to_one_day_num,over_one_day_num,`hour`,`date`,`created_at`)
+        values(#{taskType,jdbcType=VARCHAR},#{bufferNum,jdbcType=INTEGER},#{oneHourNum,jdbcType=INTEGER},#{oneToThreeNum,jdbcType=INTEGER},#{threeToFiveNum,jdbcType=INTEGER},#{fiveToTenNum,jdbcType=INTEGER},
+               #{tenToOneDayNum,jdbcType=INTEGER},#{overOneDayNum,jdbcType=INTEGER},#{hour,jdbcType=INTEGER},#{date,jdbcType=VARCHAR},now())
+    </insert>
+
+    <select id="findTaskInPoolMetric" resultMap="taskInPoolMetricMap">
+        select * from atc_task_in_pool_metric where task_type=#{taskType} and `date`=#{date} and `hour`=#{hour} limit 1;
+    </select>
+
+    <update id="updateTaskInPoolMetricById">
+        UPDATE atc_task_in_pool_metric
+        <set>
+            <if test="taskType != null and taskType != '' ">
+                task_type = #{taskType},
+            </if>
+            <if test="bufferNum != null and bufferNum != '' ">
+                buffer_num = #{bufferNum},
+            </if>
+            <if test="oneHourNum != null and oneHourNum != '' ">
+                one_hour_num = #{oneHourNum},
+            </if>
+            <if test="oneToThreeNum != null and oneToThreeNum != '' ">
+                one_to_three_num = #{oneToThreeNum},
+            </if>
+            <if test="threeToFiveNum != null and threeToFiveNum != '' ">
+                three_to_five_num = #{threeToFiveNum},
+            </if>
+            <if test="fiveToTenNum != null and fiveToTenNum != '' ">
+                five_to_ten_num = #{fiveToTenNum},
+            </if>
+            <if test="tenToOneDayNum != null and tenToOneDayNum != '' ">
+                ten_to_one_day_num = #{tenToOneDayNum},
+            </if>
+            <if test="overOneDayNum != null and overOneDayNum != '' ">
+                over_one_day_num = #{overOneDayNum},
+            </if>
+            <if test="hour != null and hour != '' ">
+                `hour` = #{hour},
+            </if>
+            <if test="date != null and date != '' ">
+                `date` = #{date},
+            </if>
+
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="getAllTaskInPoolMetric" resultMap="taskInPoolMetricMap"  resultType="com.sailvan.dispatchcenter.common.domain.TaskInPoolMetric">
+        SELECT * FROM atc_task_in_pool_metric a
+        WHERE a.id  in (select max(id)  from atc_task_in_pool_metric GROUP BY task_type)
+        order by id desc
+    </select>
+
+
+    <select id="sumTaskInPoolMetric" resultMap="taskInPoolMetricMap">
+        select sum(buffer_num) as buffer_num,sum(one_hour_num) as one_hour_num,
+               sum(one_to_three_num) as one_to_three_num,sum(three_to_five_num) as three_to_five_num,
+               sum(five_to_ten_num) as five_to_ten_num,sum(ten_to_one_day_num) as ten_to_one_day_num,
+               sum(over_one_day_num) as over_one_day_num,`hour`,`date` from atc_task_in_pool_metric where `date`=#{date} and `hour`=#{hour};
+    </select>
+</mapper>

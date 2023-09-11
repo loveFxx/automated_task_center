@@ -1,0 +1,127 @@
+spring:
+  profiles:
+    active: basic_data
+
+---
+server:
+  tomcat:
+    keep-alive-timeout: 30000
+    connection-timeout: 30000
+    accesslog:
+      buffered: true
+      enabled: true
+      file-date-format: .yyyy-MM-dd
+      pattern: '%h %l %u %t "%r" %s %b %D'
+      suffix: .log
+      prefix: tomcat
+      rename-on-rotate: false
+      request-attributes-enabled: false
+      rotate: true
+      directory: tomcat
+    basedir: D:\IDEA_workspace\automated_task_center\basic_data\
+  port: 8991
+  application:
+    name: basic_data
+  thymeleaf:
+    prefix: classpath:/templates/
+spring:
+  profiles: basic_data
+  rabbitmq:
+    host: 192.168.200.231
+    port: 5672
+    username: admin #workbench #admin
+    password: 123456 #workbench #123456
+    connection-timeout: 50000
+    virtual-host: /
+  datasource:
+    automated:
+      url: jdbc:mysql://192.168.200.9:3306/automated_task_center_my?characterEncoding=utf-8&characterSetResults=utf-8&useSSL=false&serverTimezone=GMT%2B8&autoReconnect=true
+      username: root
+      password: 123123
+      driverClassName: com.mysql.cj.jdbc.Driver
+    mini:
+      url: jdbc:mysql://192.168.201.234:3306/browserAdmin?characterEncoding=utf-8&characterSetResults=utf-8&useSSL=false&serverTimezone=GMT%2B8
+      username: browser
+      password: ODhABmmz9U8tqccBeRZd
+      driverClassName: com.mysql.cj.jdbc.Driver
+  redis:
+    host: 10.201.0.20
+    port: 6379
+    password: uNn~HqBo&T[qT3F9s2
+    database: 11
+
+    jedis:
+      pool:
+        maxWait: -1
+        maxActive: 8
+        maxIdle: 8
+        minIdle: 0
+    timeout: 300000
+  data:
+    elasticsearch:
+      cluster-hosts: 10.199.1.4:9200
+      cluster-security: admin:RaOF8MIRDtvJlb4LODB6
+  shardingsphere:
+    props:
+      sql:
+        show=true:
+    datasource:
+      names: automated
+      automated:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://192.168.200.9:3306/automated_task_center_my?characterEncoding=utf-8&characterSetResults=utf-8&useSSL=false&serverTimezone=GMT%2B8&autoReconnect=true
+        username: root
+        password: 123123
+
+core:
+  ip: 127.0.0.1
+  port: 8995
+  path: cache/
+
+ftp:
+  overseas:
+    domainName: node_amazon.valsun.cn
+    host: 104.217.197.174
+    username: centralsite_ljh
+    password: xTQB[b6FGsMzHXyS
+    port: 21
+    path: /file
+    CHARSET: UTF-8
+  inner:
+    host: 10.201.0.38
+    username: ftp_lijianhui
+    password: JKafnyXDvSVn
+    port: 21
+    path: /web
+    CHARSET: UTF-8
+
+busSystem:
+  idc:
+    appKey: 5CK8Q_BGZN1_B3KXM_HWO06_39H93
+    appSecret: 7dee8b0e96613629064a8bde1127604b
+    router: http://idc.gw.open.valsun.cn/router/rest?
+  hk:
+    appKey: I8SVR_ECOWI_55UWO_RL5ZN_307J7
+    appSecret: a9ff1b3bc436dbf9427580d459abdabc
+    router: http://gw-hk.valsun.cn:88/router/rest?
+  sz:
+    appKey: I8SVR_ECOWI_55UWO_RL5ZN_307J7
+    appSecret: a9ff1b3bc436dbf9427580d459abdabc
+    router: http://gw-sz.valsun.cn:88/router/rest?
+
+token:
+  callbackUrl: http://local.cn:8990/token/callback
+  tokenUrl: https://newtoken.valsun.cn
+  clientId: 40
+  clientSecret: pz30wEUSEHN7Oq7uXdonlsae6NzTwsuIMMfERcQH
+
+taskpool:
+  maxNum: 2000
+
+#mybatis.configuration:
+#  log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+#logging:
+#  level:
+#    com.common.dao: debug

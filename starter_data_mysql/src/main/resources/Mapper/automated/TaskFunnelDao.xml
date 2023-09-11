@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.TaskFunnelDao">
+
+    <resultMap id="taskFunnelMap" type="com.sailvan.dispatchcenter.common.domain.TaskFunnel">
+        <id property="id" column="id" />
+        <result property="taskId" column="task_id"/>
+        <result property="taskName" column="task_name"/>
+        <result property="isMain" column="is_main"/>
+        <result property="taskNum" column="task_num"/>
+        <result property="nextFireTime" column="next_fire_time"/>
+    </resultMap>
+
+
+    <select id="findByTaskId" resultMap="taskFunnelMap" resultType="com.sailvan.dispatchcenter.common.domain.TaskFunnel">
+        select *  from atc_task_funnel where task_id = #{taskId} order by id desc limit 1;
+    </select>
+
+    <insert id="insertTaskFunnel"  useGeneratedKeys="true" keyProperty="id" >
+        insert into atc_task_funnel(task_id,task_name,is_main,task_num,next_fire_time)
+        values(#{taskId,jdbcType=INTEGER},#{taskName,jdbcType=VARCHAR},#{isMain,jdbcType=INTEGER},#{taskNum,jdbcType=INTEGER},
+               #{nextFireTime,jdbcType=INTEGER})
+    </insert>
+
+    <update id="updateTaskNumById">
+        UPDATE atc_task_funnel
+        <set>
+            <if test="taskNum != null and taskNum != '' ">
+                task_num = #{taskNum},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateNextFireTimeById">
+        UPDATE atc_task_funnel
+        <set>
+            <if test="nextFireTime != null and nextFireTime != '' ">
+                next_fire_time = #{nextFireTime},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="findByTaskName" resultMap="taskFunnelMap" resultType="com.sailvan.dispatchcenter.common.domain.TaskFunnel">
+        select *  from atc_task_funnel where task_name = #{taskName} limit 1;
+    </select>
+
+    <select id="listByTaskId" resultMap="taskFunnelMap" resultType="com.sailvan.dispatchcenter.common.domain.TaskFunnel">
+        select *  from atc_task_funnel where task_id = #{taskId};
+    </select>
+
+    <select id="findMainFunnel" resultMap="taskFunnelMap" resultType="com.sailvan.dispatchcenter.common.domain.TaskFunnel">
+        select *  from atc_task_funnel where task_id = #{taskId} and is_main = 1 limit 1;
+    </select>
+
+    <delete id="deleteByTaskId">
+        delete from atc_task_funnel where task_id = #{taskId};
+    </delete>
+
+    <delete id="deleteById">
+        delete from atc_task_funnel where id = #{id};
+    </delete>
+</mapper>

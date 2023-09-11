@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.StoreAccountDao">
+
+    <!--    前面java字段 后面mysql-->
+    <resultMap id="StoreAccountMap" type="com.sailvan.dispatchcenter.common.domain.StoreAccount">
+        <id property="id" column="id" />
+        <result property="platform" column="platform"/>
+        <result property="shopName" column="shop_name"/>
+        <result property="account" column="account"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="smallType" column="small_type"/>
+        <result property="continents" column="continents"/>
+        <result property="area" column="area"/>
+        <result property="loginPlatform" column="login_platform"/>
+        <result property="qrContent" column="qr_content"/>
+        <result property="haveMachine" column="have_machine"/>
+        <result property="status" column="status"/>
+        <result property="verificationStatus" column="verification_status"/>
+        <result property="proxyIp" column="proxy_ip"/>
+        <result property="proxyIpPort" column="proxy_ip_port"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <select id="getStoreAccountAll" resultMap="StoreAccountMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.StoreAccount">
+        select *  from atc_account
+    </select>
+
+
+    <!--    ToDo-->
+    <select id="getStoreAccountByStoreAccount" resultMap="StoreAccountMap" resultType="com.sailvan.dispatchcenter.common.domain.StoreAccount">
+        select *  from atc_account
+        <where>
+            <if test="id != null and id != '' ">
+                and id in ${id}
+            </if>
+            <if test="platform != null and platform != '' ">
+                and platform = #{platform}
+            </if>
+            <if test="proxyIp != null and proxyIp != '' ">
+                and proxy_ip = #{proxyIp}
+            </if>
+            <if test="account != null and account != '' ">
+                and account in  ${account}
+            </if>
+
+            <if test="status != -1  ">
+                and status =  #{status}
+            </if>
+            <if test="continents != null and continents != '' ">
+                and continents =  #{continents}
+            </if>
+            <if test="haveMachine != -1 ">
+                and have_machine =  #{haveMachine}
+            </if>
+        </where>
+    </select>
+
+    <select id="getStoreAccount" resultMap="StoreAccountMap" resultType="com.sailvan.dispatchcenter.common.domain.StoreAccount">
+        select *  from atc_account where account =  #{account} and  continents = #{continents}
+    </select>
+
+    <select id="getStoreAccountByParams" resultMap="StoreAccountMap" resultType="com.sailvan.dispatchcenter.common.domain.StoreAccount">
+        select *  from atc_account
+        <where>
+            <if test="account != null and account != '' ">
+                and account = #{account}
+            </if>
+            <if test="platform != null and platform != '' ">
+                and platform = #{platform}
+            </if>
+            <if test="continents != null and continents != '' ">
+                and continents = #{continents}
+            </if>
+            <if test="area != null and area != '' ">
+                and area = #{area}
+            </if>
+            <if test="proxyIp != null and proxyIp != '' ">
+                and proxy_ip = #{proxyIp}
+            </if>
+            <if test="username != null and username != '' ">
+                and username = #{username}
+            </if>
+
+        </where>
+    </select>
+
+
+    <select id="getStoreAccountPlatform" resultMap="StoreAccountMap" resultType="com.sailvan.dispatchcenter.common.domain.StoreAccount">
+        select *  from atc_account where platform =  #{platform}
+    </select>
+
+    <select id="getStoreAccountByIp" resultMap="StoreAccountMap" resultType="com.sailvan.dispatchcenter.common.domain.StoreAccount">
+        select *  from atc_account where proxy_ip =  #{proxyIp}
+    </select>
+
+    <select id="getStoreAccountByAccountPlatformContinents" resultMap="StoreAccountMap" resultType="com.sailvan.dispatchcenter.common.domain.StoreAccount">
+        select *  from atc_account where account =  #{account} and  continents = #{continents} and platform =  #{platform}
+    </select>
+
+    <select id="getStoreAccountByAccount" resultMap="StoreAccountMap" resultType="com.sailvan.dispatchcenter.common.domain.StoreAccount">
+        select *  from atc_account where account = #{account} order by id desc
+    </select>
+
+    <select id="getStoreAccountByUsername" resultMap="StoreAccountMap" resultType="com.sailvan.dispatchcenter.common.domain.StoreAccount">
+        select *  from atc_account where username =  #{username}
+    </select>
+
+    <select id="getStoreAccountById" resultMap="StoreAccountMap" resultType="com.sailvan.dispatchcenter.common.domain.StoreAccount">
+        select *  from atc_account where id = #{id}
+    </select>
+
+
+
+    <!--    前mysql字段后java-->
+    <update id="updateStoreAccount">
+        UPDATE atc_account
+        <set>
+            <if test="platform != null and platform != '' ">
+                platform = #{platform},
+            </if>
+            <if test="shopName != null and shopName != '' ">
+                shop_name = #{shopName},
+            </if>
+            <if test="account != null and account != '' ">
+                account = #{account},
+            </if>
+            <if test="username != null and username != '' ">
+                username = #{username},
+            </if>
+            <if test="password != null and password != '' ">
+                password = #{password},
+            </if>
+            <if test="smallType != null and smallType != '' ">
+                small_type = #{smallType},
+            </if>
+            <if test="continents != null and continents != '' ">
+                continents = #{continents},
+            </if>
+            <if test="area != null and area != '' ">
+                area = #{area},
+            </if>
+            <if test="status != null and status != '' ">
+                status = #{status},
+            </if>
+            <if test="verificationStatus != null and verificationStatus != '' ">
+                verification_status = #{verificationStatus},
+            </if>
+            <if test="proxyIpPort != 0 ">
+                proxy_ip_port = #{proxyIpPort},
+            </if>
+            <if test="loginPlatform != 0 ">
+                login_platform = #{loginPlatform},
+            </if>
+            proxy_ip = #{proxyIp},qr_content = #{qrContent}
+        </set>
+        WHERE id = #{id}
+    </update>
+
+
+    <update id="refreshAccount">
+        UPDATE atc_account set username = #{username},password = #{password},area = #{area},login_platform = #{loginPlatform},qr_content = #{qrContent},proxy_ip = #{proxyIp},proxy_ip_port = #{proxyIpPort},status = #{status},have_machine = #{haveMachine}
+        WHERE id = #{id}
+    </update>
+    <update id="updateHaveMachine">
+        UPDATE atc_account set have_machine = #{haveMachine}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateProxyIpById">
+        UPDATE atc_account
+        <set>
+            <if test="proxyIp != null and proxyIp != '' ">
+                proxy_ip = #{proxyIp},
+            </if>
+            <if test="proxyIpPort != null and proxyIpPort != '' ">
+                proxy_ip_port = #{proxyIpPort},
+            </if>
+        </set>
+         WHERE id = #{id}
+    </update>
+
+    <insert id="insertStoreAccount" useGeneratedKeys="true" keyProperty="id" parameterType="com.sailvan.dispatchcenter.common.domain.StoreAccount">
+        insert into atc_account(platform,shop_name,account,username,password,small_type,continents,area,login_platform,qr_content,status,verification_status,proxy_ip,proxy_ip_port,created_at)
+        values(#{platform,jdbcType=VARCHAR},#{shopName,jdbcType=VARCHAR}, #{account,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}
+              ,#{password,jdbcType=VARCHAR},#{smallType,jdbcType=INTEGER},#{continents,jdbcType=VARCHAR},#{area,jdbcType=VARCHAR},#{loginPlatform,jdbcType=VARCHAR},#{qrContent,jdbcType=VARCHAR},#{status,jdbcType=INTEGER}
+              ,#{verificationStatus,jdbcType=INTEGER},#{proxyIp,jdbcType=VARCHAR},#{proxyIpPort,jdbcType=VARCHAR},now())
+    </insert>
+
+
+    <insert id="insertBatch"  parameterType="java.util.List">
+        insert into atc_account(platform,shop_name,account,username,password,small_type,continents,area,status,verification_status,proxy_ip,created_at,have_machine)
+        values
+        <foreach collection ="storeAccountList" item="list" separator =",">
+            (#{platform},#{shopName}, #{account,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}
+                  ,#{password,jdbcType=VARCHAR},#{smallType,jdbcType=INTEGER},#{continents,jdbcType=INTEGER},#{area,jdbcType=INTEGER},#{status,jdbcType=INTEGER}
+                  ,#{verificationStatus,jdbcType=INTEGER},#{proxyIP,jdbcType=VARCHAR},now(),#{haveMachine,jdbcType=INTEGER})
+        </foreach>
+    </insert>
+
+    <delete id="deleteStoreAccountById">
+        delete from atc_account where id = #{id}
+    </delete>
+
+
+    <select id="getStoreAccountByStoreAccountIdList" resultMap="StoreAccountMap" resultType="com.sailvan.dispatchcenter.common.domain.StoreAccount">
+        select * from atc_account where id in ${storeAccountIdList}
+    </select>
+
+
+    <select id="getStoreAccountByStoreAccountAndSite" resultMap="StoreAccountMap" resultType="com.sailvan.dispatchcenter.common.domain.StoreAccount">
+        select *  from atc_account
+        <where>
+            <if test="storeAccount.id != null and storeAccount.id != '' ">
+                and id in ${storeAccount.id}
+            </if>
+            <if test="storeAccount.platform != null and storeAccount.platform != '' ">
+                and platform = #{storeAccount.platform}
+            </if>
+            <if test="storeAccount.proxyIp != null and storeAccount.proxyIp != '' ">
+                and proxy_ip = #{storeAccount.proxyIp}
+            </if>
+            <if test="storeAccount.account != null and storeAccount.account != '' ">
+                and account in  ${storeAccount.account}
+            </if>
+
+            <if test="storeAccount.status != -1  ">
+                and status =  #{storeAccount.status}
+            </if>
+            <if test="storeAccount.haveMachine != -1  ">
+                and have_machine =  #{storeAccount.haveMachine}
+            </if>
+               and id in (select  account_id from atc_account_sites where status=#{siteStatus})
+        </where>
+    </select>
+
+    <select id="getStoreAccountHavingNoMachine" resultMap="StoreAccountMap">
+        select * from atc_account where have_machine=0 and <![CDATA[ account <> ''  ]]>
+    </select>
+
+
+    <select id="getStoreAccountHavingNoAvailableMachine" resultMap="StoreAccountMap">
+        select * from atc_account where have_machine!=1
+    </select>
+
+
+    <select id="getStoreAccountByAccountContinents" resultMap="StoreAccountMap" resultType="com.sailvan.dispatchcenter.common.domain.StoreAccount">
+        select *  from atc_account where account =  #{account} and  continents = #{continents}
+    </select>
+
+
+    <select id="getProxyIp" resultType="java.lang.String">
+        SELECT proxy_ip FROM atc_account WHERE proxy_ip != ''  GROUP BY proxy_ip
+    </select>
+
+</mapper>

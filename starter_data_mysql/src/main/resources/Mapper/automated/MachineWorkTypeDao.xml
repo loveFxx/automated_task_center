@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.MachineWorkTypeDao">
+
+    <!--    前面java字段 后面mysql-->
+    <resultMap id="machineWorkTypeMap" type="com.sailvan.dispatchcenter.common.domain.MachineWorkType">
+        <id property="id" column="id" />
+        <result property="machineId" column="machine_id"/>
+        <result property="machineIp" column="machine_ip"/>
+        <result property="platformId" column="platform_id"/>
+        <result property="platform" column="platform"/>
+        <result property="account" column="account"/>
+        <result property="continents" column="continents"/>
+        <result property="platformType" column="platform_type"/>
+        <result property="status" column="status"/>
+        <result property="isBrowser" column="is_browser"/>
+        <result property="isUpdate" column="is_update"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="updatedTime" column="updated_time"/>
+        <result property="deletedTime" column="deleted_time"/>
+        <result property="machineStatus" column="machine_status"/>
+    </resultMap>
+
+    <select id="getMachineWorkTypeByMachineIdStatus" resultMap="machineWorkTypeMap" resultType="com.sailvan.dispatchcenter.common.domain.MachineWorkType">
+        select *  from atc_machine_work_type where machine_id = #{machineId}
+        <if test="status != -10 ">
+            and status = #{status}
+        </if>
+    </select>
+
+    <select id="getMachineWorkTypeByMachineId" resultMap="machineWorkTypeMap" resultType="com.sailvan.dispatchcenter.common.domain.MachineWorkType">
+        select *  from atc_machine_work_type where machine_id = #{machineId}
+    </select>
+
+    <select id="getMachineWorkTypeById" resultMap="machineWorkTypeMap" resultType="com.sailvan.dispatchcenter.common.domain.MachineWorkType">
+        select *  from atc_machine_work_type where id = #{id}
+    </select>
+
+    <select id="getMachineWorkTypeByIp" resultMap="machineWorkTypeMap" resultType="com.sailvan.dispatchcenter.common.domain.MachineWorkType">
+        select *  from atc_machine_work_type where machine_ip = #{machineIp}
+    </select>
+
+    <select id="getMachineWorkTypeByPlatformType" resultMap="machineWorkTypeMap" resultType="com.sailvan.dispatchcenter.common.domain.MachineWorkType">
+        select *  from atc_machine_work_type where platform_type = #{platformType}
+    </select>
+
+    <select id="getMachineWorkTypeByPlatFormIdAndPlatformType" resultMap="machineWorkTypeMap" resultType="com.sailvan.dispatchcenter.common.domain.MachineWorkType">
+        select *  from atc_machine_work_type where platform_type = #{platformType} and platform_id = #{platformId}
+    </select>
+
+    <select id="getMachineWorkTypeByMachineWorkType" resultMap="machineWorkTypeMap" resultType="com.sailvan.dispatchcenter.common.domain.MachineWorkType">
+        select *  from atc_machine_work_type
+        <where>
+            <if test="platform != null and platform != '' ">
+                platform = #{platform}
+            </if>
+            <if test="account != null and account != '' ">
+                and account = #{account}
+            </if>
+            <if test="continents != null and continents != '' ">
+                and continents = #{continents}
+            </if>
+            <if test="platformType != -1 ">
+                and platform_type = #{platformType}
+            </if>
+            <if test="machineId != -1 ">
+                and machine_id = #{machineId}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="getMachineWorkTypeByTaskNameOrAccount" resultMap="machineWorkTypeMap" resultType="com.sailvan.dispatchcenter.common.domain.MachineWorkType">
+        select *  from atc_machine_work_type
+        <where>
+
+            <if test="account != null and account != '' ">
+                and account in ${account}
+            </if>
+            <if test="status == -10 ">
+                <![CDATA[ and status <> #{status}]]>
+            </if>
+        </where>
+    </select>
+
+    <!--    前mysql字段后java-->
+    <update id="updateMachineWorkType">
+        UPDATE atc_machine_work_type
+        <set>
+            <if test="platform != null and platform != '' ">
+                platform = #{platform},
+            </if>
+            <if test="account != null and account != '' ">
+                account = #{account},
+            </if>
+            <if test="continents != null and continents != '' ">
+                continents = #{continents}
+            </if>
+            <if test="platformType != -1 ">
+                platform_type = #{platformType}
+            </if>
+
+        </set>
+        WHERE id = #{id} and machine_id = #{machineId}
+    </update>
+
+    <update id="updatePlatformTypeStatusById">
+        UPDATE atc_machine_work_type
+        <set>
+            status = #{status}
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="updatePlatformTypeIsUpdateStatusById">
+        UPDATE atc_machine_work_type set status = #{status},is_update =#{isUpdate}
+        WHERE id = #{id}
+    </update>
+
+
+    <update id="updatePlatformTypeStatusByIpAccountContinents">
+        UPDATE atc_machine_work_type
+        <set>
+            status = #{status}
+        </set>
+        WHERE id = #{id}
+    </update>
+
+
+    <update id="updateMachineWorkTypeStatus">
+        UPDATE atc_machine_work_type
+        <set>
+            status = #{status},is_update = #{isUpdate}
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateMachineWorkTypeIsBrowser">
+        UPDATE atc_machine_work_type
+        <set>
+            is_browser = #{isBrowser}
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="invalidAccountMachine">
+        UPDATE atc_machine_work_type
+        <set>
+            status = #{status}
+        </set>
+        WHERE machine_id = #{machineId} and platform_type = #{platformType} and is_update = #{isUpdate}
+    </update>
+
+    <update id="updateMachineWorkTypePlatformTypeStatus">
+        UPDATE atc_machine_work_type
+        <set>
+            status = #{status}
+        </set>
+        WHERE machine_id = #{machineId} and platform_type = #{platformType}
+        <if test="platform != null and platform != '' ">
+            and platform = #{platform}
+        </if>
+    </update>
+
+    <update id="updateMachineWorkTypeStatusByIp">
+        UPDATE atc_machine_work_type set status = #{status},is_update =#{isUpdate} WHERE machine_ip = #{machineIp}
+
+    </update>
+
+    <insert id="insertMachineWorkType"  useGeneratedKeys="true" keyProperty="id">
+        insert into atc_machine_work_type(machine_id,machine_ip,platform_id,is_browser, platform,account,continents,platform_type,status,created_time)
+        values(#{machineId,jdbcType=INTEGER},#{machineIp,jdbcType=VARCHAR},#{platformId,jdbcType=INTEGER},#{isBrowser,jdbcType=INTEGER},#{platform,jdbcType=VARCHAR},#{account,jdbcType=VARCHAR}, #{continents,jdbcType=VARCHAR}
+        ,#{platformType,jdbcType=INTEGER},#{status,jdbcType=INTEGER},#{createdTime,jdbcType=VARCHAR})
+    </insert>
+
+
+    <select id="getMachineTypeByAccount" resultType="java.lang.Integer">
+        select distinct machine_id from atc_machine_work_type where account in ${accountList}
+    </select>
+
+    <select id="getContinentsAccountByStatusAndType" resultType="java.lang.String">
+
+        select concat(continents,',',account) from atc_machine_work_type  where status=1 and platform_type=2 and continents is not null and account is not null group by continents, account
+
+    </select>
+
+    <select id="getMachineByAccount" resultMap="machineWorkTypeMap" resultType="com.sailvan.dispatchcenter.common.domain.MachineWorkType">
+
+        select a.*,b.status machine_status from atc_machine_work_type a LEFT JOIN atc_machine b ON a.machine_id = b.id where a.account = #{account} and a.continents = #{continents}
+    </select>
+
+
+
+</mapper>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.mini.PlatformAccountDao">
+
+    <!--    前面java字段 后面mysql-->
+    <resultMap id="PlatformAccountMap" type="com.sailvan.dispatchcenter.common.domain.PlatformAccount">
+        <id property="id" column="id" />
+        <result property="platform" column="platform"/>
+        <result property="ipMac" column="ipmac"/>
+        <result property="shopName" column="shop_name"/>
+        <result property="shopId" column="shop_id"/>
+        <result property="platformAccount" column="platform_account"/>
+        <result property="platformPsWord" column="platform_psword"/>
+        <result property="managerAccount" column="manager_account"/>
+        <result property="isProxy" column="is_proxy"/>
+        <result property="proxyHost" column="proxy_host"/>
+        <result property="proxyPort" column="proxy_port"/>
+        <result property="browserType" column="browser_type"/>
+        <result property="site" column="site"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="getPlatformAccountAll" resultMap="PlatformAccountMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.PlatformAccount">
+        select *  from platform_account
+        <where>
+            platform IN
+            <foreach item="platform" index="index" collection="platformList"
+                     open="(" separator="," close=")"> #{platform}</foreach>
+        </where>
+    </select>
+
+
+
+</mapper>

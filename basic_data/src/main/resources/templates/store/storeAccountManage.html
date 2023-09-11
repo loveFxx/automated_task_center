@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<link rel="stylesheet" type="text/css" href="/css/formSelects-v4.css"/>
+<head th:include="layout :: htmlhead(pageTitle='店铺账号管理')" ></head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!--头-->
+    <div th:replace="fragments/head :: header"></div>
+    <div class="layui-body">
+        <div class="search-pane">
+            <form id="storeAccountSearch" class="layui-form layui-form-pane" method="post">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">店铺代号</label>
+                        <div class="layui-input-inline">
+                            <select name="account" id="accountSearch" xm-select-height="36px" xm-select="accountSearch"
+                                    xm-select-search="" xm-select-search-type="dl">
+                                <option value="">请选择, 可多选</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">代理IP</label>
+                        <div class="layui-input-inline">
+                            <input name="proxyIp" id="proxyIpSearch" autocomplete="off" class="layui-input"
+                                   type="text"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">店铺状态</label>
+                        <div class="layui-input-inline">
+                            <select name="status" id="accountStatusSearch" xm-select="accountStatusSearch"
+                                    xm-select-radio>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="width: 120px">店铺站点状态</label>
+                        <div class="layui-input-inline">
+                            <select name="accountSiteStatus" id="accountSiteStatusSearch"
+                                    xm-select="accountSiteStatusSearch" xm-select-radio>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">关联机器</label>
+                            <div class="layui-input-inline">
+                                <select name="haveMachine" id="haveMachine" class="">
+                                    <option value="-1">请选择</option>
+                                    <option value="0">初始化或账号大洲是空</option>
+                                    <option value="1">有且开启</option>
+                                    <option value="2">有但没有开启</option>
+                                    <option value="3">没有开启且有可用大类型</option>
+                                    <option value="4">没有开启无可用大类型</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="layui-inline" style="display: none;">
+                            <label class="layui-form-label">id</label>
+                            <div class="layui-input-inline">
+                                <input name="id" id="idSearch" autocomplete="off" class="layui-input"
+                                       type="text"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="layui-btn" lay-submit="" lay-filter="searchSubmit">提交</button>
+            </form>
+        </div>
+
+        <div class="table-pane">
+            <div class="layui-btn-container">
+                <button type="button" class="layui-btn" shiro:hasPermission="store:add" id="refreshMiNi">刷新mini</button>
+            </div>
+            <table id="storeAccountList" lay-filter="storeAccountTable"></table>
+            <script type="text/html" id="optBar">
+                <!--            <a class="layui-btn layui-btn-xs" shiro:hasPermission="store:update" lay-event="edit">编辑</a>-->
+                <a class="layui-btn layui-btn-xs" lay-event="detail">查看详情</a>
+                <a class="layui-btn layui-btn-xs" lay-event="taskTypeDetail">执行任务列表</a>
+            </script>
+        </div>
+
+
+    </div>
+
+    <!--添加或编辑店铺帐号-->
+    <div id="setStoreAccount" class="layer_self_wrap" style="width:500px;margin-left:3%;display:none;">
+        <form id="storeAccountForm" class="layui-form layui-form-pane" method="post" action="" style="margin-top: 20px;">
+            <input id="pageNum" type="hidden" name="pageNum"/>
+            <input id="id" type="hidden" name="id"/>
+            <div class="layui-form-item">
+                <label class="layui-form-label">平台</label>
+                <div class="layui-input-inline">
+                    <input id="platform" name="platform" lay-verify="required|stringCheck" autocomplete="off" class="layui-input" type="text"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">店铺名称</label>
+                <div class="layui-input-inline">
+                    <input id="shopName" name="shopName" lay-verify="required|stringCheck" autocomplete="off" class="layui-input" type="text"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">帐号名</label>
+                <div class="layui-input-inline">
+                    <input id="account" name="account" lay-verify="required|stringCheck" autocomplete="off" class="layui-input" type="text"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">用户名</label>
+                <div class="layui-input-inline">
+                    <input id="username" name="username" lay-verify="required|accountCheck" autocomplete="off" class="layui-input" type="text"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">密码</label>
+                <div class="layui-input-inline">
+                    <input id="password" name="password" lay-verify="required|accountCheck" autocomplete="off" class="layui-input" type="text"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">小类型</label>
+                <div class="layui-input-inline">
+                    <select name="smallType"  id="smallType" class="smallTypeClass">
+                        <option value="-1">请选择</option>
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">站点</label>
+                <div class="layui-input-inline">
+                    <input id="continents" name="continents" lay-verify="required|stringCheck" autocomplete="off" class="layui-input" type="text"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">店铺状态</label>
+                <div class="layui-input-inline">
+                    <input id="status" name="status" lay-verify="required|tinyIntCheck" autocomplete="off" class="layui-input" type="text"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">二维码验证状态</label>
+                <div class="layui-input-inline">
+                    <input id="verificationStatus" name="verificationStatus" lay-verify="required|tinyIntCheck" autocomplete="off" class="layui-input" type="text"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">地址</label>
+                <div class="layui-input-inline">
+                    <input id="proxyIP" name="proxyIP" lay-verify="required|stringCheck" autocomplete="off" class="layui-input" type="text"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block" style="margin-left: 10px;">
+                    <button class="layui-btn"  lay-submit="" lay-filter="storeAccountSubmit">提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+    <!--添加或编辑店铺帐号-->
+    <div id="detailStoreAccount" class="layer_self_wrap" style="width:500px;margin-left:3%;display:none;">
+        <form id="storeAccountFormDetail" class="layui-form layui-form-pane" method="post" action="" style="margin-top: 20px;">
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">店铺代号</label>
+                <div class="layui-input-inline">
+                    <input id="accountDetail" name="account"  class="layui-input" type="text" readonly="readonly" style="border-style:none"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">大洲</label>
+                <div class="layui-input-inline">
+                    <input id="continentsDetail" name="continents"  readonly="readonly" class="layui-input" type="text" style="border-style:none"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">店铺账号</label>
+                <div class="layui-input-inline">
+                    <input id="usernameDetail" name="username"  readonly="readonly" class="layui-input" type="text" style="border-style:none"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">代理IP</label>
+                <div class="layui-input-inline">
+                    <input id="proxyIpDetail" name="proxyIp" readonly="readonly" class="layui-input" type="text" style="border-style:none"/>
+                </div>
+            </div>
+            <table id="siteStatus" lay-filter="siteStatus"></table>
+        </form>
+    </div>
+    <div id="allMachineIp" class="layer_self_wrap" style="width:500px;height: 400px; margin-left:3%;display:none;">
+        <form id="userForm" class="layui-form layui-form-pane" method="post" action="" style="width:auto;margin-top: 20px;margin-bottom: 20px;" th:scrolling="yes">
+            <div class="table-overlay">
+                <table id="showAllMachineIp" lay-filter="showAllMachineIp"></table>
+            </div>
+        </form>
+    </div>
+    <div id="allTaskType" class="layer_self_wrap" style="width:1000px;height: 450px; margin-left:3%;display:none; ">
+        <form id="userForm1" class="layui-form layui-form-pane" method="post" action="" style="width:auto;margin-top: 20px;margin-bottom: 20px;" th:scrolling="yes">
+            <div class="table-overlay">
+                <table id="showTaskType" lay-filter="showTaskType"></table>
+            </div>
+        </form>
+    </div>
+    <script type="text/html" id="taskTypeStatusTemp">
+        {{#  if(d.status==STATUS_VALID){ }}
+        <input type="checkbox" name="status" lay-skin="switch" checked   lay-text="开启|关闭"  value= {{d.id}}  lay-filter="taskTypeStatus" >
+        {{#  } else { }}
+        <input type="checkbox" name="status" lay-skin="switch"  lay-text="开启|关闭"  value= {{d.id}} lay-filter="taskTypeStatus" >
+        {{#  } }}
+    </script>
+
+
+
+
+    <!--验证码窗口-->
+    <div id="qrContentWindow" class="layer_self_wrap" style="width:500px;margin-left:3%;display:none;">
+        <form  class="layui-form layui-form-pane" method="post" action="" style="margin-top: 20px;">
+
+
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none;">店铺账号</label>
+                <div class="layui-input-inline">
+                    <input id="usernameInQrWindow"   class="layui-input" type="text" readonly="readonly" style="border-style:none;width:300px;"/>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">qrContent</label>
+                <div class="layui-input-inline">
+                    <input id="mailFromQrContent"   class="layui-input" type="text" readonly="readonly" style="border-style:none;width:300px;"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none;">code</label>
+                <div class="layui-input-inline">
+                    <input id="code"   class="layui-input" type="text" readonly="readonly" style="border-style:none;width:300px;"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none;">time</label>
+                <div class="layui-input-inline">
+                    <input id="time"   class="layui-input" type="text" readonly="readonly" style="border-style:none;width:300px;"/>
+                </div>
+            </div>
+        </form>
+    </div>
+<!--    <script type="text/html" id="machineTaskType">-->
+<!--        <a class="layui-btn layui-btn-danger layui-btn-xs"  lay-event="rePush">查看全部</a>-->
+<!--    </script>-->
+    <style type="text/css">
+        .layui-table-cell {
+            height: auto;
+            /*overflow: visible;*/
+        }
+        label.required:after {   /* 给红色的必填项打红色星号（文字后）如果打前面用before*/
+            content: ' *';
+            color: red;
+        }
+        .layui-table-view .layui-table-body{min-height: 300px;}
+        .table-overlay .layui-table-cell {
+            overflow: visible;
+        }
+    </style>
+
+
+
+    <!--底部-->
+    <div th:replace="fragments/footer :: footer"></div>
+    <!--    <script src="/js/dateUtils.js"></script>-->
+    <script src="/js/storeAccount/storeAccountList.js"></script>
+
+
+    <script type="text/javascript">
+        function get(){
+            if ( typeof idList !=="undefined") {
+                //console.log(299,idList);
+                //$("#idSearch").val(idList)
+                $("#idSearch").val(idList)
+            }else{
+                //console.log("undefined")
+            }
+        }
+        window.addEventListener('load', get);
+    </script>
+    <!--    <script src="/js/nav_href.js"></script>-->
+</div>
+</body>
+</html>

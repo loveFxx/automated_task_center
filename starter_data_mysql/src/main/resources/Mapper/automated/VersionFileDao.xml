@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.VersionFileDao">
+
+    <!--    前面java字段 后面mysql-->
+    <resultMap id="versionFileMap" type="com.sailvan.dispatchcenter.common.domain.VersionFile">
+        <id property="id" column="id" />
+        <result property="versionId" column="version_id"/>
+        <result property="fileName" column="file_name"/>
+        <result property="clientFilePath" column="client_file_path"/>
+    </resultMap>
+
+    <select id="getVersionFileVersion" resultMap="versionFileMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.VersionFile">
+        select *  from atc_version_file_map where version_id=#{versionId}
+    </select>
+
+
+</mapper>

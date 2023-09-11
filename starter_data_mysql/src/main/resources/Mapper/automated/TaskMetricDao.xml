@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.TaskMetricDao">
+
+    <resultMap id="taskMetricMap" type="com.sailvan.dispatchcenter.common.domain.TaskMetric">
+        <id property="id" column="id"/>
+        <result property="taskType" column="task_type"/>
+        <result property="generatedNum" column="generated_num"/>
+        <result property="unExecutedNum" column="unexecuted_num"/>
+        <result property="totalSucceedNum" column="total_succeed_num"/>
+        <result property="succeedNum" column="succeed_num"/>
+        <result property="fileNum" column="file_num"/>
+        <result property="failedNum" column="failed_num"/>
+        <result property="date" column="date"/>
+        <result property="hour" column="hour"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+
+    <insert id="insertTaskMetric"  useGeneratedKeys="true" keyProperty="id" >
+        insert into atc_task_metric(task_type,generated_num,unexecuted_num,total_succeed_num,succeed_num,file_num,failed_num,`hour`,`date`,`created_at`)
+        values(#{taskType,jdbcType=VARCHAR},#{generatedNum,jdbcType=INTEGER},#{unExecutedNum,jdbcType=INTEGER},
+               #{totalSucceedNum,jdbcType=INTEGER},#{succeedNum,jdbcType=INTEGER},
+               #{fileNum,jdbcType=INTEGER},#{failedNum,jdbcType=INTEGER},
+               #{hour,jdbcType=INTEGER},#{date,jdbcType=VARCHAR},now())
+    </insert>
+
+    <select id="findTaskMetric" resultMap="taskMetricMap">
+        select * from atc_task_metric where task_type=#{taskType} and `date`=#{date} and `hour`=#{hour} limit 1;
+    </select>
+
+    <update id="updateTaskMetric">
+        UPDATE atc_task_metric
+        <set>
+            <if test="taskType != null and taskType != '' ">
+                task_type = #{taskType},
+            </if>
+            <if test="generatedNum != null and generatedNum != '' ">
+                generated_num = #{generatedNum},
+            </if>
+            <if test="unExecutedNum != null and unExecutedNum != '' ">
+                unexecuted_num = #{unExecutedNum},
+            </if>
+            <if test="totalSucceedNum != null and totalSucceedNum != '' ">
+                total_succeed_num = #{totalSucceedNum},
+            </if>
+            <if test="succeedNum != null and succeedNum != '' ">
+                succeed_num = #{succeedNum},
+            </if>
+            <if test="fileNum != null and fileNum != '' ">
+                file_num = #{fileNum},
+            </if>
+            <if test="failedNum != null and failedNum != '' ">
+                failed_num = #{failedNum},
+            </if>
+            <if test="hour != null and hour != '' ">
+                `hour` = #{hour},
+            </if>
+            <if test="date != null and date != '' ">
+                `date` = #{date},
+            </if>
+
+        </set>
+        WHERE id = #{id}
+    </update>
+
+
+    <select id="getTaskMetric" resultMap="taskMetricMap">
+        SELECT * FROM atc_task_metric
+        where id in
+        (select Max(id) from atc_task_metric where date=#{date} group by task_type)
+        order by task_type
+    </select>
+</mapper>

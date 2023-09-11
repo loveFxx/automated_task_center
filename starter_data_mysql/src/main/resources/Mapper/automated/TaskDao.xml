@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.TaskDao">
+
+    <resultMap id="taskMap" type="com.sailvan.dispatchcenter.common.domain.Task">
+        <id property="id" column="id" />
+        <result property="taskName" column="task_name"/>
+        <result property="type" column="type"/>
+        <result property="priority" column="priority"/>
+        <result property="cronExpression" column="cron_expression"/>
+        <result property="taskExplain" column="task_explain" />
+        <result property="status" column="status"/>
+        <result property="runMode" column="run_mode"/>
+        <result property="produceInterval" column="produce_interval"/>
+        <result property="produceCapacity" column="produce_capacity"/>
+        <result property="produceConcurrency" column="produce_concurrency"/>
+        <result property="apiTimeLimit" column="api_time_limit"/>
+        <result property="apiMaxTimes" column="api_max_times"/>
+        <result property="intervalTimes" column="interval_times"/>
+        <result property="intervalType" column="interval_type"/>
+        <result property="largeTaskType" column="large_task_type"/>
+        <result property="executePlatforms" column="execute_platforms"/>
+        <result property="systems" column="systems"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="updatedUser" column="updated_user"/>
+        <result property="isTimely" column="is_timely"/>
+        <result property="taskAbbreviation" column="task_abbreviation"/>
+        <result property="isCombo" column="is_combo"/>
+        <result property="comboColumns" column="combo_columns"/>
+        <result property="exMaxTimes" column="ex_max_times"/>
+        <result property="errorMaxTimes" column="error_max_times"/>
+        <result property="limitRetryTimes" column="limit_retry_times"/>
+    </resultMap>
+
+    <select id="listTask" resultMap="taskMap" resultType="com.sailvan.dispatchcenter.common.domain.Task">
+        select *  from atc_task
+    </select>
+
+    <select id="getTaskByTask" resultMap="taskMap" resultType="com.sailvan.dispatchcenter.common.domain.Task">
+        select *  from atc_task
+        <where>1=1
+            <if test="taskName != null and taskName != '' ">
+                and task_name like ${taskName}
+            </if>
+            <if test="systems != null and systems != '' ">
+                and FIND_IN_SET(#{systems},systems)
+            </if>
+        </where>
+    </select>
+
+    <update id="updateTask">
+        UPDATE atc_task
+        <set>
+
+            <if test="taskName != null and taskName != '' ">
+                task_name = #{taskName},
+            </if>
+            <if test="type != null and type != '' ">
+                type = #{type},
+            </if>
+            <if test="priority != null and priority != '' ">
+                priority = #{priority},
+            </if>
+            <if test="cronExpression != null and cronExpression != '' ">
+                cron_expression = #{cronExpression},
+            </if>
+            <if test="taskExplain != null and taskExplain != '' ">
+                task_explain = #{taskExplain},
+            </if>
+            <if test="status != null ">
+                status = #{status},
+            </if>
+            <if test="apiTimeLimit != null and apiTimeLimit != '' ">
+                api_time_limit = #{apiTimeLimit},
+            </if>
+            <if test="apiMaxTimes != null and apiMaxTimes != '' ">
+                api_max_times = #{apiMaxTimes},
+            </if>
+            interval_times = #{intervalTimes},
+            <if test="intervalType != null and intervalType != '' ">
+                interval_type = #{intervalType},
+            </if>
+            <if test="largeTaskType != null and largeTaskType != '' ">
+                large_task_type = #{largeTaskType},
+            </if>
+            <if test="executePlatforms != null and executePlatforms != '' ">
+                execute_platforms = #{executePlatforms},
+            </if>
+            <if test="systems != null ">
+                systems = #{systems},
+            </if>
+            is_timely = #{isTimely},
+            <if test="taskAbbreviation != null ">
+                task_abbreviation = #{taskAbbreviation},
+            </if>
+            run_mode = #{runMode},
+            produce_interval = #{produceInterval},
+            produce_capacity = #{produceCapacity},
+            produce_concurrency = #{produceConcurrency},
+            is_combo = #{isCombo},
+            combo_columns = #{comboColumns},
+            ex_max_times = #{exMaxTimes},
+            error_max_times = #{errorMaxTimes},
+            limit_retry_times = #{limitRetryTimes},
+            updated_user = #{updatedUser},
+            updated_at=now()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <insert id="insertTask"  useGeneratedKeys="true" keyProperty="id" >
+        insert into atc_task(task_name,`type`,priority,cron_expression,task_explain,status,api_max_times,api_time_limit,large_task_type
+        ,execute_platforms ,interval_times,systems,task_abbreviation,is_timely,is_combo,combo_columns,ex_max_times,error_max_times,limit_retry_times,updated_user,created_at,updated_at)
+            values(#{taskName,jdbcType=VARCHAR},#{type,jdbcType=INTEGER},#{priority,jdbcType=INTEGER}
+            ,#{cronExpression,jdbcType=VARCHAR},#{taskExplain,jdbcType=VARCHAR},1,#{apiMaxTimes,jdbcType=INTEGER}
+                  ,#{apiTimeLimit,jdbcType=INTEGER},#{largeTaskType,jdbcType=INTEGER},#{executePlatforms,jdbcType=VARCHAR}
+                  ,#{intervalTimes,jdbcType=INTEGER} ,#{systems,jdbcType=VARCHAR},#{taskAbbreviation,jdbcType=VARCHAR},
+        #{isTimely,jdbcType=INTEGER},#{isCombo,jdbcType=INTEGER},#{comboColumns,jdbcType=VARCHAR},#{exMaxTimes,jdbcType=INTEGER},#{errorMaxTimes,jdbcType=INTEGER},#{limitRetryTimes,jdbcType=INTEGER},#{updatedUser,jdbcType=VARCHAR},now(),now())
+    </insert>
+
+    <delete id="deleteTaskById">
+        delete from atc_task where id = #{id}
+    </delete>
+
+    <select id="getTaskByTaskName" resultMap="taskMap" resultType="com.sailvan.dispatchcenter.common.domain.Task">
+        select *  from atc_task where task_name = #{taskName}
+    </select>
+
+
+    <select id="getTaskByUniqueId" resultMap="taskMap" resultType="com.sailvan.dispatchcenter.common.domain.Task">
+        select *  from atc_task where id =  #{id}
+    </select>
+
+
+    <select id="getColumnList" resultType="java.lang.String">
+        select columns_name  from atc_columns
+    </select>
+
+    <select id="findTaskById" resultMap="taskMap" resultType="com.sailvan.dispatchcenter.common.domain.Task">
+        select *  from atc_task where id = #{id}
+    </select>
+    <select id="listTasksByTypeAndStatus" resultMap="taskMap" resultType="com.sailvan.dispatchcenter.common.domain.Task">
+        select *  from atc_task where type = #{type} and status = #{status}
+    </select>
+    <update id="updateTaskStatusById">
+    UPDATE atc_task
+        <set>
+            status = #{status},
+            updated_at=now()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+
+    <select id="getAllTaskName"  resultType="java.lang.String">
+        select task_name  from atc_task
+    </select>
+
+    <select id="findTaskByName" resultMap="taskMap" resultType="com.sailvan.dispatchcenter.common.domain.Task">
+        select *  from atc_task where task_name =  #{taskName} limit 1;
+    </select>
+
+    <select id="listTasksByRunMode" resultMap="taskMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.Task">
+
+        select * from atc_task
+        <where>
+                run_mode IN
+                <foreach item="runMode" index="index" collection="runModeList"
+                         open="(" separator="," close=")"> #{runMode}</foreach>
+        </where>
+    </select>
+
+    <select id="getTasksByRunMode" resultMap="taskMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.Task">
+        select * from atc_task where run_mode=#{runMode};
+    </select>
+
+    <select id="getTasksByExecutePlatform"  resultType="java.lang.String">
+        select task_name  from atc_task where execute_platforms=#{platform} and status=1;
+    </select>
+    <select id="getTasksExcludeExecutePlatform"  resultType="java.lang.String">
+        select task_name  from atc_task where execute_platforms!=#{platform} and status=1;
+    </select>
+</mapper>

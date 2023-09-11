@@ -1,0 +1,57 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.sailvan.dispatchcenter.db.service.TaskFunnelService,\
+  com.sailvan.dispatchcenter.db.service.TaskResultIndexRangeService,\
+  com.sailvan.dispatchcenter.db.service.BusinessService,\
+  com.sailvan.dispatchcenter.db.service.BusinessSystemService,\
+  com.sailvan.dispatchcenter.db.service.BusinessSystemTaskService,\
+  com.sailvan.dispatchcenter.db.service.CaptchaCodeApiKeyService,\
+  com.sailvan.dispatchcenter.db.service.ColumnService,\
+  com.sailvan.dispatchcenter.db.service.EveryDayMaxSingleIdService,\
+  com.sailvan.dispatchcenter.db.service.ImportService,\
+  com.sailvan.dispatchcenter.db.service.MachineService,\
+  com.sailvan.dispatchcenter.db.service.LambdaUserService,\
+  com.sailvan.dispatchcenter.db.service.MachineWorkTypeService,\
+  com.sailvan.dispatchcenter.db.service.MachineWorkTypeTaskService,\
+  com.sailvan.dispatchcenter.db.service.MachineCrawlPlatformService,\
+  com.sailvan.dispatchcenter.db.service.MachineExeTaskService,\
+  com.sailvan.dispatchcenter.db.service.AccountExeTaskService,\
+  com.sailvan.dispatchcenter.db.service.PlatformService,\
+  com.sailvan.dispatchcenter.db.service.ProxyIpPlatformService,\
+  com.sailvan.dispatchcenter.db.service.ProxyIpService,\
+  com.sailvan.dispatchcenter.db.service.ProxyIpShopService,\
+  com.sailvan.dispatchcenter.db.service.RequestCountService,\
+  com.sailvan.dispatchcenter.db.service.StoreAccountService,\
+  com.sailvan.dispatchcenter.db.service.StoreAccountSitesService,\
+  com.sailvan.dispatchcenter.db.service.TaskLogsService,\
+  com.sailvan.dispatchcenter.db.service.TaskResultService,\
+  com.sailvan.dispatchcenter.db.service.TaskService,\
+  com.sailvan.dispatchcenter.db.service.TaskSourceListBaseService,\
+  com.sailvan.dispatchcenter.db.service.TokenService,\
+  com.sailvan.dispatchcenter.db.service.UserTokenService,\
+  com.sailvan.dispatchcenter.db.service.VersionService,\
+  com.sailvan.dispatchcenter.db.service.VersionFileService,\
+  com.sailvan.dispatchcenter.db.service.system.PermissionService,\
+  com.sailvan.dispatchcenter.db.service.system.RoleService,\
+  com.sailvan.dispatchcenter.db.service.system.UserService,\
+  com.sailvan.dispatchcenter.db.config.AutomatedDataSourceConfig,\
+  com.sailvan.dispatchcenter.db.config.MiniDataSourceConfig,\
+  com.sailvan.dispatchcenter.db.config.TokenConfig,\
+  com.sailvan.dispatchcenter.db.util.UserSecurityUtil,\
+  com.sailvan.dispatchcenter.db.service.TaskFunnelService,\
+  com.sailvan.dispatchcenter.db.service.TaskResultIndexRangeService,\
+  com.sailvan.dispatchcenter.db.service.AccountProxyService,\
+  com.sailvan.dispatchcenter.db.service.TaskInPoolMetricService,\
+  com.sailvan.dispatchcenter.db.service.TaskExecutedExceptionService,\
+  com.sailvan.dispatchcenter.db.service.TaskIOMetricService,\
+  com.sailvan.dispatchcenter.db.service.TaskMetricService,\
+  com.sailvan.dispatchcenter.db.service.RegionService,\
+  com.sailvan.dispatchcenter.db.service.LambdaUserMapService,\
+  com.sailvan.dispatchcenter.db.service.AwsLambdaFunctionService,\
+  com.sailvan.dispatchcenter.db.service.AwsTaskMapService,\
+  com.sailvan.dispatchcenter.db.service.ProxyRequestLogsService,\
+  com.sailvan.dispatchcenter.db.service.ProxyTrendService,\
+  org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+
+  
+
+

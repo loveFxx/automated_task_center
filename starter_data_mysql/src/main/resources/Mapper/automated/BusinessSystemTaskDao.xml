@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.BusinessSystemTaskDao">
+
+    <!--    前面java字段 后面mysql-->
+    <resultMap id="businessSystemTaskMap" type="com.sailvan.dispatchcenter.common.domain.BusinessSystemTask">
+        <id property="id" column="id" />
+        <result property="systemId" column="system_id"/>
+        <result property="systemName" column="system_name"/>
+        <result property="taskId" column="task_id"/>
+        <result property="taskName" column="task_name"/>
+        <result property="taskCallbackAddress" column="task_callback_address"/>
+        <result property="networkType" column="network_type"/>
+        <result property="apiVersion" column="api_version"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="deleteTime" column="delete_time"/>
+    </resultMap>
+    <select id="getBusinessSystemTaskAll" resultMap="businessSystemTaskMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.BusinessSystemTask">
+        select *  from atc_business_system_task
+    </select>
+
+    <select id="getBusinessSystemTaskBySystemId" resultMap="businessSystemTaskMap" resultType="com.sailvan.dispatchcenter.common.domain.BusinessSystemTask">
+        select *  from atc_business_system_task where system_id = #{systemId}
+    </select>
+
+    <select id="getBusinessSystemTaskBySystemIdAndStatus" resultMap="businessSystemTaskMap" resultType="com.sailvan.dispatchcenter.common.domain.BusinessSystemTask">
+        select *  from atc_business_system_task where system_id = #{systemId} and status = #{status}
+    </select>
+
+    <select id="getBusinessSystemTaskBySystemIdAndTaskName" resultMap="businessSystemTaskMap" resultType="com.sailvan.dispatchcenter.common.domain.BusinessSystemTask">
+        select *  from atc_business_system_task where system_id = #{systemId} and task_name = #{taskName} and status = #{status}
+    </select>
+
+    <select id="getBusinessSystemTaskBySystemIdAndTaskIdAndStatus" resultMap="businessSystemTaskMap" resultType="com.sailvan.dispatchcenter.common.domain.BusinessSystemTask">
+        select *  from atc_business_system_task where system_id = #{systemId} and task_id = #{taskId} and status = #{status}
+    </select>
+
+
+
+    <!--    前mysql字段后java-->
+    <update id="updateBusinessSystemTask">
+        UPDATE atc_business_system_task
+        <set>
+            <if test="taskCallbackAddress != null and taskCallbackAddress != '' ">
+                task_callback_address = #{taskCallbackAddress},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateBusinessSystemTaskStatus">
+        UPDATE atc_business_system_task set status = #{status} WHERE task_id = #{taskId} and system_id = #{systemId}
+    </update>
+
+
+    <insert id="insertBusinessSystemTask" useGeneratedKeys="true" keyProperty="id" parameterType="com.sailvan.dispatchcenter.common.domain.BusinessSystemTask">
+        insert into atc_business_system_task(system_id, system_name,task_id,task_name,task_callback_address,status,create_time,network_type,api_version)
+        values(#{systemId,jdbcType=INTEGER},#{systemName,jdbcType=VARCHAR},#{taskId,jdbcType=INTEGER}, #{taskName,jdbcType=VARCHAR},
+        #{taskCallbackAddress,jdbcType=VARCHAR},#{status,jdbcType=INTEGER},#{createTime,jdbcType=VARCHAR}
+        ,#{networkType,jdbcType=INTEGER},#{apiVersion,jdbcType=VARCHAR})
+    </insert>
+
+
+</mapper>

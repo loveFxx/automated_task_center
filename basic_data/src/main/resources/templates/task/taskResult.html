@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head th:include="layout :: htmlhead(pageTitle='任务流水')" ></head>
+<link rel="stylesheet" type="text/css" href="/css/formSelects-v4.css"/>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!--头-->
+    <div th:replace="fragments/head :: header"></div>
+    <div class="layui-body" style="margin: 1%">
+        <form id="userSearch" class="layui-form layui-form-pane" method="post" action="" style="margin-top: 20px;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">任务库ID</label>
+                <div class="layui-input-inline">
+                    <input id="taskSourceId" name="taskSourceId" autocomplete="off" class="layui-input" type="text"/>
+                </div>
+                <label class="layui-form-label">任务类型</label>
+                <div class="layui-input-inline" >
+                    <select name="taskType" id="taskTypeSearch"  xm-select="taskTypeSearch" xm-select-search=""  xm-select-search-type="dl" xm-select-height="36px">
+                        <option value="">请选择, 可多选</option>
+                    </select>
+                </div>
+                <label class="layui-form-label">缓冲区ID</label>
+                <div class="layui-input-inline">
+                    <input id="taskBufferId" name="taskBufferId" autocomplete="off" class="layui-input" type="text"/>
+                </div>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                <button class="layui-btn"  lay-submit="" lay-filter="searchSubmit">提交</button>
+            </div>
+        </form>
+        <table id="taskResultTable" lay-filter="taskResultTable"></table>
+        <div id="page"></div>
+    </div>
+    <!--底部-->
+    <div th:replace="fragments/footer :: footer"></div>
+    <script src="/js/task/taskResult.js"></script>
+    <script src="/js/nav_href.js"></script>
+
+    <style type="text/css">
+        /*为了多行显示*/
+        .layui-table-cell {
+            height: auto;
+        }
+    </style>
+
+</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

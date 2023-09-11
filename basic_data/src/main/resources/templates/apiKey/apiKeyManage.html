@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head th:include="layout :: htmlhead (pageTitle='客户端版本管理')" >
+    <link rel="stylesheet" href="/layui/css/layui.css"  media="all">
+</head>
+<link rel="stylesheet" type="text/css" href="/css/formSelects-v4.css"/>
+<!--<script type="text/javascript" src="/js/select/formSelects-v4.js"></script>-->
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!--头-->
+    <div th:replace="fragments/head :: header"></div>
+    <div class="layui-body" style="margin: 1%">
+        <table id="apiKeyList" lay-filter="apiKeyListTable"></table>
+        <script type="text/html" id="optBar">
+            <a class="layui-btn layui-btn-xs" lay-event="update" shiro:hasPermission="apiKey:update">修改</a>
+        </script>
+    </div>
+
+    <div id="updateApiKey" class="layer_self_wrap" style="width:auto; margin-left:3%;display:none;">
+        <form id="userFormUpdate" class="layui-form layui-form-pane" method="post" action="" style="width:auto;margin-top: 20px;margin-bottom: 20px;margin-left: 20px" th:scrolling="yes">
+<!--            <input id="pageNum" type="hidden" name="pageNum"/>-->
+            <input id="idUpdate" name="id"  class="layui-input" type="hidden"/>
+
+            <div class="layui-form-item" >
+                <label class="layui-form-label" style="width:150px;border-style:none">编码</label>
+                <div class="layui-input-inline">
+                    <input id="apiKeyUpdate" name="apiKey"  class="layui-input" type="text" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block" style="margin-left: 20%;">
+                    <button class="layui-btn"  lay-submit="" lay-filter="userSubmit">提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!--底部-->
+    <div th:replace="fragments/footer :: footer"></div>
+    <script src="/js/apiKey/apiKey.js"></script>
+    <script src="/js/constant.js"></script>
+
+    <style type="text/css">
+        .layui-table-cell {
+            height: auto;
+            overflow: visible;
+            text-overflow: inherit;
+            white-space: normal;
+            word-break: break-all;
+        }
+
+        label.required:before {   /* 给红色的必填项打红色星号（文字后）如果打前面用before*/
+            content: ' *';
+            color: red;
+        }
+    </style>
+
+</div>
+</body>
+</html>

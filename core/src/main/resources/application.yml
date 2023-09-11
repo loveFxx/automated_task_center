@@ -1,0 +1,189 @@
+spring:
+  profiles:
+    active: core
+
+---
+server:
+  tomcat:
+    max-connections: 10000 #最大可被连接数，默认10000
+    accept-count: 3000  #等待队列长度，默认100。
+    max-threads: 1000  #最大工作线程数，默认200
+    min-spare-threads: 100 #最小工作空闲线程数，默认10
+    accesslog:
+      buffered: true
+      enabled: true
+      file-date-format: .yyyy-MM-dd
+      pattern: '%h %l %u %t "%r" %s %b %D'
+      suffix: .log
+      prefix: tomcat
+      rename-on-rotate: false
+      request-attributes-enabled: false
+      rotate: true
+      directory: tomcat
+    basedir: D:\IDEA_workspace\automated_task_center\core\
+  port: 8995
+  application:
+    name: core
+
+hystrix:
+  threadpool:
+    default:
+      maximumSize: 100 #最多工作线程数
+      allowMaximumSizeToDivergeFromCoreSize: true
+      maxQueueSize: 500
+      queueSizeRejectionThreshold: 500
+  command:
+    default: #这里，填写服务名称/方法
+      circuitBreaker:
+        requestVolumeThreshold: 3000
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 30000
+spring:
+  profiles: core
+  mvc:
+    async:
+      request-timeout: 1000 # 1s
+  rabbitmq:
+    host: 192.168.200.231
+    port: 5672
+    username: admin #workbench #admin
+    password: 123456 #workbench #123456
+    connection-timeout: 50000
+    virtual-host: /
+  datasource:
+    automated:
+      url: jdbc:mysql://192.168.200.9:3306/automated_task_center_my?characterEncoding=utf-8&characterSetResults=utf-8&useSSL=false&serverTimezone=GMT%2B8&autoReconnect=true
+      username: root
+      password: 123123
+      driverClassName: com.mysql.cj.jdbc.Driver
+    mini:
+      url: jdbc:mysql://192.168.201.234:3306/browserAdmin?characterEncoding=utf-8&characterSetResults=utf-8&useSSL=false&serverTimezone=GMT%2B8
+      username: browser
+      password: ODhABmmz9U8tqccBeRZd
+      driverClassName: com.mysql.cj.jdbc.Driver
+  redis:
+    host: 10.201.0.20
+    port: 6379
+    password: uNn~HqBo&T[qT3F9s2
+    database: 11
+    jedis:
+      pool:
+        maxWait: -1
+        maxActive: 8
+        maxIdle: 8
+        minIdle: 0
+        testOnBorrow: true
+        testOnReturn: true
+        testWhileIdle: true
+        timeBetweenEvictionRunsMillis: 300000000
+    timeout: 3000000000
+  quartz:
+    #持久化到数据库方式
+    job-store-type: jdbc
+    initialize-schema: embedded
+    #相关属性配置
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceName: MyScheduler
+            instanceId: AUTO
+          jobStore:
+            class: org.quartz.impl.jdbcjobstore.JobStoreTX
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            tablePrefix: QRTZ_
+            isClustered: true
+            clusterCheckinInterval: 10000
+            useProperties: false
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 20
+            threadPriority: 5
+            threadsInheritContextClassLoaderOfInitializingThread: true
+#shardingsphere
+#
+  shardingsphere:
+#    props:
+#      sql:
+#        show=true:
+    datasource:
+      names: automated
+      automated:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://192.168.200.9:3306/automated_task_center_my?characterEncoding=utf-8&characterSetResults=utf-8&useSSL=false&serverTimezone=GMT%2B8&autoReconnect=true
+        username: root
+        password: 123123
+  autoconfigure:
+    exclude:
+      - org.springframework.cloud.aws.autoconfigure.context.ContextInstanceDataAutoConfiguration
+      - org.springframework.cloud.aws.autoconfigure.context.ContextStackAutoConfiguration
+      - org.springframework.cloud.aws.autoconfigure.context.ContextRegionProviderAutoConfiguration
+
+  # mongodb
+  data:
+    mongodb:
+      uri: mongodb://192.168.200.229:27017
+      database: dispatchcenter_local_1
+    elasticsearch:
+      cluster-hosts: 10.201.0.13:9200,10.201.0.14:9200
+      cluster-security: admin:RaOF8MIRDtvJlb4LODB6
+token:
+  callbackUrl: http://local.cn:8990/token/callback
+  tokenUrl: https://newtoken.valsun.cn
+  clientId: 40
+  clientSecret: pz30wEUSEHN7Oq7uXdonlsae6NzTwsuIMMfERcQH
+
+taskpool:
+  maxNum: 7000  #任务池限制上限
+  maxInPoolTimes: 45  #最大入池数
+  batchLimitNum: 500  #批量任务上限
+
+ftp:
+  overseas:
+    domainName: node_amazon.valsun.cn
+    host: 104.217.197.174
+    username: centralsite_ljh
+    password: xTQB[b6FGsMzHXyS
+    port: 21
+    path: /file
+    CHARSET: UTF-8
+  inner:
+    host: 10.201.0.38
+    username: ftp_lijianhui
+    password: JKafnyXDvSVn
+    port: 21
+    path: /web
+    CHARSET: UTF-8
+
+busSystem:
+  idc:
+    appKey: 5CK8Q_BGZN1_B3KXM_HWO06_39H93
+    appSecret: 7dee8b0e96613629064a8bde1127604b
+    router: http://idc.gw.open.valsun.cn/router/rest?
+  hk:
+    appKey: I8SVR_ECOWI_55UWO_RL5ZN_307J7
+    appSecret: a9ff1b3bc436dbf9427580d459abdabc
+    router: http://gw-hk.valsun.cn:88/router/rest?
+  sz:
+    appKey: I8SVR_ECOWI_55UWO_RL5ZN_307J7
+    appSecret: a9ff1b3bc436dbf9427580d459abdabc
+    router: http://gw-sz.valsun.cn:88/router/rest?
+#mybatis.configuration:
+#  log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+#logging:
+#  level:
+#    com.common.dao: debug
+cloud:
+  aws:
+    region:
+      static: us-east-2
+      auto: false
+    credentials:
+      access-key: AKIAXUDALMYBBAIHPO53
+      secret-key: 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
+    queue-name: dispatchcenter-result-callback
+

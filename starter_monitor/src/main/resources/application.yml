@@ -1,0 +1,68 @@
+spring:
+  profiles:
+    active: mointor
+
+---
+server:
+  port: 8999
+  application:
+    name: mointor
+spring:
+  profiles: mointor
+  datasource:
+    automated:
+      url: jdbc:mysql://192.168.200.9:3306/automated_task_center_my?characterEncoding=utf-8&characterSetResults=utf-8&useSSL=false&serverTimezone=GMT%2B8&autoReconnect=true
+      username: root
+      password: 123123
+      driverClassName: com.mysql.cj.jdbc.Driver
+    mini:
+      url: jdbc:mysql://192.168.201.234:3306/browserAdmin?characterEncoding=utf-8&characterSetResults=utf-8&useSSL=false&serverTimezone=GMT%2B8
+      username: browser
+      password: ODhABmmz9U8tqccBeRZd
+      driverClassName: com.mysql.cj.jdbc.Driver
+  data:
+    elasticsearch:
+      cluster-hosts: 10.199.1.4:9200
+      cluster-security: admin:RaOF8MIRDtvJlb4LODB6
+  shardingsphere:
+    props:
+      sql:
+        show=true:
+    datasource:
+      names: automated
+      automated:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://192.168.200.9:3306/automated_task_center_my?characterEncoding=utf-8&characterSetResults=utf-8&useSSL=false&serverTimezone=GMT%2B8&autoReconnect=true
+        username: root
+        password: 123123
+  redis:
+    host: 10.201.0.20
+    port: 6379
+    password: uNn~HqBo&T[qT3F9s2
+    database: 11
+mybatis:
+  mapper-locations: classpath:Mapper/*.xml, classpath:Mapper/shard/*.xml
+busSystem:
+  idc:
+    appKey: 5CK8Q_BGZN1_B3KXM_HWO06_39H93
+    appSecret: 7dee8b0e96613629064a8bde1127604b
+    router: http://idc.gw.open.valsun.cn/router/rest?
+  hk:
+    appKey: I8SVR_ECOWI_55UWO_RL5ZN_307J7
+    appSecret: a9ff1b3bc436dbf9427580d459abdabc
+    router: http://gw-hk.valsun.cn:88/router/rest?
+  sz:
+    appKey: I8SVR_ECOWI_55UWO_RL5ZN_307J7
+    appSecret: a9ff1b3bc436dbf9427580d459abdabc
+    router: http://gw-sz.valsun.cn:88/router/rest?
+monitor:
+  wechat-robot:
+    WechatRobotToken: https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=6fb1462b-d837-4e2a-ad60-8948de1adaef
+    TestProxyIpUrl: https://www.baidu.com/
+
+#  frontend-host:
+#    host: http://192.168.201.29:8991
+
+
+

@@ -1,0 +1,10 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.sailvan.dispatchcenter.shard.algorithm.TblPreComplexByUuidAlgo,\
+  com.sailvan.dispatchcenter.shard.algorithm.TblPreShardAlgo,\
+  com.sailvan.dispatchcenter.shard.algorithm.TblPreShardByIdAlgo,\
+  com.sailvan.dispatchcenter.shard.algorithm.TblRangeShardAlgo,\
+  com.sailvan.dispatchcenter.shard.algorithm.TblRangeShardByIdAlgo,\
+  com.sailvan.dispatchcenter.shard.config.ShardingDataSourceConfig,\
+  com.sailvan.dispatchcenter.shard.utils.ShardingToolUtils,\
+  com.sailvan.dispatchcenter.shard.schdule.TableCreate,\
+  com.sailvan.dispatchcenter.shard.service.MachineHeartbeatLogsService

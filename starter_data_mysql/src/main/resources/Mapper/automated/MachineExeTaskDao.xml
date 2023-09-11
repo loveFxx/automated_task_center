@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.MachineExeTaskDao">
+
+    <!--    前面java字段 后面mysql-->
+    <resultMap id="machineExeTaskMap" type="com.sailvan.dispatchcenter.common.domain.MachineExeTask">
+        <id property="id" column="id" />
+        <result property="ip" column="ip"/>
+        <result property="taskType" column="task_type"/>
+        <result property="period" column="period"/>
+        <result property="taskTotal" column="task_total"/>
+        <result property="taskSuccess" column="task_success"/>
+        <result property="taskFail" column="task_fail"/>
+        <result property="totalTime" column="total_time"/>
+        <result property="avgTime" column="avg_time"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="updatedTime" column="updated_time"/>
+    </resultMap>
+
+    <select id="getMachineExeTaskByIpTaskNamePeriod" resultMap="machineExeTaskMap" resultType="com.sailvan.dispatchcenter.common.domain.MachineExeTask">
+        select *  from atc_machine_exe_task where ip = #{ip} and task_type = #{taskType} and period = #{period}
+    </select>
+
+    <select id="getMachineExeTaskByMachineExeTask"  resultType="java.util.Map">
+        select task_type
+             ,group_concat(concat(period,':',task_total,'-',task_success,'-',task_fail,'-',avg_time,'-',total_time) separator ',') as stat
+        from atc_machine_exe_task
+        where ip=#{ip} and period >=#{period}
+        group by task_type
+    </select>
+
+    <update id="updateMachineExeTask">
+        UPDATE atc_machine_exe_task
+        <set>
+            task_total = #{taskTotal},
+            task_success = #{taskSuccess},
+            task_fail = #{taskFail},
+            total_time = #{totalTime},
+            avg_time = #{avgTime}
+        </set>
+        WHERE ip = #{ip} and task_type = #{taskType} and period = #{period}
+    </update>
+
+
+    <insert id="insertMachineExeTask"  useGeneratedKeys="true" keyProperty="id">
+        insert into atc_machine_exe_task(ip,task_type,period, task_total,task_success,task_fail,total_time,avg_time,created_time)
+        values(#{ip,jdbcType=VARCHAR},#{taskType,jdbcType=VARCHAR},#{period,jdbcType=VARCHAR},#{taskTotal,jdbcType=INTEGER},#{taskSuccess,jdbcType=INTEGER}
+        ,#{taskFail,jdbcType=INTEGER}, #{totalTime,jdbcType=INTEGER},#{avgTime,jdbcType=INTEGER},#{createdTime,jdbcType=VARCHAR})
+    </insert>
+
+
+
+</mapper>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head th:include="layout :: htmlhead(pageTitle='任务库列表')" ></head>
+<link rel="stylesheet" type="text/css" href="/css/formSelects-v4.css"/>
+
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!--头-->
+    <div th:replace="fragments/head :: header"></div>
+
+    <div class="layui-body">
+
+        <div class="search-pane">
+            <form id="taskSrcListSearch" class="layui-form layui-form-pane" method="post">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">任务库id</label>
+                        <div class="layui-input-inline">
+                            <input id="idSearch" name="idSearch" autocomplete="off" class="layui-input" type="text"/>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">任务类型</label>
+                        <div class="layui-input-inline">
+                            <select name="taskNameSearch" id="taskNameSearch" xm-select="taskNameSearch"
+                                    xm-select-search="" xm-select-search-type="dl" xm-select-height="36px">
+                                <option value="">请选择, 可多选</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">周期</label>
+                        <div class="layui-input-inline">
+                            <select name="typeSearch" id="typeSearch">
+                                <option value="1">周期</option>
+                                <option value="2" selected="selected">单次</option>
+                                <option value="3">周期性单次</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">任务状态</label>
+                        <div class="layui-input-inline">
+                            <select name="stateSearch" id="stateSearch">
+                                <option value="">请选择</option>
+                                <option value="0">未执行</option>
+                                <option value="1">执行中</option>
+                                <option value="2">执行成功</option>
+                                <option value="3">执行失败</option>
+                                <option value="4">未生成任务</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">创建系统</label>
+                        <div class="layui-input-inline">
+                            <select name="systemSearch" id="systemSearch" xm-select="systemSearch" xm-select-search=""
+                                    xm-select-search-type="dl" xm-select-height="36px">
+                                <option value="">请选择, 可多选</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">参数</label>
+                        <div class="layui-input-inline">
+                            <input id="paramSearch" name="paramSearch" autocomplete="off" class="layui-input"
+                                   type="text"/>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="width: 160px">预计执行时间</label>
+                        <div class="layui-input-inline">
+                            <input id="expectedTime1" name="expectedTime1" autocomplete="off" class="layui-input"
+                                   type="text"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="width: 160px">创建日期</label>
+                        <div class="layui-input-inline">
+                            <input id="createdTime" name="createdTime" autocomplete="off" class="layui-input"
+                                   type="text"/>
+                        </div>
+                    </div>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    <button class="layui-btn" lay-submit="" lay-filter="searchSubmit">提交</button>
+                </div>
+
+            </form>
+        </div>
+
+        <div class="table-pane">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-danger layui-btn-normal delAll_btn">
+                    批量删除
+                </button>
+
+                <button class="layui-btn layui-btn-normal" shiro:hasPermission="task:add"
+                        onclick="batchRePushTaskSource()">批量重推任务库
+                </button>
+                <button type="button" class="layui-btn" id="upload" style="width: 152px;"><i
+                        class="layui-icon layui-icon-upload layui-font-12"></i>上传文件
+                </button>
+
+            </div>
+            <table id="taskSrcTable" lay-filter="taskSrcTable"></table>
+            <script type="text/html" id="optBar">
+                <a class="layui-btn layui-btn-xs" shiro:hasPermission="task:update" lay-event="edit">编辑</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" shiro:hasPermission="task:delete"
+                   lay-event="del">删除</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="rePush">强制入池</a>
+            </script>
+        </div>
+    </div>
+
+
+
+
+    <!--详情-->
+    <div id="detailTaskSrc" class="layer_self_wrap" style=";margin-left:3%;display:none;">
+
+        <form class="layui-form " style=" margin:10px;" >
+            <div style=" margin:10px; border: 1px solid #333333;">
+                <div  style="background:#f2f2f2;height: 35px">
+                    <div class="text " style=" position: relative;top: 50%;transform:translateY(-50%);margin-left: 4px;">
+                        <p><span>基本信息</span></p>
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label " >任务类型名称</label>
+                    <div class="layui-input-inline">
+                        <input id="taskName" name="taskName"  readonly="readonly"  class="layui-input " type="text" style="border-style:none" />
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label" style="border-style:none">任务库id</label>
+                    <div class="layui-input-inline">
+                        <input id="id" name="id"  class="layui-input" type="text" readonly="readonly" style="border-style:none"/>
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label" style="border-style:none">生成系统</label>
+                    <div class="layui-input-inline">
+                        <input id="systemId" name="systemId"  class="layui-input" type="text" readonly="readonly" style="border-style:none"/>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label" style="border-style:none">优先级</label>
+                    <div class="layui-input-inline">
+                        <input id="priority" name="priority"  class="layui-input" type="text" readonly="readonly" style="border-style:none"/>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label" style="border-style:none">周期</label>
+                    <div class="layui-input-inline">
+                        <input id="type"  name="type"  class="layui-input" type="text" readonly="readonly" style="border-style:none"/>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label" style="border-style:none">预计执行时间</label>
+                    <div class="layui-input-inline">
+                        <input  id="expectedTime" name="expectedTime"  class="layui-input" type="text" readonly="readonly" style="border-style:none"/>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label" style="border-style:none">是否强制</label>
+                    <div class="layui-input-inline">
+                        <input  id="isEnforced" name="isEnforced"  class="layui-input" type="text" readonly="readonly" style="border-style:none"/>
+                    </div>
+                </div>
+
+
+
+            </div>
+            <div style=" margin:10px; border: 1px solid #333333;">
+                <div  style="background:#f2f2f2;height: 35px">
+                    <div class="text " style=" position: relative;top: 50%;transform:translateY(-50%);margin-left: 4px;">
+                        <p>
+                            <span>任务参数</span>
+                            <span  id="uniqueId"  name="uniqueId" ></span>
+                            <span  id="isSingle"  name="isSingle" ></span>
+                        </p>
+                    </div>
+
+
+
+                </div>
+
+
+
+                <div style="margin-left:40%; margin-right:40%;" class="table-overlay">
+                    <table  id="taskSrcParams"    lay-filter="taskSrcParams" ></table>
+                </div>
+
+            </div>
+            <div style=" margin:10px; border: 1px solid #333333;">
+                <div  style="background:#f2f2f2;height: 35px">
+                    <div class="text " style=" position: relative;top: 50%;transform:translateY(-50%);margin-left: 4px;">
+                        <p><span>任务结果</span></p>
+                    </div>
+                </div>
+                <div style="margin-left:10%; margin-right:10%;" class="table-overlay">
+                    <table  id="taskSrcResults"   lay-filter="taskSrcResults" ></table>
+                </div>
+            </div>
+
+
+        </form>
+    </div>
+
+
+
+
+
+    <div id="batchRePushTaskSource" class="layer_self_wrap" style="width:auto; margin-left:3%;display:none;">
+        <form id="addUserForm" class="layui-form layui-form-pane" method="post" action="" style="width:auto;margin-top: 20px;margin-bottom: 20px;" th:scrolling="yes">
+            <div class="layui-form-item">
+                <label class="layui-form-label">账号大洲级别</label>
+                <div class="layui-input-inline" >
+                    <select name="accountContinentsRePush" id="accountContinentsRePush"  xm-select="accountContinentsRePush" xm-select-search=""  xm-select-search-type="dl" xm-select-height="36px">
+                        <option value="">请选择, 可多选</option>
+                    </select>
+                </div>
+            </div>
+<!--            <div class="layui-form-item">-->
+<!--                <label class="layui-form-label">账号站点级别</label>-->
+<!--                <div class="layui-input-inline" >-->
+<!--                    <select name="accountSitesRePush" id="accountSitesRePush"  xm-select="accountSitesRePush" xm-select-search=""  xm-select-search-type="dl" xm-select-height="36px">-->
+<!--                        <option value="">请选择, 可多选</option>-->
+<!--                    </select>-->
+<!--                </div>-->
+<!--            </div>-->
+            <div class="layui-form-item">
+                <label class="layui-form-label">任务</label>
+                <div class="layui-input-inline" >
+                    <select name="taskNameRePush" id="taskNameRePush"  xm-select="taskNameRePush" xm-select-search=""  xm-select-search-type="dl" xm-select-height="36px">
+                        <option value="">请选择, 可多选</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">是否强制</label>
+                <div class="layui-input-inline">
+                    <select name="isEnforcedRePush"  id="isEnforcedRePush" >
+                        <option value="0">不强制</option>
+                        <option value="1">强制</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block" style="margin-left: 10px;">
+                    <button class="layui-btn"  lay-submit="" lay-filter="batchRePushTaskSourceSubmit">提交</button>
+                </div>
+            </div>
+
+            <!--            <table id="crawlerServerPlatform" lay-filter="crawlerServerPlatform"></table>-->
+        </form>
+    </div>
+
+
+
+
+
+
+
+
+
+
+    <!--底部-->
+    <div th:replace="fragments/footer :: footer"></div>
+    <script src="/js/task/taskSrcList.js"></script>
+    <script src="/js/nav_href.js"></script>
+
+
+</div>
+</body>
+</html>
+
+
+
+
+<style type="text/css">
+    .layui-form-label {
+        text-align:left;
+        width:15%;
+
+    }
+
+    /*为了多行显示*/
+    .layui-table-cell {
+        height: auto;
+    }
+
+
+</style>

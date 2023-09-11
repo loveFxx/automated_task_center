@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head th:include="layout :: htmlhead (pageTitle='机器管理')">
+
+    <link rel="stylesheet" type="text/css" href="/css/formSelects-v4.css"/>
+</head>
+
+<body>
+
+<div class="layui-layout layui-layout-admin">
+    <!--头-->
+    <div th:replace="fragments/head :: header"></div>
+    <div class="layui-body">
+        <div class="body-container">
+            <div class="layui-card box-shadow">
+                <div class="layui-card-header">
+                    <span class="card-header-word">机器异常监控</span> <span id="time"></span>
+                    <a href="javascript:void(0)" class="layui-icon layui-icon-download-circle min-download-icon excelClass"></a>
+                </div>
+                <div class="layui-card-body box-body">
+                    <ul class="flex-panel-list" id="aggsTeamSales">
+                        <li>
+                            <h3>心跳超时</h3>
+                            <div class="agg-listbox">
+                                <span style="font-size:25px" id="span1"></span>
+                                <a href="javascript:void(0)" class="layui-icon layui-icon-download-circle download-icon XMLClass1"></a>
+                            </div>
+                        </li>
+                        <li>
+                            <h3>网络不可用</h3>
+                            <div class="agg-listbox">
+                                <span style="font-size:25px" id="span2"></span>
+                                <a href="javascript:void(0)" class="layui-icon layui-icon-download-circle download-icon XMLClass2"></a>
+                            </div>
+                        </li>
+                        <li>
+                            <h3>磁盘空间不足</h3>
+                            <div class="agg-listbox">
+                                <span style="font-size:25px" id="span3"></span>
+                                <a href="javascript:void(0)" class="layui-icon layui-icon-download-circle download-icon XMLClass3"></a>
+                            </div>
+                        </li>
+                        <li>
+                            <h3>内存空间不足</h3>
+                            <div class="agg-listbox">
+                                <span style="font-size:25px" id="span4"></span>
+                                <a href="javascript:void(0)" class="layui-icon layui-icon-download-circle download-icon XMLClass4"></a>
+                            </div>
+                        </li>
+                        <li>
+                            <h3>心跳/机器时间差异</h3>
+                            <div class="agg-listbox">
+                                <span style="font-size:25px" id="span5"></span>
+                                <a href="javascript:void(0)" class="layui-icon layui-icon-download-circle download-icon XMLClass5"></a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="layui-card box-shadow">
+                <div class="layui-card-header">
+                    <span class="card-header-word">机器分类情况</span>
+                </div>
+                <div class="layui-card-body box-body table-overlay">
+                    <table id="machineTypeCountTable" lay-filter="machineTypeCountTable"></table>
+                </div>
+            </div>
+
+            <div class="layui-card box-shadow">
+                <div class="layui-card-header">
+                    <span class="card-header-word">机器大版本情况</span>
+                </div>
+                <div class="layui-card-body box-body table-overlay">
+                    <table id="FatherVersionStatTable" lay-filter="FatherVersionStatTable"></table>
+                </div>
+            </div>
+
+            <div class="layui-card box-shadow">
+                <div class="layui-card-header">
+                    <span class="card-header-word">机器小版本情况</span>
+                </div>
+                <div class="layui-card-body box-body table-overlay">
+                    <table id="SonVersionStatTable" lay-filter="SonVersionStatTable"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="/js/monitor/machineMonitor.js"></script>
+<script src="/js/constant.js"></script>
+
+</body>
+</html>

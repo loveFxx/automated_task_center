@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.ProxyTrendDao">
+
+    <!--    前面java字段 后面mysql-->
+    <resultMap id="proxyTrendMap" type="com.sailvan.dispatchcenter.common.domain.ProxyTrend">
+        <id property="id" column="id" />
+        <result property="proxyId" column="proxy_id"/>
+        <result property="proxyIp" column="proxy_ip"/>
+        <result property="workType" column="work_type"/>
+        <result property="isUsed" column="is_used"/>
+        <result property="openTime" column="open_time"/>
+        <result property="createdTime" column="created_time"/>
+    </resultMap>
+
+    <insert id="insertProxyTrend" useGeneratedKeys="true" keyProperty="id">
+        insert atc_proxy_trend(`proxy_id`,`proxy_ip`,`work_type`,`is_used`,`open_time`,`created_time`)
+        values(#{proxyId,jdbcType=INTEGER},#{proxyIp,jdbcType=VARCHAR},#{workType,jdbcType=VARCHAR},#{isUsed,jdbcType=INTEGER},
+        #{openTime,jdbcType=VARCHAR},now())
+    </insert>
+
+    <select id="listProxySituation" resultType="java.util.Map">
+        SELECT date_format(MAX(open_time),'%Y-%m-%d %H:%i:%s') as open_time,proxy_id,proxy_ip FROM atc_proxy_trend
+        where created_time BETWEEN #{beginTime} and #{endTime}
+        and is_used = 0 AND work_type = #{workType} GROUP BY proxy_id,proxy_ip ORDER BY open_time ASC;
+    </select>
+
+    <select id="countInvalidProxy" resultType="java.lang.Integer">
+        SELECT COUNT(*) as cnt from
+        (SELECT MAX(open_time) as open_time FROM atc_proxy_trend
+        where created_time BETWEEN #{beginTime} and #{endTime}
+        and is_used = 0 AND work_type = #{workType} GROUP BY proxy_id HAVING open_time <![CDATA[>]]> #{endTime}) as a;
+    </select>
+
+    <select id="countValidProxy" resultType="java.lang.Integer">
+        SELECT COUNT(*) as cnt from
+        (SELECT MAX(open_time) as open_time FROM atc_proxy_trend
+        where created_time BETWEEN #{beginTime} and #{endTime}
+        and is_used = 0 AND work_type = #{workType} GROUP BY proxy_id HAVING open_time <![CDATA[<=]]> #{endTime}) as a;
+    </select>
+
+    <delete id="deleteByTime">
+        DELETE from atc_proxy_trend WHERE `created_time` <![CDATA[<]]> #{createdTime}
+    </delete>
+
+</mapper>

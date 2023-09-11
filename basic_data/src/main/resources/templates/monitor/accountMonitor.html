@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head th:include="layout :: htmlhead (pageTitle='店铺监控')">
+
+</head>
+<body>
+<div class="layui-layout layui-layout-admin">
+    <!--头-->
+    <div th:replace="fragments/head :: header"></div>
+    <div class="layui-body">
+        <div class="body-container">
+            <div class="layui-card box-shadow">
+                <div class="layui-card-header">
+                    <span class="card-header-word">店铺监控</span>
+                    <span id="time"></span>
+                </div>
+                <div class="layui-card-body box-body">
+                    <ul class="flex-panel-list" id="aggsTeamSales">
+                        <li>
+                            <h3>站点总数</h3>
+                            <div class="agg-listbox">
+                                <span class="loading" style="font-size:25px" id="span1"></span>
+                            </div>
+                            <div class="agg-listbox">
+                                <span>有周期任务</span>
+                                <span class="loading" style="font-size:25px" id="span2"></span>
+                            </div>
+                        </li>
+                        <li>
+                            <h3>Token状态异常站点</h3>
+                            <div class="agg-listbox">
+                                <span class="loading" style="font-size:25px" id="span3"></span>
+                            </div>
+                            <div class="agg-listbox">
+                                <span>有周期任务</span>
+                                <span class="loading" style="font-size:25px" id="span4"></span>
+                            </div>
+                        </li>
+                        <li>
+                            <h3>机器状态异常站点</h3>
+                            <div class="agg-listbox">
+                                <span class="loading" style="font-size:25px" id="span5"></span>
+                            </div>
+                            <div class="agg-listbox">
+                                <span>有周期任务</span>
+                                <span class="loading" style="font-size:25px" id="span6"></span>
+                            </div>
+                        </li>
+                        <li>
+                            <h3>无关联机器店铺</h3>
+                            <div class="agg-listbox">
+                                <span>所有</span>
+                                <a href="javascript:void(0)" class="loading" style="font-size:25px" id="span7"></a>
+                            </div>
+                            <div class="agg-listbox">
+                                <span>有周期任务</span>
+                                <a href="javascript:void(0)" class="loading" style="font-size:25px" id="span8"></a>
+                            </div>
+                        </li>
+                        <li>
+                            <h3>无可用机器店铺</h3>
+                            <div class="agg-listbox">
+                                <span>所有</span>
+                                <a href="javascript:void(0)" class="loading" style="font-size:25px" id="span9"></a>
+                                <a href="javascript:void(0)"
+                                   class="layui-icon layui-icon-download-circle download-icon downloadAccountClass"
+                                   id="span9_"></a>
+                            </div>
+                            <div class="agg-listbox">
+                                <span>有周期任务</span>
+                                <a href="javascript:void(0)" class="loading" style="font-size:25px" id="span10"></a>
+                                <a href="javascript:void(0)"
+                                   class="layui-icon layui-icon-download-circle download-icon downloadAccountClass"
+                                   id="span10_"></a>
+                            </div>
+                        </li>
+
+                        <li>
+                            <h3>二步验证错误店铺</h3>
+                            <div class="agg-listbox">
+                                <span>所有</span>
+                                <a href="javascript:void(0)" class="loading" style="font-size:25px" id="span11"></a>
+                                <a href="javascript:void(0)"
+                                   class="layui-icon layui-icon-download-circle download-icon downloadAccountClass"
+                                   id="span11_"></a>
+                            </div>
+                            <div class="agg-listbox">
+                                <span>有周期任务</span>
+                                <a href="javascript:void(0)" class="loading" style="font-size:25px" id="span12"></a>
+                                <a href="javascript:void(0)"
+                                   class="layui-icon layui-icon-download-circle download-icon downloadAccountClass"
+                                   id="span12_"></a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="layui-card box-shadow">
+                <div class="layui-card-header">
+                    <span class="card-header-word">站点人工状态(token)</span>
+                </div>
+                <div class="layui-card-body box-body table-overlay">
+                    <table id="countSiteByPersonTypeTable" lay-filter="countSiteByPersonTypeTable"></table>
+                </div>
+            </div>
+
+            <div class="layui-card box-shadow">
+                <div class="layui-card-header">
+                    <span class="card-header-word">站点机器状态</span>
+                </div>
+                <div class="layui-card-body box-body table-overlay">
+                    <table id="countSiteByMachineTypeTable" lay-filter="countSiteByMachineTypeTable"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/js/monitor/accountMonitor.js"></script>
+<script src="/js/constant.js"></script>
+
+</body>
+</html>

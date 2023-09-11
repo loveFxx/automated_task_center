@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.ProxyIpPlatformDao">
+
+    <!--    前面java字段 后面mysql-->
+    <resultMap id="proxyIpPlatformMap" type="com.sailvan.dispatchcenter.common.domain.ProxyIpPlatform">
+        <id property="id" column="id" />
+        <result property="proxyIpId" column="proxy_ip_id"/>
+        <result property="platform" column="platform"/>
+        <result property="status" column="status"/>
+        <result property="banPeriod" column="ban_period"/>
+        <result property="lastUsedTimestamp" column="last_used_timestamp"/>
+        <result property="openTimestamp" column="open_timestamp"/>
+
+    </resultMap>
+
+    <select id="getProxyIpPlatformByIpId" resultMap="proxyIpPlatformMap" resultType="com.sailvan.dispatchcenter.common.domain.ProxyIpPlatform">
+        select *  from atc_proxy_ip_platform where proxy_ip_id = #{proxyIpId}
+    </select>
+
+    <select id="getProxyIpPlatformByPlatform" resultMap="proxyIpPlatformMap" resultType="com.sailvan.dispatchcenter.common.domain.ProxyIpPlatform">
+        select *  from atc_proxy_ip_platform
+        <where>
+            <if test="proxyIpId != null and proxyIpId != '' ">
+                and proxy_ip_id = #{proxyIpId}
+            </if>
+            <if test="platform != null and platform != '' ">
+                and platform = #{platform}
+            </if>
+
+        </where>
+    </select>
+
+    <select id="listPlatformByProxyId" resultType="java.lang.String">
+        select platform from atc_proxy_ip_platform where proxy_ip_id = #{proxyIpId}
+    </select>
+
+    <select id="getProxyIpPlatformByProxyIpIdPlatform" resultMap="proxyIpPlatformMap" resultType="com.sailvan.dispatchcenter.common.domain.ProxyIpPlatform">
+        select *  from atc_proxy_ip_platform where proxy_ip_id = #{proxyIpId} and platform = #{platform}
+    </select>
+
+
+
+    <!--    前mysql字段后java-->
+    <update id="updateProxyIpPlatform">
+        UPDATE atc_proxy_ip_platform
+        <set>
+            <if test="banPeriod != null and banPeriod != '' ">
+                ban_period = #{banPeriod},
+            </if>
+            <if test="openTimestamp != null and openTimestamp != '' ">
+                open_timestamp = #{openTimestamp},
+            </if>
+            status = #{status}
+        </set>
+        WHERE proxy_ip_id = #{proxyIpId} and platform = #{platform}
+    </update>
+
+    <update id="updateProxyIpPlatformLastUsedTimestamp">
+        UPDATE atc_proxy_ip_platform SET last_used_timestamp = #{lastUsedTimestamp}
+        WHERE proxy_ip_id = #{proxyIpId} and platform = #{platform}
+    </update>
+
+    <delete id="deleteProxyIpPlatform">
+        delete from atc_proxy_ip_platform WHERE proxy_ip_id = #{proxyIpId} and platform = #{platform}
+    </delete>
+
+
+    <insert id="insertProxyIpPlatform">
+        insert into atc_proxy_ip_platform(proxy_ip_id, last_used_timestamp, platform, status)
+        values(#{proxyIpId,jdbcType=INTEGER}, #{lastUsedTimestamp,jdbcType=VARCHAR}, #{platform,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER})
+    </insert>
+
+    <select id="countByPlatformAndStatus" resultType="java.lang.Integer">
+        select count(*) as cnt from atc_proxy_ip_platform as a join atc_proxy_ip as b on a.proxy_ip_id=b.id
+        <where>
+            a.platform = #{platform}
+                and a.status = #{status,jdbcType=INTEGER} and b.is_deleted=0
+        </where>
+    </select>
+
+    <delete id="deleteByProxyId">
+        DELETE from atc_proxy_ip_platform WHERE proxy_ip_id=#{proxyId}
+    </delete>
+
+    <select id="getByProxyIdAndPlatform" resultMap="proxyIpPlatformMap" resultType="com.sailvan.dispatchcenter.common.domain.ProxyIpPlatform">
+        select * from atc_proxy_ip_platform
+        <where>
+            proxy_ip_id=#{proxyId} and platform = #{platform}
+        </where>
+        limit 1;
+    </select>
+
+    <update id="updateStatusById">
+        UPDATE atc_proxy_ip_platform
+        <set>
+            status = #{status}
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="getPlatformBanProxyIpNum" resultType="java.util.Map">
+        SELECT b.platform ,b.cnt as availableProxyIpNum,a.cnt as banProxyIpNum from (SELECT platform ,count(*) as cnt from atc_proxy_ip_platform where status=-1 group by platform) as a right join  (SELECT platform ,count(*) as cnt from atc_proxy_ip_platform where status=1 group by platform) as b on a.platform =b.platform
+    </select>
+
+    <select id="countByPlatformAndOpenTimestamp" resultType="java.lang.Integer">
+        select count(*) as cnt from atc_proxy_ip_platform as a join atc_proxy_ip as b on a.proxy_ip_id=b.id
+        <where>
+            a.platform = #{platform}
+            and a.status = 1 and a.open_timestamp>#{openTimestamp} and b.is_deleted=0
+        </where>
+    </select>
+
+    <delete id="deleteByProxyIdAndPlatform">
+        DELETE from atc_proxy_ip_platform WHERE proxy_ip_id=#{proxyId} and platform=#{platform}
+    </delete>
+</mapper>

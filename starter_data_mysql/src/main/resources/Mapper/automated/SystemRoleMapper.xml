@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.system.RoleDao">
+  <resultMap id="BaseResultMap" type="com.sailvan.dispatchcenter.common.domain.system.RoleDomain">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="role_name" jdbcType="VARCHAR" property="roleName" />
+    <result column="role_desc" jdbcType="VARCHAR" property="roleDesc" />
+    <result column="permissions" jdbcType="VARCHAR" property="permissions" />
+    <result column="create_time" jdbcType="VARCHAR" property="createTime" />
+    <result column="update_time" jdbcType="VARCHAR" property="updateTime" />
+    <result column="role_status" jdbcType="INTEGER" property="roleStatus" />
+  </resultMap>
+
+  <sql id="baseColumn">
+    id,role_name,role_desc,permissions,create_time,update_time,role_status
+  </sql>
+
+    <update id="updateRole">
+      UPDATE atc_system_role
+      SET
+      <if test="roleName != null">role_name = #{roleName},</if>
+      <if test="roleDesc != null">role_desc = #{roleDesc},</if>
+      <if test="permissions != null">permissions = #{permissions},</if>
+      <if test="updateTime != null">update_time = #{updateTime}</if>
+      where
+      <if test="id != null">id = #{id}</if>
+    </update>
+
+  <update id="updateRoleStatus">
+    UPDATE atc_system_role
+    SET role_status = #{roleStatus}
+    where
+    <if test="id != null">id = #{id}</if>
+  </update>
+
+  <select id="getRoleList" resultMap="BaseResultMap">
+    SELECT <include refid="baseColumn" />
+    FROM atc_system_role
+    </select>
+
+  <select id="getRoles" resultMap="BaseResultMap">
+    SELECT <include refid="baseColumn" />
+    FROM atc_system_role WHERE role_status = 1
+  </select>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+      SELECT * FROM atc_system_role  WHERE id = #{id}
+    </select>
+
+  <insert id="insert">
+        insert into atc_system_role(sys_user_name, role_id,user_phone,sys_user_pwd,reg_time)
+        values(#{sysUserName,jdbcType=VARCHAR},#{roleId,jdbcType=INTEGER},
+         #{userPhone,jdbcType=VARCHAR},#{sysUserPwd,jdbcType=VARCHAR},#{regTime,jdbcType=VARCHAR})
+    </insert>
+
+  <delete id="deleteByPrimaryKey">
+        delete from atc_system_role where id = #{id}
+    </delete>
+
+</mapper>

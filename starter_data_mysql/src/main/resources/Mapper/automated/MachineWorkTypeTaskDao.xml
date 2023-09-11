@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.MachineWorkTypeTaskDao">
+
+    <!--    前面java字段 后面mysql-->
+    <resultMap id="machineWorkTypeTaskMap" type="com.sailvan.dispatchcenter.common.domain.MachineWorkTypeTask">
+        <id property="id" column="id" />
+        <result property="machineId" column="machine_id"/>
+        <result property="workTypeId" column="work_type_id"/>
+        <result property="taskId" column="task_id"/>
+        <result property="taskName" column="task_name"/>
+        <result property="status" column="status"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="deletedTime" column="deleted_time"/>
+        <result property="isUpdate" column="is_update"/>
+    </resultMap>
+
+    <select id="getMachineWorkTypeTaskByWorkTypeId" resultMap="machineWorkTypeTaskMap" resultType="com.sailvan.dispatchcenter.common.domain.MachineWorkTypeTask">
+        select *  from atc_machine_work_type_task where work_type_id = #{workTypeId}
+    </select>
+
+    <select id="getMachineWorkTypeTaskByWorkTypeIdTaskId" resultMap="machineWorkTypeTaskMap" resultType="com.sailvan.dispatchcenter.common.domain.MachineWorkTypeTask">
+        select *  from atc_machine_work_type_task where work_type_id = #{workTypeId} and task_id = #{taskId}
+    </select>
+
+    <select id="getMachineWorkTypeTaskByMachineIdAndWorkTypeId" resultMap="machineWorkTypeTaskMap" resultType="com.sailvan.dispatchcenter.common.domain.MachineWorkTypeTask">
+        select *  from atc_machine_work_type_task where machine_id = #{machineId} and work_type_id = #{workTypeId}
+    </select>
+
+    <select id="getMachineWorkTypeTaskByMachineIdAndWorkTypeIdAndTaskId" resultMap="machineWorkTypeTaskMap" resultType="com.sailvan.dispatchcenter.common.domain.MachineWorkTypeTask">
+        select *  from atc_machine_work_type_task where machine_id = #{machineId} and work_type_id = #{workTypeId} and task_id = #{taskId}
+    </select>
+
+    <select id="getMachineWorkTypeTaskByWorkTypeIdStatus" resultMap="machineWorkTypeTaskMap" resultType="com.sailvan.dispatchcenter.common.domain.MachineWorkTypeTask">
+        select *  from atc_machine_work_type_task where work_type_id = #{workTypeId} and status = #{status}
+    </select>
+
+
+    <update id="updateMachineWorkTypeTask">
+        UPDATE atc_machine_work_type_task
+        <set>
+            status = #{status},is_update = #{isUpdate}
+        </set>
+        WHERE id = #{id}
+    </update>
+
+
+    <update id="updateMachineWorkTypeTaskStatus">
+        UPDATE atc_machine_work_type_task
+        <set>
+            status = #{status}
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateMachineWorkTypeTaskStatusByWorkTypeIdAndTaskId">
+        UPDATE atc_machine_work_type_task
+        <set>
+            status = #{status},is_update = #{isUpdate}
+        </set>
+        WHERE work_type_id = #{workTypeId} and task_id = #{taskId}
+    </update>
+
+
+    <insert id="insertMachineWorkTypeTask"  useGeneratedKeys="true" keyProperty="id">
+        insert into atc_machine_work_type_task(machine_id,work_type_id, task_id,task_name,status,created_time)
+        values(#{machineId,jdbcType=INTEGER},#{workTypeId,jdbcType=INTEGER},#{taskId,jdbcType=INTEGER},#{taskName,jdbcType=VARCHAR},
+        #{status,jdbcType=INTEGER},#{createdTime,jdbcType=VARCHAR})
+    </insert>
+
+
+    <select id="getMachineTaskTypeByTaskId" resultType="java.lang.Integer">
+        select distinct atc_machine_work_type.machine_id from atc_machine_work_type_task
+          LEFT JOIN atc_machine_work_type on atc_machine_work_type_task.work_type_id = atc_machine_work_type.id
+           where atc_machine_work_type_task.task_id in ${taskIdList} and atc_machine_work_type_task.status = 1 and atc_machine_work_type.status = 1
+    </select>
+</mapper>

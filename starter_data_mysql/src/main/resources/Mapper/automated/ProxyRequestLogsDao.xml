@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.ProxyRequestLogsDao">
+
+    <!--    前面java字段 后面mysql-->
+    <resultMap id="proxyRequestLogsMap" type="com.sailvan.dispatchcenter.common.domain.ProxyRequestLogs">
+        <id property="id" column="id" />
+        <result property="proxyId" column="proxy_id"/>
+        <result property="proxyIp" column="proxy_ip"/>
+        <result property="port" column="port"/>
+        <result property="workType" column="work_type"/>
+        <result property="machineIp" column="machine_ip"/>
+        <result property="usedNum" column="used_num"/>
+        <result property="succeedNum" column="succeed_num"/>
+        <result property="bannedNum" column="banned_num"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <insert id="insertRequestLogs" useGeneratedKeys="true" keyProperty="id">
+        insert atc_proxy_request_logs(`proxy_id`,`proxy_ip`,`port`,`work_type`,`machine_ip`,`used_num`,`succeed_num`,`banned_num`,`created_at`)
+        values(#{proxyId,jdbcType=INTEGER},#{proxyIp,jdbcType=VARCHAR},#{port,jdbcType=INTEGER},#{workType,jdbcType=VARCHAR},#{machineIp,jdbcType=VARCHAR},
+        #{usedNum,jdbcType=INTEGER},#{succeedNum,jdbcType=INTEGER},#{bannedNum,jdbcType=INTEGER},now())
+    </insert>
+
+    <select id="sumGroupByProxyId" resultType="java.util.Map">
+        SELECT proxy_id,proxy_ip,port,used_num,succeed_num,banned_num,CAST(banned_num/used_num as DECIMAL(8,4)) as banned_rate from  (SELECT proxy_id,proxy_ip,port, SUM(used_num) as used_num,SUM(succeed_num) as succeed_num,SUM(banned_num) as banned_num from atc_proxy_request_logs WHERE created_at BETWEEN #{minTime} and #{maxTime}
+        <if test="workType != null and workType != '' ">
+            and work_type = #{workType}
+        </if>
+        GROUP BY proxy_id,proxy_ip,port ) as a ORDER BY banned_rate DESC limit 20
+    </select>
+
+    <delete id="deleteByTime">
+        DELETE from atc_proxy_request_logs WHERE `created_at` <![CDATA[<]]> #{createdTime}
+    </delete>
+
+    <select id="sumGroupByProxyIdByWorkType" resultType="java.util.Map">
+        SELECT proxy_id,proxy_ip,port,work_type, SUM(used_num) as used_num,SUM(succeed_num) as succeed_num,SUM(banned_num) as banned_num from atc_proxy_request_logs
+        WHERE created_at BETWEEN #{minTime} and #{maxTime}
+        <if test="workType != null and workType != '' ">
+            and work_type = #{workType}
+        </if>
+        GROUP BY proxy_id,proxy_ip,port order by used_num asc;
+    </select>
+
+    <select id="listOverBannedRate" resultType="java.util.Map">
+        SELECT proxy_id,used_num,banned_num,CAST(banned_num/used_num*100 as DECIMAL(8,4)) as banned_rate from  (SELECT proxy_id,SUM(used_num) as used_num,SUM(banned_num) as banned_num from atc_proxy_request_logs WHERE created_at BETWEEN #{minTime} and #{maxTime} GROUP BY proxy_id,proxy_ip,port ) as a having banned_rate <![CDATA[>]]> #{bannedRate}
+    </select>
+
+    <select id="sumGroupByTimeBlock" resultType="java.util.Map">
+        SELECT
+        SUM(used_num) as used_num,SUM(succeed_num) as succeed_num,SUM(banned_num) as banned_num,SUBSTRING(created_at,1,13) as time_block
+        FROM
+        atc_proxy_request_logs WHERE created_at BETWEEN #{minTime} and #{maxTime} and proxy_id=#{proxyId}
+        <if test="workType != null and workType != '' ">
+            and work_type = #{workType}
+        </if>
+        GROUP BY SUBSTRING(created_at,1,13)
+    </select>
+
+    <select id="sumRangeTime" resultType="java.util.Map">
+        SELECT SUM(used_num) as used_num,SUM(succeed_num) as succeed_num,SUM(banned_num) as banned_num
+        FROM atc_proxy_request_logs WHERE created_at BETWEEN #{minTime} and #{maxTime}
+        <if test="workType != null and workType != '' ">
+            and work_type = #{workType}
+        </if>
+    </select>
+
+    <select id="listRangeTime" resultMap="proxyRequestLogsMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.ProxyRequestLogs">
+        SELECT * FROM atc_proxy_request_logs WHERE created_at BETWEEN #{minTime} and #{maxTime}
+        <if test="workType != null and workType != '' ">
+            and work_type = #{workType}
+        </if>
+    </select>
+</mapper>

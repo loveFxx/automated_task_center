@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.RequestCountDao">
+
+    <!--    前面java字段 后面mysql-->
+    <resultMap id="requestCountMap" type="com.sailvan.dispatchcenter.common.domain.RequestCount">
+        <id property="id" column="id" />
+        <result property="period" column="period"/>
+        <result property="systemName" column="system_name"/>
+        <result property="requestMethod" column="request_method"/>
+        <result property="requestNum" column="request_num"/>
+        <result property="requestSuccess" column="request_success"/>
+        <result property="requestTimeout" column="request_timeout"/>
+        <result property="requestException" column="request_exception"/>
+        <result property="requestLimit" column="request_limit"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    <select id="getRequestCountAll" resultMap="requestCountMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.RequestCount">
+        select *  from atc_request_count
+    </select>
+
+    <select id="getRequestCountByPeriod" resultMap="requestCountMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.RequestCount">
+        select *  from atc_request_count where period <![CDATA[>=]]> #{period}
+    </select>
+
+
+    <!--    前mysql字段后java-->
+    <update id="updateRequestCount">
+        UPDATE atc_request_count
+        <set>
+            <if test="requestNum != null and requestNum != '' ">
+                request_num = #{requestNum},
+            </if>
+            <if test="requestSuccess != null and requestSuccess != '' ">
+                request_success = #{requestSuccess},
+            </if>
+            <if test="requestTimeout != null and requestTimeout != '' ">
+                request_timeout = #{requestTimeout},
+            </if>
+            <if test="requestException != null and requestException != '' ">
+                request_exception = #{requestException},
+            </if>
+            <if test="requestLimit != null and requestLimit != '' ">
+                request_limit = #{requestLimit},
+            </if>
+        </set>
+        WHERE period = #{period} and system_name = #{systemName}  and request_method = #{requestMethod}
+    </update>
+
+
+
+    <insert id="insertRequestCount" useGeneratedKeys="true" keyProperty="id" parameterType="com.sailvan.dispatchcenter.common.domain.RequestCount">
+        insert into atc_request_count(period,system_name,request_method,request_num,request_success,request_timeout,request_exception,request_limit)
+        values(#{period,jdbcType=VARCHAR},#{systemName,jdbcType=VARCHAR},#{requestMethod,jdbcType=VARCHAR},#{requestNum,jdbcType=VARCHAR},#{requestSuccess,jdbcType=VARCHAR},#{requestTimeout,jdbcType=VARCHAR}
+        ,#{requestException,jdbcType=VARCHAR},#{requestLimit,jdbcType=VARCHAR})
+    </insert>
+
+    <select id="selectByPeriodAndSystemName" resultMap="requestCountMap" resultType="com.sailvan.dispatchcenter.common.domain.RequestCount">
+        select *  from atc_request_count where period =  #{period} and system_name = #{systemName} and request_method = #{requestMethod}
+    </select>
+
+
+</mapper>

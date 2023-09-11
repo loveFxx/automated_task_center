@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head th:include="layout :: htmlhead (pageTitle='客户端版本管理')" >
+    <link rel="stylesheet" href="/layui/css/layui.css"  media="all">
+</head>
+<link rel="stylesheet" type="text/css" href="/css/formSelects-v4.css"/>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!--头-->
+    <div th:replace="fragments/head :: header"></div>
+    <div class="layui-body" >
+        <form id="taskSrcListSearch" class="layui-form layui-form-pane" method="post" action="" style="margin-top: 20px;">
+            <div class="layui-form">
+                <label class="layui-form-label">任务类型</label>
+                <div class="layui-input-inline" >
+                    <select name="taskTypeSearch" id="taskTypeSearch"  xm-select="taskTypeSearch" xm-select-search=""  xm-select-search-type="dl" xm-select-height="36px" xm-select-radio>
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+                <button class="layui-btn"  lay-submit="" lay-filter="searchSubmit">提交</button>
+            </div>
+
+        </form>
+        <div>
+            <table id="taskFailMonitor" ></table>
+        </div>
+    </div>
+
+
+    <!--底部-->
+    <div th:replace="fragments/footer :: footer"></div>
+    <script src="/js/monitor/taskFailMonitor.js"></script>
+    <script src="/js/constant.js"></script>
+
+
+</div>
+</body>
+</html>

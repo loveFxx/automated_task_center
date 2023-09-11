@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.TaskExecutedExceptionDao">
+
+    <resultMap id="taskExecutedExceptionMap" type="com.sailvan.dispatchcenter.common.domain.TaskExecutedException">
+        <id property="id" column="id" />
+        <result property="taskType" column="task_type"/>
+        <result property="error" column="error"/>
+        <result property="num" column="num"/>
+        <result property="hour" column="hour"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+
+    <insert id="insertTaskExecutedException"  useGeneratedKeys="true" keyProperty="id" >
+        insert into atc_task_executed_exception(task_type,error,num,`hour`,`date`,`created_at`)
+        values(#{taskType,jdbcType=VARCHAR},#{error,jdbcType=VARCHAR},#{num,jdbcType=INTEGER},#{hour,jdbcType=INTEGER},#{date,jdbcType=VARCHAR},now())
+    </insert>
+
+    <select id="findTaskExecutedException" resultMap="taskExecutedExceptionMap">
+        select * from atc_task_executed_exception where task_type=#{taskType} and `date`=#{date} and `hour`=#{hour} limit 1;
+    </select>
+
+    <update id="updateTaskExecutedException">
+        UPDATE atc_task_executed_exception
+        <set>
+            <if test="taskType != null and taskType != '' ">
+                task_type = #{taskType},
+            </if>
+            <if test="error != null and error != '' ">
+                error = #{error},
+            </if>
+            <if test="num != null and num != '' ">
+                num = #{num},
+            </if>
+            <if test="hour != null and hour != '' ">
+                `hour` = #{hour},
+            </if>
+            <if test="date != null and date != '' ">
+                `date` = #{date},
+            </if>
+
+        </set>
+        WHERE id = #{id}
+    </update>
+
+
+    <select id="getTaskExecutedException" resultMap="taskExecutedExceptionMap">
+        SELECT * from atc_task_executed_exception a
+        where
+            a.`hour` =  (SELECT MAX(`hour`) hour FROM atc_task_executed_exception where date = #{date})
+            AND a.date = #{date}
+            <if test="taskType != null and taskType != ''">
+                and a.task_type = #{taskType}
+            </if>
+        ORDER BY a.task_type, a.num DESC
+    </select>
+
+
+    <select id="getFailTaskType" resultType="java.util.Map">
+        SELECT task_type name from atc_task_executed_exception group by task_type
+    </select>
+
+    <delete id="deleteTaskExecutedException">
+        DELETE from atc_task_executed_exception where `date` <![CDATA[<]]> #{datetime}
+    </delete>
+
+</mapper>

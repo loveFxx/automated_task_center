@@ -1,0 +1,10 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.sailvan.dispatchcenter.redis.init.InitAccountRedisCache,\
+  com.sailvan.dispatchcenter.redis.init.InitMachineRedisCache,\
+  com.sailvan.dispatchcenter.redis.init.InitPlatformRedisCache,\
+  com.sailvan.dispatchcenter.redis.init.InitSystemRedisCache,\
+  com.sailvan.dispatchcenter.redis.init.InitTaskRedisCache,\
+  com.sailvan.dispatchcenter.redis.init.InitValidVersionRedisCache,\
+  com.sailvan.dispatchcenter.redis.init.InitLambdaRedisCache
+
+

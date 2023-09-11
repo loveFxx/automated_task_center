@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head th:include="layout :: htmlhead (pageTitle='客户端版本管理')" >
+    <link rel="stylesheet" href="/layui/css/layui.css"  media="all">
+</head>
+<link rel="stylesheet" type="text/css" href="/css/formSelects-v4.css"/>
+<!--<script type="text/javascript" src="/js/select/formSelects-v4.js"></script>-->
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!--头-->
+    <div th:replace="fragments/head :: header"></div>
+    <div class="layui-body" >
+        <span style="font-size: 20px;text-align: center;padding-bottom: 6px;padding-left: 20px;padding-right: 100px;color: #000000;padding-top: 6px;box-shadow: 10px 10px 5px #888888;">
+            任务池数量表
+        </span>
+
+        <div class="one" >
+            <table id="taskMonitor"  ></table>
+        </div>
+        <span style="font-size: 20px;text-align: center;padding-bottom: 6px;padding-left: 20px;padding-right: 100px;color: #000000;padding-top: 6px;box-shadow: 10px 10px 5px #888888;">
+            任务池吞吐量表
+        </span>
+        <div class="two" >
+            <table id="taskIoMetric"  ></table>
+        </div>
+        <span style="font-size: 20px;text-align: center;padding-bottom: 6px;padding-left: 20px;padding-right: 100px;color: #000000;padding-top: 6px;box-shadow: 10px 10px 5px #888888;">
+            分类任务监控表
+        </span>
+        <div class="three" >
+            <table id="taskMetric"  ></table>
+        </div>
+
+        <span style="font-size: 20px;text-align: center;padding-bottom: 6px;padding-left: 20px;padding-right: 100px;color: #000000;padding-top: 6px;box-shadow: 10px 10px 5px #888888;">
+            延迟队列监控表
+        </span>
+        <div class="four" >
+            <table id="delayQueue"  ></table>
+        </div>
+    </div>
+
+
+
+    <!--底部-->
+    <div th:replace="fragments/footer :: footer"></div>
+    <script src="/js/monitor/taskMonitor.js"></script>
+    <script src="/js/constant.js"></script>
+
+    <style type="text/css">
+        .layui-table-cell {
+            height: auto;
+            overflow: visible;
+            text-overflow: inherit;
+            white-space: normal;
+            word-break: break-all;
+        }
+
+        label.required:before {   /* 给红色的必填项打红色星号（文字后）如果打前面用before*/
+            content: ' *';
+            color: red;
+        }
+    </style>
+
+</div>
+</body>
+</html>

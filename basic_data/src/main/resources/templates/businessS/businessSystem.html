@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head th:include="layout :: htmlhead (pageTitle='业务系统管理')" >
+</head>
+<link rel="stylesheet" type="text/css" href="/css/formSelects-v4.css"/>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!--头-->
+    <div th:replace="fragments/head :: header"></div>
+    <div class="layui-body" style="margin: 1%">
+        <form id="userSearch" class="layui-form layui-form-pane" method="post" action="" style="margin-top: 20px;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">系统名称</label>
+                <div class="layui-input-inline">
+                    <input id="systemNameSearch" name="systemName" autocomplete="off" class="layui-input" type="text"/>
+                </div>
+                <button class="layui-btn"  lay-submit="" lay-filter="searchSubmit">提交</button>
+            </div>
+        </form>
+
+        <button class="layui-btn layui-btn-normal"  onclick="addBusinessSystem()">添加</button>
+        <table id="businessSystemList" lay-filter="businessSystemListTable"></table>
+
+        <script type="text/html" id="optBar">
+            <a class="layui-btn layui-btn-xs" lay-event="edit" shiro:hasPermission="businessS:update">编辑</a>
+<!--            <a class="layui-btn layui-btn-xs" lay-event="details">详情</a>-->
+
+        </script>
+    </div>
+
+
+    <!--添加或编辑业务系统-->
+    <div id="setBusinessSystem" class="layer_self_wrap" style="width:auto; margin-left:3%;display:none;">
+        <form id="userForm" class="layui-form layui-form-pane" method="post" action="" style="width:auto;margin-top: 20px;margin-bottom: 20px;margin-left: 20px" th:scrolling="yes">
+            <div id="setBusinessSystemId" class="layui-form-item" style="display:none;" >
+                <label class="layui-form-label required" style="width:150px;border-style:none">系统ID</label>
+                <div class="layui-input-inline">
+                    <input id="id" name="id"  class="layui-input" type="text"  readonly="readonly" style="border-style:none"/>
+                </div>
+            </div>
+            <div class="layui-form-item" >
+                <label class="layui-form-label required" style="width:150px;border-style:none">系统名称</label>
+                <div class="layui-input-inline">
+                    <input id="systemName" name="systemName"  class="layui-input" type="text" />
+                </div>
+            </div>
+            <div class="layui-form-item" >
+                <label class="layui-form-label required" style="width:150px;border-style:none">接口调用次数限制</label>
+                <div class="layui-input-inline">
+                    <input id="invokeTimesMonth" name="invokeTimesMonth"  class="layui-input" type="text"/>
+                </div>
+
+            </div>
+            <div class="layui-form-item" >
+                <label class="layui-form-label required" style="width:150px;border-style:none" >接口调用频率限制</label>
+                <label class="layui-form-label" style="width:auto;border-style:none;">
+                    每
+                </label>
+                <div class="layui-input-inline" style="width:70px">
+                    <input id="invokeInterval" name="invokeInterval"  class="layui-input" type="text" style="width:65px;margin: 0px"/>
+                </div>
+                <label class="layui-form-label" style="width:auto;border-style:none;">min调用</label>
+                <div class="layui-input-inline" style="width:70px">
+                    <input id="invokeTimes" name="invokeTimes"  class="layui-input" type="text" style="width:65px;margin: 0px"/>
+                </div>
+                <label class="layui-form-label" style="width:auto;border-style:none;">次</label>
+            </div>
+            <div class="layui-form-item" >
+                <label class="layui-form-label required" style="width:150px;border-style:none">任务类型</label>
+                <div class="layui-input-inline" >
+                    <select name="taskTypeName" id="taskTypeSearch"  xm-select="taskTypeSearch" xm-select-search=""  xm-select-search-type="dl" xm-select-height="36px">
+                        <option value="">请选择, 可多选</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item" >
+                <label class="layui-form-label required" style="width:150px;border-style:none">任务结果接收地址</label>
+                <div class="layui-input-inline">
+                    <textarea id="callbackAddress" name="callbackAddress" rows="3" cols="40"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item" >
+                <label class="layui-form-label" style="border-style:none">网络类型</label>
+                <div  class="layui-input-inline" style="width:auto">
+                    <input class="layui-input-block" type="radio" name="networkType"  lay-filter="largeTaskType1" value="1" title="直连"  />
+                    <input class="layui-input-block" type="radio" name="networkType"  lay-filter="largeTaskType2" value="2" title="idc" />
+                    <input class="layui-input-block" type="radio" name="networkType"  lay-filter="largeTaskType2" value="3" title="sz" />
+                    <input class="layui-input-block" type="radio" name="networkType"  lay-filter="largeTaskType2" value="4" title="hk" />
+                </div>
+            </div>
+            <div class="layui-form-item" >
+                <label class="layui-form-label required" style="width:150px;border-style:none">版本号</label>
+                <div class="layui-input-inline">
+                    <input id="systemVersion" name="systemVersion"  class="layui-input" type="text" />
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <div class="layui-input-block" style="margin-left: 20%;">
+                    <button class="layui-btn"  lay-submit="" lay-filter="userSubmit">提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!--底部-->
+    <div th:replace="fragments/footer :: footer"></div>
+    <script src="/js/business/businessSystem.js"></script>
+    <script src="/js/constant.js"></script>
+
+    <script type="text/html" id="statusTemp">
+        {{#  if(d.status==STATUS_VALID){ }}
+        <input type="checkbox" name="status" lay-skin="switch" checked   lay-text="开启|关闭"  value= {{d.id}}  lay-filter="status" >
+        {{#  } else { }}
+        <input type="checkbox" name="status" lay-skin="switch"  lay-text="开启|关闭"  value= {{d.id}} lay-filter="status" >
+        {{#  } }}
+    </script>
+    <style type="text/css">
+        .layui-table-cell {
+            height: auto;
+            overflow: visible;
+        }
+        label.required:before {   /* 给红色的必填项打红色星号（文字后）如果打前面用before*/
+            content: ' *';
+            color: red;
+        }
+    </style>
+
+</div>
+</body>
+</html>

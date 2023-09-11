@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.TokenUserDao">
+
+    <select id="checkTokenUser" resultType="com.sailvan.dispatchcenter.common.domain.TokenUser">
+		select *  from atc_token_user where username = #{userName} and password = #{passWord}
+	</select>
+
+    <select id="selectByPrimaryKey" resultType="com.sailvan.dispatchcenter.common.domain.TokenUser">
+		select *  from atc_token_user where id = #{id}
+	</select>
+
+	<update id="updateByPrimaryKey">
+    UPDATE atc_token_user
+    SET lastlogin = #{lastLogin}
+    WHERE id = #{id}
+  </update>
+
+
+</mapper>

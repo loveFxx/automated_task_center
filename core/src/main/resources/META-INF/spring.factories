@@ -1,0 +1,27 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.sailvan.dispatchcenter.core.async.AsyncPushTask,\
+  com.sailvan.dispatchcenter.core.config.TaskPoolConfig,\
+  com.sailvan.dispatchcenter.core.config.WebTokenConfig,\
+  com.sailvan.dispatchcenter.core.config.SQSConfig,\
+  com.sailvan.dispatchcenter.core.controller.BusinessController,\
+  com.sailvan.dispatchcenter.core.controller.ClientController,\
+  com.sailvan.dispatchcenter.core.filter.UserSecurityHandlerInterceptor,\
+  com.sailvan.dispatchcenter.core.job.BaseJob,\
+  com.sailvan.dispatchcenter.core.limit.LimitAnnotationListener,\
+  com.sailvan.dispatchcenter.core.limit.LimitInterceptor,\
+  com.sailvan.dispatchcenter.core.monitor.MonitorInterceptor,\
+  com.sailvan.dispatchcenter.core.scheduler.TaskMonitorScheduler,\
+  com.sailvan.dispatchcenter.core.pool.TaskPool,\
+  com.sailvan.dispatchcenter.core.scheduler.ExpireTasksValidator,\
+  com.sailvan.dispatchcenter.core.scheduler.DelayedSendResult,\
+  com.sailvan.dispatchcenter.core.service.ClientService,\
+  com.sailvan.dispatchcenter.core.service.JobService,\
+  com.sailvan.dispatchcenter.core.service.CoreTaskSourceListService,\
+  com.sailvan.dispatchcenter.core.service.TaskBufferService,\
+  com.sailvan.dispatchcenter.core.service.TaskLogsService,\
+  com.sailvan.dispatchcenter.core.service.SQSService,\
+  com.sailvan.dispatchcenter.core.service.SQSConsumer,\
+  com.sailvan.dispatchcenter.core.Funnel.ConcurrentFunnel,\
+  com.sailvan.dispatchcenter.core.domain.TaskBuffer
+
+

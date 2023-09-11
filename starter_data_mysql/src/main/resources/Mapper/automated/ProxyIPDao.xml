@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.ProxyIpDao">
+
+    <!--    前面java字段 后面mysql-->
+    <resultMap id="proxyIPMap" type="com.sailvan.dispatchcenter.common.domain.ProxyIp">
+        <id property="id" column="id" />
+        <result property="shopName" column="shop_name"/>
+        <result property="ip" column="ip"/>
+        <result property="port" column="port"/>
+        <result property="crawlPlatform" column="crawl_platform"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="validStatus" column="valid_status"/>
+        <result property="isp" column="isp"/>
+        <result property="lastRenewalTime" column="last_renewal_time"/>
+        <result property="expireTime" column="expire_time"/>
+        <result property="limitConfig" column="limit_config"/>
+        <result property="unitTime" column="unit_time"/>
+        <result property="maxBannedRate" column="max_banned_rate"/>
+        <result property="delayTime" column="delay_time"/>
+        <result property="validateTimes" column="validate_times"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="largeTaskType" column="large_task_type"/>
+    </resultMap>
+
+    <select id="getProxyIpAll" resultMap="proxyIPMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.ProxyIp">
+        select *  from atc_proxy_ip where is_deleted=0;
+    </select>
+
+    <select id="getProxyIpByIp" resultMap="proxyIPMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.ProxyIp">
+        select *  from atc_proxy_ip where ip = #{ip} and is_deleted=0;
+    </select>
+
+    <!--    ToDo-->
+    <select id="getProxyIpByProxyIp" resultMap="proxyIPMap" resultType="com.sailvan.dispatchcenter.common.domain.ProxyIp">
+        select *  from atc_proxy_ip
+        <where>
+            is_deleted=0
+            <if test="ip != null and ip != '' ">
+                and ip = #{ip}
+            </if>
+            <if test="crawlPlatform != null and crawlPlatform != '' ">
+                and crawl_platform like concat('%',#{crawlPlatform},'%')
+            </if>
+            <if test="ids != null and ids != '' ">
+                and id in ${ids}
+            </if>
+        </where>
+    </select>
+
+    <!--    前mysql字段后java-->
+    <update id="updateProxyIp">
+        UPDATE atc_proxy_ip
+        <set>
+            <if test="ip != null and ip != '' ">
+                ip = #{ip},
+            </if>
+            <if test="port != null and port != '' ">
+                port = #{port},
+            </if>
+            <if test="crawlPlatform != null and crawlPlatform != '' ">
+                crawl_platform = #{crawlPlatform},
+            </if>
+            <if test="validStatus != null and validStatus != '' ">
+                valid_status = #{validStatus},
+            </if>
+            <if test="isp != null and isp != '' ">
+                isp = #{isp}
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!--    前mysql字段后java-->
+    <update id="updateProxyIpPort">
+        UPDATE atc_proxy_ip set port = #{port} WHERE id = #{id}
+    </update>
+
+    <update id="updateCrawlPlatform">
+        UPDATE atc_proxy_ip set crawl_platform = #{crawlPlatform} WHERE id = #{id}
+    </update>
+    <update id="updateLargeTaskType">
+        UPDATE atc_proxy_ip set large_task_type = #{largeTaskType} WHERE id = #{id}
+    </update>
+
+    <insert id="insertProxyIp" useGeneratedKeys="true" keyProperty="id" parameterType="com.sailvan.dispatchcenter.common.domain.ProxyIp">
+        insert into atc_proxy_ip(ip,port,shop_name,valid_status,crawl_platform,isp,last_renewal_time,expire_time,limit_config,unit_time,max_banned_rate,delay_time,large_task_type)
+        values(#{ip,jdbcType=VARCHAR},#{port,jdbcType=INTEGER},#{shopName,jdbcType=VARCHAR},#{validStatus,jdbcType=INTEGER},#{crawlPlatform,jdbcType=VARCHAR},
+        #{isp,jdbcType=VARCHAR},#{lastRenewalTime,jdbcType=VARCHAR},#{expireTime,jdbcType=VARCHAR},#{limitConfig,jdbcType=VARCHAR},#{unitTime,jdbcType=INTEGER},
+        #{maxBannedRate,jdbcType=INTEGER},#{delayTime,jdbcType=INTEGER},#{largeTaskType,jdbcType=INTEGER})
+    </insert>
+
+    <delete id="deleteProxyIpById">
+        delete from atc_proxy_ip where id = #{id}
+    </delete>
+
+
+    <select id="select" resultMap="proxyIPMap" resultType="com.sailvan.dispatchcenter.common.domain.ProxyIp">
+        select  * from atc_proxy_ip  where shop_name = #{shopName} and is_deleted=0
+    </select>
+
+    <select id="getPlatformProxyIpTotal" resultType="java.util.Map">
+        select b.platform platform, COUNT(*) number
+        from atc_proxy_ip a
+        LEFT JOIN atc_proxy_ip_platform b
+        ON a.id = b.proxy_ip_id
+        where a.is_deleted=0
+        GROUP BY b.platform
+    </select>
+
+    <update id="setProxyIpValidStatus">
+        UPDATE atc_proxy_ip set valid_status = #{validStatus} WHERE id = #{id}
+    </update>
+
+    <select id="getProxyIpByUniqueKey" resultMap="proxyIPMap" resultType="com.sailvan.dispatchcenter.common.domain.ProxyIp">
+        select  * from atc_proxy_ip  where ip = #{ip} and port = #{port} and is_deleted=0 limit 1
+    </select>
+
+    <select id="findProxyIpById" resultMap="proxyIPMap" resultType="com.sailvan.dispatchcenter.common.domain.ProxyIp">
+        select  * from atc_proxy_ip  where id = #{id} and is_deleted=0 limit 1
+    </select>
+
+    <update id="updateProxyStatus">
+        UPDATE atc_proxy_ip
+        <set>
+            valid_status = #{validStatus}
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="getProxyByPlatform" resultMap="proxyIPMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.ProxyIp">
+        select *  from atc_proxy_ip where crawl_platform=#{platform} and is_deleted=0
+    </select>
+
+    <update id="batchSetRate">
+        UPDATE atc_proxy_ip
+        <set>
+            limit_config = #{limitConfig},
+            unit_time = #{unitTime},
+            max_banned_rate = #{maxBannedRate},
+            delay_time = #{delayTime}
+        </set>
+        <where>
+            id IN
+            <foreach item="id" index="index" collection="ids"
+                     open="(" separator="," close=")"> #{id}</foreach>
+        </where>
+    </update>
+
+    <select id="getFirstProxyByPlatform" resultMap="proxyIPMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.ProxyIp">
+        select *  from atc_proxy_ip where crawl_platform=#{platform} limit 1;
+    </select>
+
+    <update id="updateValidateTimes" >
+        UPDATE atc_proxy_ip
+        <set>
+            validate_times = #{validateTimes},
+            is_deleted = #{isDeleted}
+        </set>
+        where id=#{id}
+    </update>
+
+    <select id="listProxyByLargeTaskType" resultMap="proxyIPMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.ProxyIp">
+        select *  from atc_proxy_ip where large_task_type=#{largeTaskType} and is_deleted=0;
+    </select>
+
+    <select id="listProxyByExpireTime" resultMap="proxyIPMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.ProxyIp">
+        SELECT * from atc_proxy_ip api where expire_time <![CDATA[<]]> #{expireTime} and is_deleted=0;
+    </select>
+</mapper>

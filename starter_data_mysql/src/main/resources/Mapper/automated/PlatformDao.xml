@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.PlatformDao">
+
+    <!--    前面java字段 后面mysql-->
+    <resultMap id="platformMap" type="com.sailvan.dispatchcenter.common.domain.Platform">
+        <id property="id" column="id" />
+        <result property="platformName" column="platform_name"  />
+        <result property="platformNameZh" column="platform_name_zh"  />
+        <result property="isBrowser" column="is_browser"  />
+        <result property="createdAt" column="created_at"  />
+        <result property="updatedAt" column="updated_at"  />
+        <result property="config" column="config"  />
+        <result property="relatedProxyIp" column="related_proxy_ip"  />
+    </resultMap>
+    <select id="getPlatformAll" resultMap="platformMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.Platform">
+        select *  from atc_platform
+    </select>
+
+    <select id="getPlatformById" resultMap="platformMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.Platform">
+        select *  from atc_platform where id = #{id}
+    </select>
+
+    <select id="getPlatformByName" resultMap="platformMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.Platform">
+        select *  from atc_platform where platform_name = #{platformName} limit 1
+    </select>
+
+    <update id="updatePlatform">
+        UPDATE atc_platform set is_browser = #{isBrowser}, platform_name_zh = #{platformNameZh},config = #{config},related_proxy_ip=#{relatedProxyIp} WHERE id = #{id}
+    </update>
+
+    <delete id="deletePlatformById">
+        delete from atc_platform where id = #{id}
+    </delete>
+
+    <select id="getPlatformByPlatform" resultMap="platformMap" resultType="com.sailvan.dispatchcenter.common.domain.Platform">
+        select *  from atc_platform
+        <where>
+            <if test="platformName != null and platformName != '' ">
+                and platform_name = #{platformName}
+            </if>
+            <if test="platformNameZh != null and platformNameZh != '' ">
+                and platform_name_Zh = #{platformNameZh}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insertPlatform" useGeneratedKeys="true" keyProperty="id" parameterType="com.sailvan.dispatchcenter.common.domain.Platform">
+        insert into atc_platform(platform_name, platform_name_zh, is_browser, created_at,config,related_proxy_ip)
+        values(#{platformName,jdbcType=VARCHAR},#{platformNameZh,jdbcType=VARCHAR},#{isBrowser,jdbcType=INTEGER},#{createdAt,jdbcType=VARCHAR},#{config,jdbcType=VARCHAR},#{relatedProxyIp,jdbcType=INTEGER})
+    </insert>
+
+</mapper>

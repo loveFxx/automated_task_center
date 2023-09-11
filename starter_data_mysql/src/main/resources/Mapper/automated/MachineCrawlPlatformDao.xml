@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.MachineCrawlPlatformDao">
+
+    <!--    前面java字段 后面mysql-->
+    <resultMap id="machineCrawlPlatformMap" type="com.sailvan.dispatchcenter.common.domain.MachineCrawlPlatform">
+        <id property="id" column="id" />
+        <result property="machineId" column="machine_id"/>
+        <result property="machineIp" column="machine_ip"/>
+        <result property="platformId" column="platform_id"/>
+        <result property="platformName" column="platform_name"/>
+        <result property="status" column="status"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="updatedTime" column="updated_time"/>
+        <result property="deletedTime" column="deleted_time"/>
+    </resultMap>
+
+    <select id="getMachineCrawlPlatformByMachineIdStatus" resultMap="machineCrawlPlatformMap" resultType="com.sailvan.dispatchcenter.common.domain.MachineCrawlPlatform">
+        select *  from atc_machine_crawl_platform where machine_id = #{machineId} and status = #{status}
+
+    </select>
+
+    <select id="getMachineCrawlPlatformByMachineId" resultMap="machineCrawlPlatformMap" resultType="com.sailvan.dispatchcenter.common.domain.MachineCrawlPlatform">
+        select *  from atc_machine_crawl_platform where machine_id = #{machineId}
+    </select>
+
+    <select id="getMachineCrawlPlatformById" resultMap="machineCrawlPlatformMap" resultType="com.sailvan.dispatchcenter.common.domain.MachineCrawlPlatform">
+        select *  from atc_machine_crawl_platform where id = #{Id}
+    </select>
+
+
+    <update id="updateMachineCrawlPlatformStatus">
+        UPDATE atc_machine_crawl_platform
+        <set>
+            status = #{status}
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateMachineCrawlPlatformStatusById">
+        UPDATE atc_machine_crawl_platform
+        <set>
+            status = #{status}
+        </set>
+        WHERE id = #{id}
+    </update>
+
+
+    <insert id="insertMachineCrawlPlatform">
+        insert into atc_machine_crawl_platform(machine_id,machine_ip,platform_id, platform_name,status,created_time)
+        values(#{machineId,jdbcType=INTEGER},#{machineIp,jdbcType=INTEGER},#{platformId,jdbcType=INTEGER},#{platformName,jdbcType=VARCHAR},
+        #{status,jdbcType=INTEGER}, #{createdTime,jdbcType=VARCHAR})
+    </insert>
+
+
+
+    <select id="getMachineByCrawlPlatform" resultType="java.lang.Integer">
+        select machine_id from atc_machine_crawl_platform where platform_id in ${platFormIdList}
+    </select>
+
+
+</mapper>

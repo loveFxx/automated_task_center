@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.ColumnDao">
+
+    <resultMap id="columnMap" type="com.sailvan.dispatchcenter.common.domain.Column">
+        <id property="id" column="id" />
+        <result property="taskId" column="task_id"/>
+        <result property="columnsName" column="columns_name"  />
+        <result property="columnType" column="column_type"  />
+        <result property="columnExplain" column="column_explain"  />
+        <result property="isRequired" column="is_required" />
+        <result property="isCombined" column="is_combined"  />
+        <result property="isCombinedUnique" column="is_combined_unique"  />
+        <result property="isReturnFlag" column="is_return_flag"/>
+        <result property="isIdFlag" column="is_id_flag"/>
+    </resultMap>
+
+    <insert id="batchInsertColumn" >
+        INSERT INTO atc_columns (task_id,columns_name,column_explain,column_type,is_required,is_combined,is_combined_unique,is_return_flag,is_id_flag)
+        VALUES
+        <foreach collection="columnList" item="item" index="index" separator=",">
+            (#{taskId},#{item.columnsName},#{item.columnExplain},#{item.columnType},#{item.isRequired},#{item.isCombined},#{item.isCombinedUnique},#{item.isReturnFlag},#{item.isIdFlag})
+        </foreach>
+    </insert>
+
+    <select id="getColumnId" resultType="java.lang.Integer">
+        select id
+        from atc_columns
+        where columns_name = #{columnsName}
+    </select>
+
+    <select id="listColumnsByTaskIdAndIsRequired" resultMap="columnMap" resultType="com.sailvan.dispatchcenter.common.domain.Column">
+        select * from atc_columns where task_id = #{taskId}
+    </select>
+
+    <select id="listColumnsByTaskId" resultMap="columnMap" resultType="com.sailvan.dispatchcenter.common.domain.Column">
+        select * from atc_columns where task_id = #{taskId}
+    </select>
+
+    <delete id="deleteColumnByTaskId">
+        delete from atc_columns where task_id = #{taskId}
+    </delete>
+
+</mapper>

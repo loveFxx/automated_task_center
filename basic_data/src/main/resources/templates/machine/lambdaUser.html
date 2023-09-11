@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head th:include="layout :: htmlhead (pageTitle='lambda用户管理')">
+</head>
+<link rel="stylesheet" type="text/css" href="/css/formSelects-v4.css"/>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!--头-->
+    <div th:replace="fragments/head :: header"></div>
+    <div class="layui-body">
+        <div class="table-pane">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal" shiro:hasPermission="machine:add" onclick="addLambda()">
+                    添加lambda用户
+                </button>
+                <button class="layui-btn layui-btn-normal"  onclick="addFunction()">添加函数</button>
+                <button class="layui-btn layui-btn-normal"  onclick="addUserAndRegionFunction()">添加用户关联</button>
+            </div>
+            <table id="lambdaUserList" lay-filter="lambdaUserTable"></table>
+            <script type="text/html" id="optBar">
+                <a class="layui-btn layui-btn-xs" lay-event="edit" shiro:hasPermission="machine:update">修改</a>
+                <!--                <a class="layui-btn layui-btn-xs" lay-event="delete">删除</a>-->
+            </script>
+        </div>
+    </div>
+
+
+<!--    添加用户-->
+    <div id="addLambdaUser" class="layer_self_wrap" style="width:auto; margin-left:3%;display:none;">
+        <form id="addUserForm" class="layui-form layui-form-pane" method="post" action=""
+              style="width:auto;margin-top: 20px;margin-bottom: 20px;" th:scrolling="yes">
+            <input id="idAdd" type="hidden" name="id"/>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">用户名</label>
+                <div class="layui-input-inline">
+                    <input id="accountName" name="accountName" lay-verify="required" autocomplete="off" class="layui-input"
+                           type="text"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">access_key</label>
+                <div class="layui-input-inline">
+                    <input id="accessKey" name="accessKey" lay-verify="required" autocomplete="off" class="layui-input"
+                           type="text"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">access_sercret</label>
+                <div class="layui-input-inline">
+                    <input id="accessSecret" name="accessSecret" lay-verify="required" autocomplete="off"
+                           class="layui-input" type="text"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">region</label>
+                <div class="layui-input-inline">
+                    <select name="regionSearch" id="regionSearch" xm-select="regionSearch1"
+                            xm-select-search="" xm-select-search-type="dl" xm-select-height="36px" xm-select-radio >
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">lambda函数</label>
+                <div class="layui-input-inline">
+                    <select name="lambdaFunction" id="lambdaFunction" xm-select="lambdaFunction1"
+                            xm-select-search="" xm-select-search-type="dl" xm-select-height="36px" xm-select-radio >
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <div class="layui-input-block" style="margin-left: 10px;">
+                    <button class="layui-btn" lay-submit="" lay-filter="userSubmit">提交</button>
+                </div>
+            </div>
+
+            <!--            <table id="crawlerServerPlatform" lay-filter="crawlerServerPlatform"></table>-->
+        </form>
+    </div>
+
+    <!--修改用户-->
+    <div id="setLambdaUser" class="layer_self_wrap" style="width:auto; margin-left:3%;display:none;">
+        <form id="userForm" class="layui-form layui-form-pane" method="post" action=""
+              style="width:auto;margin-top: 20px;margin-bottom: 20px;" th:scrolling="yes">
+            <!--            <input id="pageNum" type="hidden" name="pageNum"/>-->
+            <input id="id" type="hidden" name="id"/>
+            <input id="lambdaAccountId" type="hidden" name="lambdaAccountId"/>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">access_key</label>
+                <div class="layui-input-inline">
+                    <input id="accessKeyUpdate" name="accessKey" lay-verify="required" autocomplete="off"
+                           class="layui-input" type="text"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">access_sercret</label>
+                <div class="layui-input-inline">
+                    <input id="accessSecretUpdate" name="accessSecret" lay-verify="required" autocomplete="off"
+                           class="layui-input" type="text"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">region</label>
+                <div class="layui-input-inline">
+                    <select name="region" id="region" xm-select="regionSearch"
+                            xm-select-search="" xm-select-search-type="dl" xm-select-height="36px" xm-select-radio >
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">lambda函数</label>
+                <div class="layui-input-inline">
+                    <select name="functionName" id="functionName" xm-select="lambdaFunction"
+                            xm-select-search="" xm-select-search-type="dl" xm-select-height="36px" xm-select-radio >
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block" style="margin-left: 10px;">
+                    <button class="layui-btn" lay-submit="" lay-filter="updateUserSubmit">提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+<!--    添加函数-->
+    <div id="addFunction" class="layer_self_wrap" style="width:auto; margin-left:3%;display:none;">
+        <form id="addFunctionFrom" class="layui-form layui-form-pane" method="post" action=""
+              style="width:auto;margin-top: 20px;margin-bottom: 20px;" th:scrolling="yes">
+            <input id="idFunction" type="hidden" name="id"/>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">函数名</label>
+                <div class="layui-input-inline">
+                    <input id="lfName" name="lfName" lay-verify="required" autocomplete="off" class="layui-input"
+                           type="text"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">processNum</label>
+                <div class="layui-input-inline">
+                    <input id="processNum" name="processNum" lay-verify="required" autocomplete="off" class="layui-input"
+                           type="text"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block" style="margin-left: 10px;">
+                    <button class="layui-btn" lay-submit="" lay-filter="functionSubmit">提交</button>
+                </div>
+            </div>
+            <!--            <table id="crawlerServerPlatform" lay-filter="crawlerServerPlatform"></table>-->
+        </form>
+    </div>
+<!--添加用户与区域站点 函数的关联关系-->
+    <div id="addUserAndRegionFunction" class="layer_self_wrap" style="width:auto; margin-left:3%;display:none;">
+        <form id="addRelationFrom" class="layui-form layui-form-pane" method="post" action=""
+              style="width:auto;margin-top: 20px;margin-bottom: 20px;" th:scrolling="yes">
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">用户</label>
+                <div class="layui-input-inline">
+                    <select name="lambdaUserName" id="lambdaUserName" xm-select="lambdaUserName" lay-verify="required"
+                            xm-select-search="" xm-select-search-type="dl" xm-select-height="36px" xm-select-radio >
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">region</label>
+                <div class="layui-input-inline">
+                    <select name="userAndRegion" id="userAndRegion" xm-select="regionSearch" lay-verify="required"
+                            xm-select-search="" xm-select-search-type="dl" xm-select-height="36px" xm-select-radio >
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">lambda函数</label>
+                <div class="layui-input-inline">
+                    <select name="userAndFunctionName" id="userAndFunctionName" xm-select="lambdaFunction" lay-verify="required"
+                            xm-select-search="" xm-select-search-type="dl" xm-select-height="36px" xm-select-radio >
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block" style="margin-left: 10px;">
+                    <button class="layui-btn" lay-submit="" lay-filter="relationSubmit">提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+    <!--底部-->
+    <div th:replace="fragments/footer :: footer"></div>
+    <script src="/js/crawlerServer/lambdaUser.js"></script>
+    <script src="/js/constant.js"></script>
+    <style type="text/css">
+        .layui-table-cell {
+            height: auto;
+            /*overflow: visible;*/
+        }
+
+        label.required:after { /* 给红色的必填项打红色星号（文字后）如果打前面用before*/
+            content: ' *';
+            color: red;
+        }
+
+        .layui-table-view .layui-table-body {
+            min-height: 300px;
+        }
+
+        .table-overlay .layui-table-cell {
+            overflow: visible;
+        }
+    </style>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,17 @@
+.svn/
+target/
+.idea/
+.classpath
+.project
+automated_task_center.iml
+/logs/
+/stat.xlsx
+/version/
+*.iml
+tomcat/
+basic_data/tomcat/
+core/tomcat/
+/cache/
+/machine_exe_task_cache/
+MultiDesk.xml
+/stat/

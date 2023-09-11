@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.TaskIOMetricDao">
+
+    <resultMap id="taskIOMetricMap" type="com.sailvan.dispatchcenter.common.domain.TaskIOMetric">
+        <id property="id" column="id" />
+        <result property="taskType" column="task_type"/>
+        <result property="inPoolNum" column="in_pool_num"/>
+        <result property="outPoolNum" column="out_pool_num"/>
+        <result property="hour" column="hour"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+
+    <insert id="insertTaskIOMetric"  useGeneratedKeys="true" keyProperty="id" >
+        insert into atc_task_io_metric(task_type,in_pool_num,out_pool_num,`hour`,`date`,`created_at`)
+        values(#{taskType,jdbcType=VARCHAR},#{inPoolNum,jdbcType=INTEGER},#{outPoolNum,jdbcType=INTEGER},#{hour,jdbcType=INTEGER},#{date,jdbcType=VARCHAR},now())
+    </insert>
+
+    <select id="findTaskIOMetric" resultMap="taskIOMetricMap">
+        select * from atc_task_io_metric where task_type=#{taskType} and `date`=#{date} and `hour`=#{hour} limit 1;
+    </select>
+
+    <update id="updateTaskIOMetricById">
+        UPDATE atc_task_io_metric
+        <set>
+            <if test="taskType != null and taskType != '' ">
+                task_type = #{taskType},
+            </if>
+            <if test="inPoolNum != null and inPoolNum != '' ">
+                in_pool_num = #{inPoolNum},
+            </if>
+            <if test="outPoolNum != null and outPoolNum != '' ">
+                out_pool_num = #{outPoolNum},
+            </if>
+            <if test="hour != null and hour != '' ">
+                `hour` = #{hour},
+            </if>
+            <if test="date != null and date != '' ">
+                `date` = #{date},
+            </if>
+
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="sumTaskIOMetric" resultMap="taskIOMetricMap">
+        select sum(in_pool_num) as in_pool_num,sum(out_pool_num) as out_pool_num,`hour`,`date` from atc_task_io_metric where `date`=#{date} and `hour`=#{hour};
+    </select>
+
+    <select id="getTaskIoMetric" resultMap="taskIOMetricMap">
+        SELECT * FROM atc_task_io_metric
+        where id in
+        (select Max(id) from atc_task_io_metric where date=#{date} group by task_type)
+        order by id desc
+    </select>
+
+
+</mapper>

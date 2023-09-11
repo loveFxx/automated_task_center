@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.AccountProxyDao">
+
+    <!--    前面java字段 后面mysql-->
+    <resultMap id="accountProxyMap" type="com.sailvan.dispatchcenter.common.domain.AccountProxy">
+        <id property="id" column="id" />
+        <result property="proxyIpId" column="proxy_ip_id"/>
+        <result property="proxyIp" column="proxy_ip"/>
+        <result property="port" column="port"/>
+        <result property="accountId" column="account_id"/>
+        <result property="platform" column="platform"/>
+        <result property="account" column="account"/>
+        <result property="continents" column="continents"/>
+        <result property="status" column="status"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="updatedTime" column="updated_time"/>
+        <result property="deletedTime" column="deleted_time"/>
+    </resultMap>
+
+    <select id="getAccountProxyByProxyIpId" resultMap="accountProxyMap" resultType="com.sailvan.dispatchcenter.common.domain.AccountProxy">
+        select *  from atc_account_proxy where proxy_ip_id = #{proxyIpId}
+    </select>
+
+
+<!--    <select id="getAccountProxyByAccountProxy" resultMap="accountProxyMap" resultType="com.sailvan.dispatchcenter.common.domain.AccountProxy">-->
+<!--        select *  from atc_account_proxy where proxy_ip_id = #{proxyIpId} and account_id = #{accountId}-->
+<!--    </select>-->
+
+    <select id="selectAccountProxy" resultMap="accountProxyMap" resultType="com.sailvan.dispatchcenter.common.domain.AccountProxy">
+        select *  from atc_account_proxy where proxy_ip_id = #{proxyIpId} and account_id = #{accountId}
+    </select>
+
+    <select id="getAccountProxyByAccountProxy" resultMap="accountProxyMap" resultType="com.sailvan.dispatchcenter.common.domain.AccountProxy">
+        select *  from atc_account_proxy
+        <where>
+            <if test="platform != null and platform != '' ">
+                platform = #{platform}
+            </if>
+            <if test="account != null and account != '' ">
+                and account = #{account}
+            </if>
+            <if test="continents != null and continents != '' ">
+                and continents = #{continents}
+            </if>
+            and proxy_ip_id = #{proxyIpId}
+        </where>
+    </select>
+
+    <select id="getAccountProxyByAccountProxyTwo" resultMap="accountProxyMap" resultType="com.sailvan.dispatchcenter.common.domain.AccountProxy">
+        select *  from atc_account_proxy
+        <where>
+            <if test="platform != null and platform != '' ">
+                platform = #{platform}
+            </if>
+            <if test="account != null and account != '' ">
+                and account in ${account}
+            </if>
+            <if test="continents != null and continents != '' ">
+                and continents = #{continents}
+            </if>
+        </where>
+    </select>
+
+    <update id="updateAccountProxyStatus">
+        UPDATE atc_account_proxy set status = #{status} WHERE proxy_ip_id = #{proxyIpId} and account_id = #{accountId}
+    </update>
+
+    <update id="updateAccountProxyStatusById">
+        UPDATE atc_account_proxy set status = #{status} WHERE id = #{id}
+    </update>
+
+    <update id="updateAccountProxyPortById">
+        UPDATE atc_account_proxy set port = #{port} WHERE id = #{id}
+    </update>
+
+    <insert id="insertAccountProxy">
+        insert into atc_account_proxy(proxy_ip_id,proxy_ip,port,account_id,platform,account,continents,status,created_time)
+        values(#{proxyIpId,jdbcType=INTEGER},#{proxyIp,jdbcType=VARCHAR},#{port,jdbcType=INTEGER},#{accountId,jdbcType=INTEGER},
+        #{platform,jdbcType=VARCHAR},#{account,jdbcType=VARCHAR}, #{continents,jdbcType=VARCHAR},#{status,jdbcType=INTEGER}
+        ,#{createdTime,jdbcType=VARCHAR})
+    </insert>
+
+
+</mapper>

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.TaskSourceListDao">
+
+    <resultMap id="taskSourceListMap" type="com.sailvan.dispatchcenter.common.domain.TaskSourceList">
+        <id property="id" column="id" />
+        <result property="uniqueId" column="unique_id"/>
+        <result property="taskId" column="task_id"/>
+        <result property="type" column="type"/>
+        <result property="systemId" column="system_id"/>
+        <result property="priority" column="priority"/>
+        <result property="isEnforced" column="is_enforced"/>
+        <result property="isSingle" column="is_single"/>
+        <result property="workType" column="work_type"/>
+        <result property="params" column="params"/>
+        <result property="returnParams" column="return_params"/>
+        <result property="expectedTime" column="expected_time"/>
+        <result property="refreshTime" column="refresh_time"/>
+        <result property="lastCreateTime" column="last_create_time"/>
+        <result property="lastResultTime" column="last_result_time"/>
+        <result property="jobName" column="job_name"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="getTaskSrcByTaskSrc" resultMap="taskSourceListMap" resultType="com.sailvan.dispatchcenter.common.domain.TaskSourceList">
+        select *  from atc_task_source_list
+        <where>
+            <if test="startTime != null and startTime != '' ">
+                <![CDATA[ created_at >= #{startTime}  ]]>
+            </if>
+            <if test="endTime != null and endTime != '' ">
+                and <![CDATA[ created_at <= #{endTime}  ]]>
+            </if>
+            <if test="taskSourceList.id != null and taskSourceList.id != '' ">
+                and id = #{taskSourceList.id}
+            </if>
+            <if test="taskSourceList.type != null and taskSourceList.type != '' ">
+                and type = #{taskSourceList.type}
+            </if>
+            <if test="taskIds!= null and taskIds != '' ">
+                and   task_id in ${taskIds}
+            </if>
+            <if test="systemIds!= null and systemIds != '' ">
+                and   system_id in ${systemIds}
+            </if>
+        </where>
+    </select>
+
+    <select id="findTaskSourceById" resultMap="taskSourceListMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.TaskSourceList">
+        select *  from atc_task_source_list where id = #{id} and is_single=#{isSingle}
+    </select>
+
+    <update id="update">
+        UPDATE atc_task_source_list
+        <set>
+            <if test="uniqueId != null or uniqueId != '' ">
+                unique_id = #{uniqueId},
+            </if>
+            <if test="taskId != null or taskId != '' ">
+                task_id = #{taskId},
+            </if>
+            <if test="systemId != null or systemId != '' ">
+                system_id = #{systemId},
+            </if>
+            <if test="priority != null or priority != '' ">
+                priority = #{priority},
+            </if>
+            <if test="isEnforced != null or isEnforced != '' ">
+                is_enforced = #{isEnforced},
+            </if>
+            <if test="params != null or params != '' ">
+                params = #{params},
+            </if>
+            <if test="returnParams != null or returnParams != '' ">
+                return_params = #{returnParams},
+            </if>
+            <if test="expectedTime != null or expectedTime != '' ">
+                expected_time = #{expectedTime},
+            </if>
+            <if test="refreshTime != null or refreshTime != '' ">
+                refresh_time = #{refreshTime},
+            </if>
+            <if test="lastCreateTime != null or lastCreateTime != '' ">
+                last_create_time = #{lastCreateTime},
+            </if>
+            <if test="lastResultTime != null or lastResultTime != '' ">
+                last_result_time = #{lastResultTime},
+            </if>
+            <if test="jobName != null or jobName != '' ">
+                job_name = #{jobName},
+            </if>
+            updated_at=now()
+
+        </set>
+        WHERE id = #{id} and is_single = #{isSingle}
+    </update>
+
+    <insert id="insertTaskSourceList" useGeneratedKeys="true" keyProperty="id">
+        insert into atc_task_source_list(id,unique_id,task_id,type,system_id,priority,is_enforced
+                ,is_single,work_type,params,return_params,expected_time,refresh_time,last_create_time,last_result_time,created_at,updated_at)
+        values(#{id,jdbcType=INTEGER},#{uniqueId,jdbcType=INTEGER},#{taskId,jdbcType=INTEGER},#{type,jdbcType=INTEGER},#{systemId,jdbcType=VARCHAR}
+             ,#{priority,jdbcType=INTEGER} ,#{isEnforced,jdbcType=INTEGER},#{isSingle,jdbcType=INTEGER},#{workType,jdbcType=VARCHAR},
+               #{params,jdbcType=VARCHAR},#{returnParams,jdbcType=VARCHAR},#{expectedTime,jdbcType=TIMESTAMP},#{refreshTime,jdbcType=TIMESTAMP},#{lastCreateTime,jdbcType=TIMESTAMP},#{lastResultTime,jdbcType=TIMESTAMP},now(),now())
+    </insert>
+
+
+    <delete id="delete">
+        delete from atc_task_source_list where id = #{id} and is_single=#{isSingle}
+    </delete>
+
+    <select id="getTaskSourceListByUniqueIdAndIsSingle" resultMap="taskSourceListMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.TaskSourceList">
+        select *  from atc_task_source_list where unique_id = #{uniqueId} and is_single = #{isSingle} and id <![CDATA[>=]]> #{id} limit 1;
+    </select>
+
+    <select id="getTaskSourceListByUniqueIdAndIsSingleAndRefreshTime" resultMap="taskSourceListMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.TaskSourceList">
+        select *  from atc_task_source_list where unique_id = #{uniqueId} and is_single=#{isSingle}
+                                              and refresh_time=#{refreshTime} and id <![CDATA[>=]]> #{id} limit 1;
+    </select>
+
+    <update id="updateLastResultTimeById">
+        UPDATE atc_task_source_list
+        <set>
+            last_result_time = #{lastResultTime},
+            updated_at=now()
+        </set>
+        WHERE id = #{id} and is_single=#{isSingle}
+    </update>
+
+    <resultMap id="PartMap" type="java.util.HashMap">
+        <result column="system_id" property="systemId"/>
+    </resultMap>
+
+    <update id="updateJobNameById">
+        UPDATE atc_task_source_list
+        <set>
+            <if test="expectedTime != null and expectedTime != '' ">
+                expected_time = #{expectedTime},
+            </if>
+            <if test="jobName != null and jobName != '' ">
+                job_name = #{jobName},
+            </if>
+        </set>
+        WHERE id = #{id} and is_single=#{isSingle}
+    </update>
+
+    <select id="listTaskSourcesByJobName" resultMap="taskSourceListMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.TaskSourceList">
+        select *  from atc_task_source_list where job_name = #{jobName} and is_single=#{isSingle} and id <![CDATA[>=]]> #{id};
+    </select>
+
+    <update id="bulkUpdateTimeByIds">
+
+        UPDATE atc_task_source_list
+        <set>
+            <if test="expectedTime != null and expectedTime != '' ">
+                expected_time = #{expectedTime},
+            </if>
+            <if test="lastCreateTime != null and lastCreateTime != '' ">
+                last_create_time = #{lastCreateTime},
+            </if>
+            updated_at=now()
+        </set>
+        <where>
+            id IN
+            <foreach item="list" index="index" collection="lists"
+                     open="(" separator="," close=")"> #{list}</foreach>
+            and is_single = #{isSingle}
+        </where>
+    </update>
+
+    <update id="updateExpectedTimeByJobName">
+        UPDATE atc_task_source_list
+        <set>
+            <if test="expectedTime != null and expectedTime != '' ">
+                expected_time = #{expectedTime},
+            </if>
+            updated_at=now()
+        </set>
+        where job_name = #{jobName}
+    </update>
+
+
+    <select id="queryTaskSource" resultMap="taskSourceListMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.TaskSourceList">
+
+        select * from atc_task_source_list
+        <where>
+            is_single=#{isSingle} and id <![CDATA[>=]]> #{id}
+            <if test="workTypes != null">
+            and work_type IN
+            <foreach item="workType" index="index" collection="workTypes"
+                     open="(" separator="," close=")"> #{workType}</foreach>
+            </if>
+            <if test="taskIds != null">
+                and task_id IN
+                <foreach item="taskId" index="index" collection="taskIds"
+                         open="(" separator="," close=")"> #{taskId}</foreach>
+            </if>
+        </where>
+    </select>
+</mapper>

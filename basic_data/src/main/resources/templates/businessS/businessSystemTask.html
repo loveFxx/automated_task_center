@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head th:include="layout :: htmlhead (pageTitle='系统详情')" >
+</head>
+<link rel="stylesheet" type="text/css" href="/css/formSelects-v4.css"/>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+
+    <!--头-->
+    <div th:replace="fragments/head :: header"></div>
+    <div class="layui-body" style="margin: 1%">
+        <div class="layui-form-item">
+            <table id="businessSystemTaskList" lay-filter="businessSystemListTable"></table>
+            <script type="text/html" id="optBar">
+                <a class="layui-btn layui-btn-xs" lay-event="edit" shiro:hasPermission="businessS:update">编辑</a>
+            </script>
+        </div>
+
+    </div>
+
+    <!--底部-->
+    <div th:replace="fragments/footer :: footer"></div>
+    <script src="/js/business/businessSystemTask.js"></script>
+    <script src="/js/constant.js"></script>
+
+    <style type="text/css">
+        .layui-table-cell {
+            height: auto;
+            overflow: visible;
+        }
+        label.required:before {   /* 给红色的必填项打红色星号（文字后）如果打前面用before*/
+            content: ' *';
+            color: red;
+        }
+    </style>
+
+</div>
+
+
+</body>
+</html>

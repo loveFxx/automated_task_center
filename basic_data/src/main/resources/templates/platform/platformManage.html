@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head th:include="layout :: htmlhead (pageTitle='爬取平台管理')"></head>
+<link rel="stylesheet" type="text/css" href="/css/formSelects-v4.css"/>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!--头-->
+    <div th:replace="fragments/head :: header"></div>
+    <div class="layui-body">
+        <div class="search-pane">
+            <form id="userSearch" class="layui-form layui-form-pane" method="post" action="" style="margin-top: 20px;">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">平台名称</label>
+                    <div class="layui-input-inline">
+                        <input id="platformName" name="platformName" autocomplete="off" class="layui-input"
+                               type="text"/>
+                    </div>
+                    <button class="layui-btn" lay-submit="" lay-filter="searchSubmit">提交</button>
+                </div>
+            </form>
+        </div>
+        <div class="table-pane">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal" onclick="addPlatform()">增加新平台</button>
+            </div>
+            <table id="platformList" lay-filter="platformListTable"></table>
+            <script type="text/html" id="optBar">
+                <a class="layui-btn layui-btn-xs" lay-event="update" shiro:hasPermission="platform:update">修改</a>
+                <a class="layui-btn layui-btn-xs" lay-event="delete" shiro:hasPermission="platform:delete">删除</a>
+            </script>
+        </div>
+    </div>
+
+    <!--添加-->
+    <div id="addPlatform" class="layer_self_wrap" style="width:auto; margin-left:3%;display:none;">
+        <form id="userFormAdd" class="layui-form layui-form-pane" method="post" action=""
+              style="margin:10px;" th:scrolling="yes">
+            <!--            <input id="pageNum" type="hidden" name="pageNum"/>-->
+            <div class="layui-form-item">
+                <label class="layui-form-label required" style="width:150px;border-style:none">平台名称</label>
+                <div class="layui-input-inline">
+                    <input id="platformNameAdd" name="platformName" class="layui-input" type="text"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required" style="width:150px;border-style:none">平台中文名</label>
+                <div class="layui-input-inline">
+                    <input id="platformNameZhAdd" name="platformNameZh" class="layui-input" type="text"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">开启浏览器</label>
+                <div class="layui-input-inline" style="width:auto">
+                    否<input type="radio" name="isBrowser" value="0"/>
+                    是<input type="radio" name="isBrowser" value="1"/>
+                </div>
+            </div>
+
+<!--            <div>-->
+<!--                <label>频率</label>-->
+<!--                <div id="column-box">-->
+<!--                    <div id="box-list">-->
+<!--                    在-->
+<!--                    <div style="width:50px">-->
+<!--                        <input name="intervalTime" autocomplete="off"/>-->
+<!--                    </div>-->
+<!--                    <div>-->
+<!--                        <select name="intervalType">-->
+<!--                                <option value="1">分</option>-->
+<!--                                <option value="2">时</option>-->
+<!--                                <option value="3">天</option>-->
+<!--                        </select>-->
+<!--                    </div>-->
+<!--                    内达到-->
+<!--                    <div style="width:50px">-->
+<!--                        <input name="maxBannedTimes" autocomplete="off"/>-->
+<!--                    </div>-->
+<!--                    次上限延迟-->
+<!--                    <div style="width:50px">-->
+<!--                        <input name="delayTime" autocomplete="off"/>-->
+<!--                    </div>-->
+<!--                    <div>-->
+<!--                        <select name="delayType">-->
+<!--                            <option value="1">分</option>-->
+<!--                            <option value="2">时</option>-->
+<!--                        </select>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                </div>-->
+<!--                <a href="javascript:void(0);" style="color:blue;font-size:20px;line-height:38px;" onclick="addComboColumn()">+</a>-->
+<!--                <a href="javascript:void(0);" style="color:blue;font-size:20px;line-height:38px;" onclick="deleteComboColumn()">-</a>-->
+<!--            </div>-->
+
+            <div class="layui-form-item">
+                <div class="layui-input-block" style="margin-left: 20%;">
+                    <button class="layui-btn" lay-submit="" lay-filter="userAddSubmit">提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!--修改-->
+    <div id="updatePlatform" class="layer_self_wrap" style="width:auto; margin-left:3%;display:none;">
+        <form class="layui-form " style=" margin:10px;">
+            <input id="idUpdate" name="id" class="layui-input" type="hidden"/>
+            <div class="layui-form-item">
+                <label class="layui-form-label">平台英文名</label>
+                <div class="layui-input-inline">
+                    <input id="platformNameUpdate" name="platformName" class="layui-input" type="text"
+                           readonly="readonly"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">平台中文名</label>
+                <div class="layui-input-inline">
+                    <input id="platformNameZhUpdate" name="platformNameZh" class="layui-input" type="text"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="border-style:none">开启浏览器</label>
+                <div class="layui-input-inline" style="width:auto">
+                    否<input type="radio" name="isBrowserUpdate" value="0"/>
+                    是<input type="radio" name="isBrowserUpdate" value="1"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block" style="margin-left: 20%;">
+                    <button class="layui-btn" lay-submit="" lay-filter="userUpdateSubmit">提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!--底部-->
+    <div th:replace="fragments/footer :: footer"></div>
+    <script src="/js/platform/platfromManage.js"></script>
+    <script src="/js/constant.js"></script>
+    <style type="text/css">
+        label.required:before { /* 给红色的必填项打红色星号（文字后）如果打前面用before*/
+            content: ' *';
+            color: red;
+        }
+    </style>
+</div>
+</body>
+</html>

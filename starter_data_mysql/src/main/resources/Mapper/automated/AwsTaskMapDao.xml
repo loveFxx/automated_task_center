@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.AwsTaskMapDao">
+
+    <resultMap id="awsTaskMapMap" type="com.sailvan.dispatchcenter.common.domain.AwsTaskMap">
+        <id property="id" column="id" />
+        <result property="awsLambdaMapId" column="aws_lambda_map_id"/>
+        <result property="taskId" column="task_id"/>
+        <result property="taskName" column="task_name"/>
+    </resultMap>
+
+    <insert id="addTaskMap" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.sailvan.dispatchcenter.common.domain.AwsTaskMap">
+        insert into atc_aws_task_map (aws_lambda_map_id,task_id,task_name)
+        values (#{awsLambdaMapId,jdbcType=INTEGER}, #{taskId,jdbcType=INTEGER}, #{taskName,jdbcType=VARCHAR})
+    </insert>
+
+
+    <select id="getTaskMapByTaskId" resultMap="awsTaskMapMap" >
+        select * from atc_aws_task_map where task_id = #{taskId}
+    </select>
+
+	<select id="getRelationMap" resultType="java.util.HashMap">
+        SELECT c.access_key,c.access_secret,b.region,b.function_name FROM atc_aws_task_map as a join
+        atc_aws_lambda_user_map as b on a.aws_lambda_map_id=b.id join atc_aws_lambda_user as c on b.lambda_account_id= c.id limit 1;
+    </select>
+
+
+    <update id="updateTaskMap">
+        UPDATE atc_aws_task_map
+        <set>
+            <if test="awsLambdaMapId != null and awsLambdaMapId != 0 ">
+                aws_lambda_map_id = #{awsLambdaMapId},
+            </if>
+            <if test="taskId != null and taskId != 0 ">
+                task_id = #{taskId},
+            </if>
+            <if test="taskName != null and taskName != '' ">
+                task_name = #{taskName},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteByTaskId">
+        delete from atc_aws_task_map where task_id = #{taskId}
+    </delete>
+
+</mapper>

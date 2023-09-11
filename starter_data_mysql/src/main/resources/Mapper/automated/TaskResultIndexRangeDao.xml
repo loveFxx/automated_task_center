@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.TaskResultIndexRangeDao">
+
+    <resultMap id="taskResultIndexRangeMap" type="com.sailvan.dispatchcenter.common.domain.TaskResultIndexRange">
+        <id property="id" column="id" />
+        <result property="index" column="index"/>
+        <result property="date" column="date"/>
+    </resultMap>
+
+    <insert id="insertTaskResultIndexRange"  useGeneratedKeys="true" keyProperty="id" >
+        insert into atc_task_result_index_range(`index`,`date`) values(#{index,jdbcType=INTEGER},#{date,jdbcType=TIMESTAMP})
+    </insert>
+
+    <select id="getSmallestRangeIndex" resultMap="taskResultIndexRangeMap" resultType="com.sailvan.dispatchcenter.common.domain.TaskResultIndexRange">
+        select *  from atc_task_result_index_range where `date` <![CDATA[<=]]> #{date} order by id desc limit 1;
+    </select>
+
+    <select id="getBiggestRangeIndex" resultMap="taskResultIndexRangeMap" resultType="com.sailvan.dispatchcenter.common.domain.TaskResultIndexRange">
+        select *  from atc_task_result_index_range where `date` <![CDATA[>=]]> #{date} limit 1;
+    </select>
+
+</mapper>

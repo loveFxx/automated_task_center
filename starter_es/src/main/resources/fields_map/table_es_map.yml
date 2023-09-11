@@ -1,0 +1,23 @@
+es-config:
+  list:
+  - name: 144444444
+    index: 23333333
+    fields:
+      id: id
+      machineId: machine_id
+      heartbeat: heartbeat
+    list:
+      - 1
+      - 2
+      - 3
+  - name: 222222222
+    index: 22222222
+    fields:
+      id: id
+      machineId: machine_id
+      heartbeat: heartbeat
+    list:
+      - 3
+      - 3
+      - 3
+

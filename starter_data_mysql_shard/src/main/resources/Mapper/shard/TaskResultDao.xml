@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.shard.dao.TaskResultShardDao">
+
+    <resultMap id="taskResultMap" type="com.sailvan.dispatchcenter.common.domain.TaskResult">
+        <id property="id" column="id" />
+        <result property="clientCode" column="client_code"/>
+        <result property="taskType" column="task_type"/>
+        <result property="taskSourceId" column="task_source_id"/>
+        <result property="taskBufferId" column="task_buffer_id"/>
+        <result property="uniqueId" column="unique_id"/>
+        <result property="resultHashKey" column="result_hash_key"/>
+        <result property="resultType" column="result_type"/>
+        <result property="needRetry" column="need_retry"/>
+        <result property="errorLevel" column="error_level"/>
+        <result property="clientResult" column="client_result"/>
+        <result property="refreshTime" column="refresh_time"/>
+        <result property="centerParams" column="center_params"/>
+        <result property="returnParams" column="return_params"/>
+        <result property="clientMsg" column="client_msg"/>
+        <result property="clientError" column="client_error"/>
+        <result property="retryTimes" column="retry_times"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="account" column="account"/>
+        <result property="site" column="site"/>
+        <result property="workType" column="work_type"/>
+        <result property="ip" column="ip"/>
+        <result property="runMode" column="run_mode"/>
+    </resultMap>
+
+    <resultMap id="resultMap" type="com.sailvan.dispatchcenter.common.domain.Result">
+        <result property="clientCode" column="client_code"/>
+        <result property="taskType" column="task_type"/>
+        <result property="taskSourceId" column="task_source_id"/>
+        <result property="resultType" column="result_type"/>
+        <result property="needRetry" column="need_retry"/>
+        <result property="errorLevel" column="error_level"/>
+        <result property="clientResult" column="client_result"/>
+        <result property="centerParams" column="center_params"/>
+        <result property="returnParams" column="return_params"/>
+        <result property="clientMsg" column="client_msg"/>
+        <result property="clientError" column="client_error"/>
+        <result property="retryTimes" column="retry_times"/>
+        <result property="createdTime" column="created_time"/>
+    </resultMap>
+
+    <select id="listTaskResultByTaskSourceId" resultMap="resultMap">
+        select *  from atc_task_result where task_source_id = #{taskSourceId} and id <![CDATA[>=]]> #{id} order by created_time desc
+    </select>
+
+    <select id="listTaskResultByUniqueIdOrderByCreatedTime" resultMap="resultMap">
+        select *  from atc_task_result where unique_id = #{uniqueId} and id <![CDATA[>=]]> #{id} order by created_time desc
+    </select>
+
+    <select id="listTaskResultByResultHashKey" resultMap="taskResultMap" resultType="com.sailvan.dispatchcenter.common.domain.TaskResult">
+        select *  from atc_task_result where result_hash_key=#{resultHashKey} and id <![CDATA[>=]]> #{id}
+    </select>
+
+    <insert id="insertTaskResult"  useGeneratedKeys="true" keyProperty="id">
+        insert into atc_task_result(id, client_code,task_type,task_source_id,task_buffer_id,unique_id,result_hash_key,result_type,need_retry,error_level,client_result,refresh_time,center_params,return_params,client_msg,client_error,retry_times,created_time,account,site,work_type,ip,run_mode)
+        values(#{id,jdbcType=INTEGER},#{clientCode,jdbcType=INTEGER},#{taskType,jdbcType=VARCHAR},#{taskSourceId,jdbcType=VARCHAR},#{taskBufferId,jdbcType=VARCHAR},#{uniqueId,jdbcType=INTEGER},#{resultHashKey,jdbcType=INTEGER},#{resultType,jdbcType=VARCHAR},#{needRetry,jdbcType=INTEGER},#{errorLevel,jdbcType=VARCHAR},
+               #{clientResult,jdbcType=LONGVARCHAR},#{refreshTime,jdbcType=TIMESTAMP},#{centerParams,jdbcType=VARCHAR},#{returnParams,jdbcType=VARCHAR},#{clientMsg,jdbcType=VARCHAR},#{clientError,jdbcType=VARCHAR},#{retryTimes,jdbcType=INTEGER},now(),#{account,jdbcType=VARCHAR},#{site,jdbcType=VARCHAR},#{workType,jdbcType=VARCHAR},#{ip,jdbcType=VARCHAR},#{runMode,jdbcType=INTEGER})
+    </insert>
+
+    <select id="getTaskResultByTaskSourceIdAndResultHashKeyAndRefreshTime" resultMap="taskResultMap" resultType="com.sailvan.dispatchcenter.common.domain.TaskResult">
+        select *  from atc_task_result where task_source_id = #{taskSourceId} and result_hash_key=#{resultHashKey} and refresh_time=#{refreshTime} and id <![CDATA[>=]]> #{id} limit 1
+    </select>
+
+    <update id="updateTaskResult">
+        UPDATE atc_task_result
+        <set>
+            <if test="clientCode != null and clientCode != '' ">
+                client_code = #{clientCode},
+            </if>
+            <if test="resultType != null and resultType != '' ">
+                result_type= #{resultType},
+            </if>
+            <if test="needRetry != null and needRetry != '' ">
+                need_retry = #{needRetry},
+            </if>
+            <if test="errorLevel != null and errorLevel != '' ">
+                error_level = #{errorLevel},
+            </if>
+            <if test="clientResult != null and clientResult != '' ">
+                client_result = #{clientResult},
+            </if>
+            <if test="clientMsg != null and clientMsg != '' ">
+                client_msg = #{clientMsg},
+            </if>
+            <if test="clientError != null and clientError != '' ">
+                client_error = #{clientError},
+            </if>
+            <if test="retryTimes != null and retryTimes != '' ">
+                retry_times = #{retryTimes},
+            </if>
+            <if test="account != null and account != '' ">
+                account = #{account},
+            </if>
+            <if test="site != null and site != '' ">
+                site = #{site},
+            </if>
+            <if test="workType != null and workType != '' ">
+                work_type = #{workType},
+            </if>
+            <if test="ip != null and ip != '' ">
+                ip = #{ip},
+            </if>
+            <if test="runMode != null and runMode != '' ">
+                run_mode = #{runMode},
+            </if>
+            created_time = now()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="findById" resultMap="taskResultMap">
+        select *  from atc_task_result where id = #{id} limit 1
+    </select>
+
+    <select id="listTaskResultByTaskSourceIdRange" resultMap="resultMap">
+        select *  from atc_task_result where task_source_id = #{taskSourceId} and id between #{smallestId} and #{biggestId} order by created_time desc
+    </select>
+
+    <select id="listTaskResultByUniqueIdRange" resultMap="resultMap">
+        select *  from atc_task_result where unique_id = #{uniqueId} and id between #{smallestId} and #{biggestId} order by created_time desc
+    </select>
+
+
+
+    <select id="getFirstTaskResultByTaskResult" resultMap="taskResultMap" resultType="com.sailvan.dispatchcenter.common.domain.TaskResult">
+        select *  from atc_task_result
+
+        <if test="taskResult.taskType != null and taskResult.taskType != '' ">
+            FORCE INDEX(task_source_id,atc_task_result_task_buffer_id_index,atc_task_result_task_type_index)
+        </if>
+        <where>
+            <![CDATA[ id  <= #{maxId} and id >0]]>
+            <if test="taskResult.taskSourceId != null and taskResult.taskSourceId != '' ">
+                and task_source_id = #{taskResult.taskSourceId}
+            </if>
+
+            <if test="taskResult.taskBufferId != null and taskResult.taskBufferId != '' ">
+                and task_buffer_id = #{taskResult.taskBufferId}
+            </if>
+            <if test="taskResult.taskType != null and taskResult.taskType != '' ">
+                and task_type in ${taskResult.taskType}
+            </if>
+        </where>
+        order by  id desc limit 10
+    </select>
+
+    <select id="getNextTaskResultByTaskResult" resultMap="taskResultMap" resultType="com.sailvan.dispatchcenter.common.domain.TaskResult">
+        select *  from atc_task_result
+
+        <if test="taskResult.taskType != null and taskResult.taskType != '' ">
+            FORCE INDEX(task_source_id,atc_task_result_task_buffer_id_index,atc_task_result_task_type_index)
+        </if>
+
+        <where>
+            <![CDATA[ id  < #{curPageMinId} and id >0]]>
+            <if test="taskResult.taskSourceId != null and taskResult.taskSourceId != '' ">
+                and task_source_id = #{taskResult.taskSourceId}
+            </if>
+
+            <if test="taskResult.taskBufferId != null and taskResult.taskBufferId != '' ">
+                and task_buffer_id = #{taskResult.taskBufferId}
+            </if>
+            <if test="taskResult.taskType != null and taskResult.taskType != '' ">
+                and task_type in ${taskResult.taskType}
+            </if>
+        </where>
+        order by  id desc limit 10
+    </select>
+
+
+    <select id="getLastTaskResultByTaskResult" resultMap="taskResultMap" resultType="com.sailvan.dispatchcenter.common.domain.TaskResult">
+        select *  from atc_task_result
+
+        <if test="taskResult.taskType != null and taskResult.taskType != '' ">
+            FORCE INDEX(task_source_id,atc_task_result_task_buffer_id_index,atc_task_result_task_type_index)
+        </if>
+
+        <where>
+            <![CDATA[ id  > #{curPageMaxId} ]]>
+            <if test="taskResult.taskSourceId != null and taskResult.taskSourceId != '' ">
+                and task_source_id = #{taskResult.taskSourceId}
+            </if>
+
+            <if test="taskResult.taskBufferId != null and taskResult.taskBufferId != '' ">
+                and task_buffer_id = #{taskResult.taskBufferId}
+            </if>
+            <if test="taskResult.taskType != null and taskResult.taskType != '' ">
+                and task_type in ${taskResult.taskType}
+            </if>
+        </where>
+         limit 10
+    </select>
+
+
+    <select id="getTaskResultCount"  resultType="java.lang.Integer">
+        select count(*)  from atc_task_result
+        <where>
+             <![CDATA[  id <= #{maxId} and id >0 ]]>
+            <if test="taskResult.taskSourceId != null and taskResult.taskSourceId != '' ">
+                and task_source_id = #{taskResult.taskSourceId}
+            </if>
+
+            <if test="taskResult.taskBufferId != null and taskResult.taskBufferId != '' ">
+                and task_buffer_id = #{taskResult.taskBufferId}
+            </if>
+            <if test="taskResult.taskType != null and taskResult.taskType != '' ">
+                and task_type in ${taskResult.taskType}
+            </if>
+
+        </where>
+    </select>
+
+    <select id="countDistinctErrorResult" resultType="map">
+        SELECT distinct(client_error),count(1) as num FROM atc_task_result
+        where id <![CDATA[>=]]> #{id} and created_time <![CDATA[>]]> #{createdTime} and  task_type=#{taskType} and client_code != 1 group by client_error;
+    </select>
+
+
+    <select id="countTaskResultByType" resultType="java.lang.Integer">
+        select count(*) as count from atc_task_result where id between #{minResultId} and #{maxResultId} and task_type=#{type};
+    </select>
+
+    <select id="listResultIds" resultType="java.lang.Integer">
+        select id from atc_task_result where id between #{minResultId} and #{maxResultId} and task_source_id=#{oldTaskSourceId};
+    </select>
+    <update id="fixTaskResult">
+        UPDATE atc_task_result
+        <set>
+            task_source_id = #{newTaskSourceId},unique_id=#{uniqueId}
+        </set>
+        <where>
+            id IN
+            <foreach item="id" index="index" collection="ids"
+                         open="(" separator="," close=")"> #{id}</foreach>
+        </where>
+    </update>
+
+    <select id="listTaskResultByTime" resultMap="taskResultMap" resultType="com.sailvan.dispatchcenter.common.domain.TaskResult">
+        select * from atc_task_result where id between #{minResultId} and #{maxResultId} and task_type=#{type} and created_time between #{minTime} and #{maxTime}
+    </select>
+</mapper>

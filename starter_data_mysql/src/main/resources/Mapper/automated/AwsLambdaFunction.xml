@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.AwsLambdaFunctionDao">
+
+    <resultMap id="awsLambdaFunctionMap" type="com.sailvan.dispatchcenter.common.domain.AwsLambdaFunction">
+        <id property="id" column="id" />
+        <result property="functionName" column="function_name"/>
+        <result property="processNum" column="process_num"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+
+    <select id="getFunctionByFunctionName" resultMap="awsLambdaFunctionMap" >
+        select * from atc_aws_lambda_function where function_name = #{functionName}
+    </select>
+
+    <select id="getAllLambdaFunction" resultMap="awsLambdaFunctionMap" >
+        select * from atc_aws_lambda_function
+    </select>
+
+    <insert id="addFunction" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.sailvan.dispatchcenter.common.domain.AwsLambdaFunction">
+        insert into atc_aws_lambda_function( function_name,process_num, updated_at, created_at)
+        values ( #{functionName,jdbcType=VARCHAR},#{processNum,jdbcType=VARCHAR}, #{updatedAt,jdbcType=VARCHAR},
+               #{createdAt,jdbcType=VARCHAR})
+    </insert>
+
+
+
+</mapper>

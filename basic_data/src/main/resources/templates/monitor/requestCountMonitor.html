@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.w3.org/1999/xhtml">
+<head th:include="layout :: htmlhead (pageTitle='请求数量监控')">
+    <link rel="stylesheet" href="/layui/css/layui.css" media="all">
+</head>
+<link rel="stylesheet" type="text/css" href="/css/formSelects-v4.css"/>
+<script type="text/javascript" src="/echart/echarts.min.js"></script>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!--头-->
+    <div th:replace="fragments/head :: header"></div>
+    <div class="layui-body" style="margin: 1%">
+        <form id="taskSrcListSearch" class="layui-form layui-form-pane" method="post" action=""
+              style="margin-top: 20px;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">系统</label>
+                <div class="layui-input-inline">
+                    <select name="systemName" id="systemName" lay-filter="systemName" class="select">
+                        <option value="">所有系统</option>
+                        <option value="client">client</option>
+                        <option value="PI">PI</option>
+                        <option value="EIP">EIP</option>
+                        <option value="EHR">EHR</option>
+                        <option value="FBX">FBX</option>
+                        <option value="FBX-INNER">FBX-INNER</option>
+                        <option value="FINANCE">FINANCE</option>
+                        <option value="REPORT_CENTER">REPORT_CENTER</option>
+                        <option value="CENTRAL_DATA">CENTRAL_DATA</option>
+                    </select>
+                </div>
+
+                <label class="layui-form-label">请求方法</label>
+                <div class="layui-input-inline">
+                    <select name="method" id="method" xm-select="method" xm-select-radio>
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+
+                <label class="layui-form-label">展示类型</label>
+                <div class="layui-input-inline">
+                    <select name="showType" id="showType">
+                        <option value="1">按时段(小时)</option>
+                        <option value="2">按日期(天)</option>
+                    </select>
+                </div>
+                <button class="layui-btn" lay-submit="" lay-filter="searchSubmit">提交</button>
+            </div>
+        </form>
+        <div class="layui-card">
+            <div class="layui-card-header">请求次数折线图</div>
+            <div class="layui-card-body">
+                <div id="optionchartZhe" style="width: 1000px;height: 400px;"></div>
+            </div>
+        </div>
+    </div>
+    <!--底部-->
+    <div th:replace="fragments/footer :: footer"></div>
+    <script src="/js/constant.js"></script>
+    <script src="/js/monitor/requestCountMonitor.js"></script>
+
+</div>
+</body>
+</html>

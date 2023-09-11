@@ -1,0 +1,8 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.sailvan.dispatchcenter.es.dao.MachineHeartbeatLogsEsDao,\
+  com.sailvan.dispatchcenter.es.dao.TaskLogsEsDao,\
+  com.sailvan.dispatchcenter.es.config.EsConfig,\
+  com.sailvan.dispatchcenter.es.config.MapConfig,\
+  com.sailvan.dispatchcenter.es.config.YamlPropertySourceFactory,\
+  com.sailvan.dispatchcenter.es.util.EsUtils,\
+  com.sailvan.dispatchcenter.es.util.ESConnection

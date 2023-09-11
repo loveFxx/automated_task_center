@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.EveryDayMaxSingleIdDao">
+
+    <insert id="recordTodayMaxSingleId" keyProperty="id" parameterType="com.sailvan.dispatchcenter.common.domain.EveryDayMaxSingleId">
+        INSERT INTO atc_task_source_list_single_index_range (task_source_list_single_id,current_id_date) values(#{taskSourceListSingleId,jdbcType=INTEGER},#{currentIdDate,jdbcType=VARCHAR})
+    </insert>
+
+    <select id="getMaxNumByDate"  resultType="java.lang.Integer">
+        select  task_source_list_single_id from atc_task_source_list_single_index_range
+        where
+            current_id_date = #{yesterdayDate}
+    </select>
+
+
+</mapper>

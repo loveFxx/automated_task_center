@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.db.dao.automated.StoreAccountSitesDao">
+
+    <!--    前面java字段 后面mysql-->
+    <resultMap id="StoreAccountSitesMap" type="com.sailvan.dispatchcenter.common.domain.StoreAccountSites">
+        <id property="id" column="id" />
+        <result property="accountId" column="account_id"/>
+        <result property="site" column="site"/>
+        <result property="account" column="account"/>
+        <result property="continents" column="continents"/>
+        <result property="statusMachine" column="status_machine"/>
+        <result property="statusPerson" column="status_person"/>
+        <result property="status" column="status"/>
+        <result property="payment" column="payment"/>
+        <result property="clientMsg" column="client_msg"/>
+        <result property="clientError" column="client_error"/>
+    </resultMap>
+
+    <select id="getStoreAccountSitesAll" resultMap="StoreAccountSitesMap"
+            resultType="com.sailvan.dispatchcenter.common.domain.StoreAccountSites">
+        select *  from atc_account_sites
+    </select>
+
+
+    <select id="getStoreAccountSites" resultMap="StoreAccountSitesMap" resultType="com.sailvan.dispatchcenter.common.domain.StoreAccountSites">
+        select *  from atc_account_sites where account_id =  #{accountId} and  site = #{site}
+    </select>
+
+
+    <select id="getStoreAccountSitesById" resultMap="StoreAccountSitesMap" resultType="com.sailvan.dispatchcenter.common.domain.StoreAccountSites">
+        select *  from atc_account_sites where id =  #{id}
+    </select>
+
+    <select id="getStoreAccountSitesByAccountId" resultMap="StoreAccountSitesMap" resultType="com.sailvan.dispatchcenter.common.domain.StoreAccountSites">
+        select *  from atc_account_sites where account_id =  #{accountId}
+    </select>
+
+    <select id="getStoreAccountSitesByAccountSite" resultMap="StoreAccountSitesMap" resultType="com.sailvan.dispatchcenter.common.domain.StoreAccountSites">
+        select *  from atc_account_sites where account =  #{account} and site =  #{site}
+    </select>
+
+    <select id="getStoreAccountSitesByAccountContinents" resultMap="StoreAccountSitesMap" resultType="com.sailvan.dispatchcenter.common.domain.StoreAccountSites">
+        select *  from atc_account_sites where account =  #{account} and continents =  #{continents}
+    </select>
+
+
+
+    <!--    前mysql字段后java-->
+    <update id="updateStoreAccountSites">
+        UPDATE atc_account_sites
+        <set>
+            account = #{account},
+            continents = #{continents},
+            payment = #{payment},
+            <if test="statusMachine != -2  ">
+                status_machine = #{statusMachine},
+            </if>
+            <if test="statusPerson != -2  ">
+                status_person = #{statusPerson},
+            </if>
+            <if test="status != -1  ">
+                status = #{status},
+            </if>
+
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateStoreAccountSitesByClient">
+        UPDATE atc_account_sites
+        <set>
+            client_error = #{clientError},
+            client_msg = #{clientMsg},
+            status_machine = #{statusMachine},
+            status = #{status}
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateStatusInvalid">
+        UPDATE atc_account_sites set status = -1 WHERE account_id = #{id}
+    </update>
+
+    <update id="updateMachineStatus">
+        UPDATE atc_account_sites set status_machine = #{statusMachine} WHERE id = #{id}
+    </update>
+
+    <insert id="insertStoreAccountSites">
+        insert into atc_account_sites(account_id,site,status_machine,status_person,status,account,continents,client_msg,client_error,payment)
+        values(#{accountId,jdbcType=INTEGER},#{site,jdbcType=VARCHAR}
+              ,#{statusMachine,jdbcType=INTEGER},#{statusPerson,jdbcType=INTEGER},#{status,jdbcType=INTEGER}
+              ,#{account,jdbcType=VARCHAR},#{continents,jdbcType=VARCHAR},#{clientMsg,jdbcType=VARCHAR},#{clientError,jdbcType=VARCHAR},#{payment,jdbcType=INTEGER}
+              )
+    </insert>
+
+
+    <delete id="deleteStoreAccountSitesById">
+        delete from atc_account_sites where id = #{id}
+    </delete>
+
+
+
+
+
+
+
+    <select id="getSiteJoinAccountHavingMachine" resultType="java.util.Map">
+        select atc_account_sites.id,atc_account.have_machine from atc_account_sites left join atc_account on atc_account_sites.account_id = atc_account.id
+    </select>
+
+
+
+    <select id="getSiteByStatusMachineAndHavingMachine" resultType="java.util.Map">
+        SELECT status_machine,
+               SUM(CASE WHEN have_machine != 1 THEN count ELSE 0 END)     not1,
+               SUM(CASE WHEN have_machine in ('0') THEN count ELSE 0 END) is0
+
+        FROM (select atc_account_sites.status_machine, atc_account.have_machine, count(*) count
+              from atc_account_sites
+                  left join atc_account on atc_account_sites.account_id = atc_account.id
+              group by atc_account_sites.status_machine, atc_account.have_machine) table_a
+        GROUP BY status_machine;
+    </select>
+
+
+
+
+</mapper>

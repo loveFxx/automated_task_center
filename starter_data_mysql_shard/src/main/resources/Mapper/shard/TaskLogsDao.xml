@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sailvan.dispatchcenter.shard.dao.TaskLogsShardDao">
+
+    <resultMap id="taskLogsMap" type="com.sailvan.dispatchcenter.common.domain.TaskLogs">
+        <id property="id" column="id" />
+        <result property="taskSourceId" column="task_source_id"/>
+        <result property="resultHashKey" column="result_hash_key"/>
+        <result property="hashKey" column="hash_key"/>
+        <result property="taskName" column="task_name"/>
+        <result property="retryTimes" column="retry_times"/>
+        <result property="date" column="date" />
+        <result property="event" column="event"/>
+        <result property="explain" column="explain" />
+        <result property="account" column="account"/>
+        <result property="continent" column="continent"/>
+        <result property="platform" column="platform"/>
+        <result property="remoteIp" column="remote_ip"/>
+        <result property="proxyIp" column="proxy_ip"/>
+        <result property="clientParams" column="client_params"/>
+        <result property="centerParams" column="center_params"/>
+        <result property="refreshTime" column="refresh_time"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="hasFile" column="has_file"/>
+        <result property="runMode" column="run_mode"/>
+    </resultMap>
+
+    <insert id="insertTaskLogs"  useGeneratedKeys="true" keyProperty="id" >
+        insert into atc_task_logs (`task_source_id`,`result_hash_key`,`hash_key`,`task_name`,`retry_times`,`event`,`explain`,`account`,`continent`,`platform`,`remote_ip`,`proxy_ip`,`client_params`,`center_params`,`refresh_time`,`date`,`created_time`,`has_file`,`run_mode`)
+        values
+        (#{taskSourceId,jdbcType=VARCHAR},#{resultHashKey,jdbcType=INTEGER},#{hashKey,jdbcType=INTEGER},#{taskName,jdbcType=VARCHAR},#{retryTimes,jdbcType=INTEGER},
+         #{event,jdbcType=INTEGER},#{explain,jdbcType=VARCHAR},#{account,jdbcType=VARCHAR},#{continent,jdbcType=VARCHAR},#{platform,jdbcType=VARCHAR},#{remoteIp,jdbcType=VARCHAR},
+         #{proxyIp,jdbcType=VARCHAR},#{clientParams,jdbcType=VARCHAR},#{centerParams,jdbcType=VARCHAR},#{refreshTime,jdbcType=VARCHAR},#{date,jdbcType=VARCHAR},#{createdTime,jdbcType=VARCHAR},#{hasFile,jdbcType=INTEGER},#{runMode,jdbcType=INTEGER});
+    </insert>
+
+
+
+    <select id="getTaskLogsByTaskLogs" resultMap="taskLogsMap" resultType="com.sailvan.dispatchcenter.common.domain.TaskLogs">
+        select *  from atc_task_logs
+        <where>
+            <if test="startTime != null and startTime != '' ">
+                <![CDATA[ created_time >= #{startTime}  ]]>
+            </if>
+            <if test="endTime != null and endTime != '' ">
+                and <![CDATA[ created_time <= #{endTime}  ]]>
+            </if>
+            <if test="taskLogs.taskSourceId != null and taskLogs.taskSourceId != ''">
+                and task_source_id = #{taskLogs.taskSourceId}
+            </if>
+            <if test="taskLogs.account != null and taskLogs.account != '' ">
+                and   account in ${taskLogs.account}
+            </if>
+            <if test="taskLogs.taskName != null and taskLogs.taskName != '' ">
+                and   task_name in ${taskLogs.taskName}
+            </if>
+            <if test="taskLogs.proxyIp != null and taskLogs.proxyIp != '' ">
+                and proxy_ip = #{taskLogs.proxyIp}
+            </if>
+            <if test="taskLogs.remoteIp != null and taskLogs.remoteIp != '' ">
+                and remote_ip = #{taskLogs.remoteIp}
+            </if>
+            <if test="taskLogs.resultHashKey != null and taskLogs.resultHashKey != '' ">
+                and result_hash_key = #{taskLogs.resultHashKey}
+            </if>
+            <if test=" taskLogs.event != -1 ">
+                and event = #{taskLogs.event}
+            </if>
+            <if test=" taskLogs.platform != null and taskLogs.platform != ''">
+                and platform = #{taskLogs.platform}
+            </if>
+            <if test=" taskLogs.resultHashKey != null and taskLogs.resultHashKey != ''">
+                and result_hash_key = #{taskLogs.resultHashKey}
+            </if>
+        </where>
+        order by id desc
+    </select>
+
+    <select id="getTaskNameTotalCount" resultType="java.util.Map">
+        select task_name,count(*) from atc_task_logs
+        where
+            created_time
+            between #{start} and #{end}
+         and event=1 group by task_name
+    </select>
+
+
+    <select id="getHashKeysList" resultType="java.lang.String">
+        select distinct hash_key from atc_task_logs
+        where
+          <![CDATA[ created_time >= #{start}  ]]>
+         and
+         <![CDATA[  created_time <=#{end}   ]]>
+        and
+        event=1 and hash_key is not null
+    </select>
+
+
+    <select id="getTaskNameForceFailedCount"  resultType="java.util.Map">
+        select task_name,count(*),group_concat(task_source_id) from atc_task_logs
+        where
+         <![CDATA[ created_time >= #{start}  ]]>
+         and
+         <![CDATA[  created_time <=#{end}   ]]>
+        and event=7
+        and hash_key in ${hashKeyList}
+        group by task_name
+    </select>
+
+
+    <select id="getTaskNameSuccessCount"  resultType="java.util.Map">
+        select task_name,count(*) from atc_task_logs
+        where
+         <![CDATA[ created_time >= #{start}  ]]>
+         and
+         <![CDATA[  created_time <=#{end}   ]]>
+        and event=4
+          and hash_key in ${hashKeyList}
+        group by task_name
+    </select>
+
+    <select id="getTaskNameTotalSuccessCount"  resultType="java.util.Map">
+        SELECT task_name,count(1) as `count` FROM atc_task_logs
+        where
+         <![CDATA[ created_time >= #{start}  ]]>
+        and event=4
+        group by task_name
+    </select>
+
+    <select id="getTaskNameFileCount"  resultType="java.util.Map">
+        select task_name,count(*) from atc_task_logs
+        where
+         <![CDATA[ created_time >= #{start}  ]]>
+         and
+         <![CDATA[  created_time <=#{end}   ]]>
+        and event=4
+          and hash_key in ${hashKeyList} and has_file=1
+        group by task_name
+    </select>
+
+
+
+    <select id="getMaxIdOfHashKey"  resultType="java.lang.String">
+        select max(id) from atc_task_logs
+        where
+         <![CDATA[ created_time >= #{start}  ]]>
+         and
+         <![CDATA[  created_time <=#{end}   ]]>
+          and hash_key in ${hashKeyList}
+        group by hash_key
+    </select>
+
+    <select id="getHashKeyFromSecondDay"  resultType="java.lang.String">
+        select hash_key from atc_task_logs
+        where
+         <![CDATA[ created_time >= #{start}  ]]>
+         and
+         <![CDATA[  created_time <=#{end}   ]]>
+          and hash_key in ${hashKeyList}
+        group by hash_key
+    </select>
+
+
+    <select id="getTaskNameFailedCount"  resultType="java.util.Map">
+        select task_name,count(*) from atc_task_logs
+        where
+         <![CDATA[ created_time >= #{start}  ]]>
+         and
+         <![CDATA[  created_time <=#{end}   ]]>
+        and event=5
+          and id in ${idList}
+        group by task_name
+    </select>
+
+    <select id="tooMuchFailureReasonsStat"  resultType="java.util.Map">
+        select hash_key,task_name,account,continent,center_params,  client_params , ifnull(retry_times, 0) as retry_times,`explain`
+        from atc_task_logs where
+        <![CDATA[ created_time >= #{start}  ]]>
+         and
+         <![CDATA[  created_time <=#{end}   ]]>
+         and
+            retry_times>=#{retryTimes} and event=5
+    </select>
+
+
+    <select id="getTaskMameListByContinentsAccount"  resultType="java.util.Map">
+
+
+        select concat(continent,',',account),group_concat(task_name)   from atc_task_logs
+        where
+        <![CDATA[ created_time >= #{start}  ]]>
+         and
+         <![CDATA[  created_time <=#{end}   ]]>
+
+        group by continent,account
+
+    </select>
+
+
+    <select id="getEventById"  resultMap="taskLogsMap" resultType="com.sailvan.dispatchcenter.common.domain.TaskLogs">
+        select * from atc_task_logs
+        where
+         <![CDATA[ created_time >= #{startTime}  ]]>
+         and
+         <![CDATA[  created_time <=#{endTime}   ]]>
+          and task_source_id = #{taskSourceId}
+    </select>
+
+
+<!--    <select id="getEveryHourLogsIdByCreatedTime" resultType="java.lang.Integer">-->
+<!--        select min(id) from atc_task_logs-->
+<!--        where-->
+<!--         <![CDATA[ created_time = #{currentDate}  ]]>-->
+<!--    </select>-->
+
+    <select id="getTaskLogsListInOneHour" resultMap="taskLogsMap" resultType="com.sailvan.dispatchcenter.common.domain.TaskLogs">
+        select * from atc_task_logs
+         where
+         <![CDATA[ created_time >= #{startTime}  ]]>
+         and
+         <![CDATA[  created_time < #{endTime}   ]]>
+        and id > ${startId}
+        and account != ""
+         LIMIT  #{offset},#{limit}
+    </select>
+
+
+
+    <select id="getTaskLogsById" resultMap="taskLogsMap" resultType="com.sailvan.dispatchcenter.common.domain.TaskLogs">
+        select *  from atc_task_logs
+        <where>
+            id <![CDATA[>]]> #{id}
+            and  <![CDATA[ created_time >= #{startTime}  ]]>
+            and <![CDATA[ created_time <= #{endTime}  ]]>
+        </where>
+         LIMIT  #{offset},#{limit}
+    </select>
+
+    <select id="getTaskLogsCountById" resultType="java.lang.Integer">
+        select count(*)  from atc_task_logs
+        <where>
+            id <![CDATA[>]]> #{id}
+            and  <![CDATA[ created_time >= #{startTime}  ]]>
+            and <![CDATA[ created_time <= #{endTime}  ]]>
+        </where>
+    </select>
+
+    <select id="getTaskLogsByTaskSourceId" resultMap="taskLogsMap" resultType="com.sailvan.dispatchcenter.common.domain.TaskLogs">
+        select *  from atc_task_logs
+        <where>
+            task_source_id = #{taskSourceId}
+            and  <![CDATA[ created_time >= #{startTime}  ]]>
+            and <![CDATA[ created_time <= #{endTime}  ]]>
+        </where>
+    </select>
+
+</mapper>
